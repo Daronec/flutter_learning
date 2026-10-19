@@ -29,7 +29,16 @@ for (const file of files) {
 
 // Commit and push
 execSync('git add .', { cwd: repoDir, stdio: 'inherit' });
-execSync('git commit -m "Deploy Flutter Learning site"', { cwd: repoDir, stdio: 'inherit' });
-execSync('git push', { cwd: repoDir, stdio: 'inherit' });
+const status = execSync('git status --porcelain', { cwd: repoDir, encoding: 'utf-8' }).trim();
+if (status) {
+  execSync('git commit -m "Deploy Flutter Learning site"', { cwd: repoDir, stdio: 'inherit' });
+}
+try {
+  execSync('git pull --rebase origin main', { cwd: repoDir, stdio: 'inherit' });
+  execSync('git push origin main', { cwd: repoDir, stdio: 'inherit' });
+} catch {
+  // Remote may have unrelated history; force push
+  execSync('git push --force origin main', { cwd: repoDir, stdio: 'inherit' });
+}
 
 console.log('Deploy complete! https://daronec.github.io');
