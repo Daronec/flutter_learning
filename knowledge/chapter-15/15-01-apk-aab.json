@@ -1,0 +1,133 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Сборка APK и AAB — команды и параметры"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Перед публикацией приложения в магазин приложений необходимо собрать релизную версию. Flutter поддерживает несколько форматов сборки для разных платформ. Понимание различий между форматами и правильная настройка сборки — ключевой этап подготовки приложения к релизу.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Форматы сборки"},
+    {"level": 3, "type": "heading", "text": "APK (Android Package Kit)"},
+    {"text": "APK — это файл пакета Android, который содержит всё необходимое для установки приложения. Это универсальный формат, который можно установить на любое Android-устройство напрямую.", "type": "paragraph"},
+    {"text": "<strong>Когда использовать APK:</strong>", "type": "paragraph"},
+    {"items": ["Тестирование на реальных устройствах", "Распространение через сторонние магазины (Amazon Appstore)", "Внутреннее тестирование в команде", "Распространение через мессенджеры или веб-сайт"], "type": "ul"},
+    {"text": "<strong>Недостатки APK:</strong>", "type": "paragraph"},
+    {"items": ["Файл содержит код для всех архитектур (большой размер)", "Google Play больше не принимает новые APK (с август 2021)", "Нет оптимизации под конкретное устройство"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "AAB (Android App Bundle)"},
+    {"text": "AAB — это новый формат пакета, разработанный Google. Он содержит весь скомпилированный код и ресурсы, но передаёт генерацию оптимизированных APK на сторону Google Play.", "type": "paragraph"},
+    {"text": "<strong>Преимущества AAB:</strong>", "type": "paragraph"},
+    {"items": ["Меньший размер загрузки (Google Play генерирует APK под конкретную архитектуру)", "Android App Store оптимизирует загрузку (Play Feature Delivery)", "Обязательный формат для новых приложений в Google Play"], "type": "ul"},
+    {"text": "<strong>Недостатки AAB:</strong>", "type": "paragraph"},
+    {"items": ["Нельзя установить напрямую на устройство", "Требует Google Play Console для развёртывания"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Команды сборки"},
+    {"level": 3, "type": "heading", "text": "Сборка APK"},
+    {"content": "# Сборка APK для ARM (по умолчанию, для большинства устройств)
+flutter build apk
+
+# Сборка APK для всех архитектур (ARM64, ARM, x86_64, x86)
+flutter build apk --split-per-abi
+
+# Сборка APK в режиме Release (оптимизация, минификация)
+flutter build apk --release
+
+# Сборка APK в режиме Debug (для отладки)
+flutter build apk --debug
+
+# Сборка APK в режиме Profile (для профилирования производительности)
+flutter build apk --profile", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Сборка AAB"},
+    {"content": "# Сборка AAB в режиме Release
+flutter build appbundle
+
+# Сборка AAB с указанием целевой платформы
+flutter build appbundle --target-platform=android-arm,android-arm64
+
+# Сборка AAB с выводом в конкретную директорию
+flutter build appbundle --output=./build/output", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Режимы сборки"},
+    {"level": 3, "type": "heading", "text": "Debug Mode"},
+    {"text": "Режим отладки, используется во время разработки. Не оптимизирован, содержит отладочную информацию.", "type": "paragraph"},
+    {"content": "flutter build apk --debug", "language": "bash", "type": "code"},
+    {"text": "<strong>Характеристики:</strong>", "type": "paragraph"},
+    {"items": ["Hot reload и hot restart поддерживаются", "Отладочные инструменты включены", "Нет минификации кода", "Размер файла максимальный"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Profile Mode"},
+    {"text": "Режим профилирования, используется для анализа производительности.", "type": "paragraph"},
+    {"content": "flutter build apk --profile", "language": "bash", "type": "code"},
+    {"text": "<strong>Характеристики:</strong>", "type": "paragraph"},
+    {"items": ["Оптимизации включены (как в Release)", "Доступны инструменты профилирования в DevTools", "Подходит для замера FPS, использования памяти, CPU"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Release Mode"},
+    {"text": "Релизный режим, используется для публикации.", "type": "paragraph"},
+    {"content": "flutter build appbundle --release", "language": "bash", "type": "code"},
+    {"text": "<strong>Характеристики:</strong>", "type": "paragraph"},
+    {"items": ["Все оптимизации включены", "Минификация кода (при настройке)", "Обфускация (при настройке)", "Минимальный размер файла"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Параметры сборки"},
+    {"level": 3, "type": "heading", "text": "Разделение по архитектурам"},
+    {"content": "# Создать отдельные APK для каждой архитектуры
+flutter build apk --split-per-abi
+
+# Результат:
+# build/app/outputs/flutter-apk/
+# ├── app-arm64-v8a-release.apk
+# ├── app-armeabi-v7a-release.apk
+# └── app-x86_64-release.apk", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Связывание (Shrinking и Obfuscation)"},
+    {"content": "# Минификация и обфускация кода
+flutter build apk --release --obfuscate --split-debug-info=build/debug-info
+
+# Для AAB
+flutter build appbundle --release --obfuscate --split-debug-info=build/debug-info", "language": "bash", "type": "code"},
+    {"text": "Параметры:", "type": "paragraph"},
+    {"items": ["<code>--obfuscate</code> — обфускация имён переменных и методов", "<code>--split-debug-info</code> — путь для хранения карты отладочной информации"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Кастомный entrypoint"},
+    {"content": "# Указание пользовательского entry point
+flutter build apk --release --target=lib/main_prod.dart
+
+# Пример main_prod.dart
+void main() {
+const bool isProd = bool.fromEnvironment('dart.define.is_prod', defaultValue: true);
+
+runApp(
+MyApp(
+environment: isProd ? Environment.PROD : Environment.DEV,
+),
+);
+}", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Определение переменных среды"},
+    {"content": "# Определение переменных через dart.define
+flutter build apk --release \\\\
+--dart-define=API_URL=https://api.production.com \\\\
+--dart-define=DEBUG_MODE=false \\\\
+--dart-define=FEATURE_FLAG_NEW_UI=true
+
+# Использование в коде
+void main() {
+const String apiUrl = String.fromEnvironment('API_URL');
+const bool debugMode = bool.fromEnvironment('DEBUG_MODE', defaultValue: false);
+const bool featureFlag = bool.fromEnvironment('FEATURE_FLAG_NEW_UI', defaultValue: false);
+
+runApp(MyApp(apiUrl: apiUrl));
+}", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение режимов сборки"},
+    {"text": "| Параметр | Debug | Profile | Release |", "type": "paragraph"},
+    {"text": "|----------|-------|---------|---------|", "type": "paragraph"},
+    {"text": "| Оптимизации | Нет | Да | Да |", "type": "paragraph"},
+    {"text": "| Hot reload | Да | Нет | Нет |", "type": "paragraph"},
+    {"text": "| Отладка | Полная | Ограниченная | Нет |", "type": "paragraph"},
+    {"text": "| Размер файла | Большой | Средний | Минимальный |", "type": "paragraph"},
+    {"text": "| Производительность | Низкая | Хорошая | Максимальная |", "type": "paragraph"},
+    {"text": "| Назначение | Разработка | Профилирование | Публикация |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Расположение файлов"},
+    {"content": "build/
+└── app/
+├── intermediates/     # Промежуточные файлы сборки
+├── outputs/
+│   ├── apk/
+│   │   └── release/
+│   │       ├── app-release.apk
+│   │       └── output-metadata.json
+│   └── bundle/
+│       └── release/
+│           └── app-release.aab
+└── debug/
+└── app-debug.apk", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Всегда собирайте в Release режиме</strong> перед публикацией", "<strong>Используйте AAB</strong> для Google Play Store", "<strong>Сохраняйте debug-info</strong> для расшифровки stacktrace после обфускации", "<strong>Тестируйте APK</strong> на реальных устройствах перед публикацией", "<strong>Проверяйте размер</strong> — оптимизируйте ресурсы и код", "<strong>Используйте переменные среды</strong> для настройки под разные окружения"], "type": "ul"}
+  ]
+}

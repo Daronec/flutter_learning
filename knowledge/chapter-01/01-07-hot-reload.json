@@ -1,0 +1,85 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "1.7 Hot Reload, Hot Restart — принципы работы"},
+    {"level": 2, "type": "heading", "text": "Что такое Hot Reload и Hot Restart?"},
+    {"text": "Flutter предоставляет два механизма мгновенного обновления кода во время разработки:", "type": "paragraph"},
+    {"text": "| | Hot Reload | Hot Restart |", "type": "paragraph"},
+    {"text": "|---|---|---|", "type": "paragraph"},
+    {"text": "| <strong>Что делает</strong> | Обновляет исходный код в запущенном процессе | Перезапускает приложение с нуля |", "type": "paragraph"},
+    {"text": "| <strong>Состояние</strong> | Сохраняется | Сбрасывается |", "type": "paragraph"},
+    {"text": "| <strong>Скорость</strong> | Мгновенно (< 1 секунды) | Быстро (1-2 секунды) |", "type": "paragraph"},
+    {"text": "| <strong>Когда использовать</strong> | Изменение UI, логики | Изменение main(), initState(), зависимостей |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Hot Reload — как это работает"},
+    {"level": 3, "type": "heading", "text": "Принцип работы"},
+    {"content": "1. Изменение кода в редакторе
+↓
+2. Dart Compiler компилирует изменённые классы
+↓
+3. Новые классы загружаются в Dart VM (JIT)
+↓
+4. Framework перестраивает Widget Tree
+↓
+5. Render Object Tree обновляется инкрементально
+↓
+6. Экран обновляется — состояние сохранено!", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Что Hot Reload может обновить:"},
+    {"items": ["✅ Изменение виджетов (текст, цвета, размеры)", "✅ Изменение логики build()", "✅ Добавление/удаление виджетов", "✅ Изменение стилей и тем", "✅ Изменение бизнес-логики"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Что Hot Reload НЕ может обновить:"},
+    {"items": ["❌ Изменение <code>main()</code> функции", "❌ Изменение <code>initState()</code> (состояние не сбросится, но метод не вызовется заново)", "❌ Изменение типов (нужен Hot Restart)", "❌ Изменение структур данных, которые уже инициализированы", "❌ Изменение зависимостей в pubspec.yaml"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Hot Restart — как это работает"},
+    {"text": "Hot Restart полностью перезапускает приложение:", "type": "paragraph"},
+    {"content": "1. Изменение кода в редакторе
+↓
+2. Dart VM останавливает текущий процесс
+↓
+3. Приложение перезапускается с нуля
+↓
+4. Вызывается main()
+↓
+5. Создаётся новый Widget Tree
+↓
+6. Состояние сброшено, приложение в начальном состоянии", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Когда нужен Hot Restart:"},
+    {"items": ["Изменение <code>main()</code> функции", "Изменение <code>initState()</code>", "Изменение структуры данных", "Изменение <code>const</code> констант", "Изменение зависимостей"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "JIT vs AOT компиляция"},
+    {"level": 3, "type": "heading", "text": "JIT (Just-In-Time) — для разработки"},
+    {"content": "Dart код → JIT компилятор → машинный код (во время выполнения)", "language": "", "type": "code"},
+    {"items": ["Используется в <strong>Debug</strong> и <strong>Profile</strong> режимах", "Позволяет Hot Reload — классы можно подменять на лету", "Быстрая итерация разработки", "Немного меньшая производительность"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "AOT (Ahead-Of-Time) — для релиза"},
+    {"content": "Dart код → AOT компилятор → машинный код (до запуска)", "language": "", "type": "code"},
+    {"items": ["Используется в <strong>Release</strong> режиме", "Вся приложение компилируется в нативный ARM-код", "Нет JIT — Hot Reload невозможен", "Максимальная производительность", "Меньший размер бандла"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Жизненный цикл при Hot Reload"},
+    {"content": "До Hot Reload:
+Widget A (состояние: count = 5)
+└── Widget B
+
+Изменение кода → Hot Reload
+
+После Hot Reload:
+Widget A (состояние: count = 5) ← СОХРАНЕНО!
+└── Widget B (обновлённый)", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "DevTools — инструменты отладки"},
+    {"text": "Flutter DevTools — набор инструментов для отладки:", "type": "paragraph"},
+    {"content": "# Запуск DevTools
+flutter pub global activate devtools
+flutter pub global run devtools", "language": "bash", "type": "code"},
+    {"text": "<strong>Возможности DevTools:</strong>", "type": "paragraph"},
+    {"items": ["<strong>Widget Inspector</strong> — исследование дерева виджетов", "<strong>Performance</strong> — мониторинг FPS, CPU, memory", "<strong>Timeline</strong> — детальный анализ кадров", "<strong>Memory</strong> — анализ утечек памяти", "<strong>Network</strong> — мониторинг сетевых запросов", "<strong>Logging</strong> — просмотр логов приложения"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Горячие клавиши"},
+    {"text": "| Действие | Android Studio / VS Code | Терминал |", "type": "paragraph"},
+    {"text": "|---|---|---|", "type": "paragraph"},
+    {"text": "| Hot Reload | <code>s</code> (AS) / <code>Ctrl+S</code> (VS Code) | <code>r</code> |", "type": "paragraph"},
+    {"text": "| Hot Restart | <code>R</code> (AS) | <code>R</code> |", "type": "paragraph"},
+    {"text": "| Quit | <code>q</code> | <code>q</code> |", "type": "paragraph"},
+    {"text": "| Run DevTools | — | <code>d</code> |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Ограничения Hot Reload"},
+    {"level": 3, "type": "heading", "text": "Когда Hot Reload не работает:"},
+    {"items": ["<strong>Изменение структуры класса</strong> — добавление/удаление полей", "<strong>Изменение типа переменной</strong> — <code>int</code> → <code>String</code>", "<strong>Изменение <code>main()</code></strong> — точка входа", "<strong>Изменение <code>initState()</code></strong> — метод не вызовется заново", "<strong>Изменение <code>const</code></strong> — константы не обновляются", "<strong>Изменение <code>static</code> полей</strong> — статические данные не сбрасываются"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Решение:"},
+    {"items": ["Использовать <strong>Hot Restart</strong> (<code>R</code> или <code>Cmd/Ctrl + Shift + F5</code>)", "Перезапустить приложение полностью"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Hot Reload — одна из главных фишек Flutter, которая значительно ускоряет разработку:", "type": "paragraph"},
+    {"items": ["<strong>Hot Reload</strong> — для быстрых итераций UI", "<strong>Hot Restart</strong> — когда нужно сбросить состояние", "<strong>DevTools</strong> — для глубокой отладки"], "type": "ul"},
+    {"text": "Использование этих инструментов — ключ к продуктивной Flutter-разработке.", "type": "paragraph"}
+  ]
+}

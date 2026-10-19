@@ -1,0 +1,193 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "3.3 StatelessWidget vs StatefulWidget"},
+    {"level": 2, "type": "heading", "text": "StatelessWidget"},
+    {"level": 3, "type": "heading", "text": "Описание"},
+    {"text": "StatelessWidget — виджет без изменяемого состояния. Конфигурация виджета фиксирована после создания.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Когда использовать"},
+    {"items": ["UI не изменяется динамически", "Зависит только от конфигурации (параметров)", "Не реагирует на события пользователя", "Отображает статические данные"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Пример"},
+    {"content": "class GreetingWidget extends StatelessWidget {
+final String name;
+final Color color;
+
+const GreetingWidget({
+required this.name,
+this.color = Colors.black,
+super.key,
+});
+
+@override
+Widget build(BuildContext context) {
+return Text(
+'Hello, $name!',
+style: TextStyle(color: color, fontSize: 24),
+);
+}
+}
+
+// Использование
+GreetingWidget(name: 'Alice', color: Colors.blue);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Особенности"},
+    {"items": ["Все поля должны быть <code>final</code>", "Конструктор обычно <code>const</code>", "Один метод <code>build()</code>", "Не может изменять себя после создания"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "StatefulWidget"},
+    {"level": 3, "type": "heading", "text": "Описание"},
+    {"text": "StatefulWidget — виджет с изменяемым состоянием. Содержит <code>State</code> объект, который хранит и управляет состоянием.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Когда использовать"},
+    {"items": ["UI изменяется динамически", "Реагирует на события пользователя", "Анимации", "Данные загружаются асинхронно", "Форма с вводом"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Пример"},
+    {"content": "class CounterWidget extends StatefulWidget {
+const CounterWidget({super.key});
+
+@override
+State<CounterWidget> createState() => _CounterWidgetState();
+}
+
+class _CounterWidgetState extends State<CounterWidget> {
+int _count = 0;
+
+@override
+Widget build(BuildContext context) {
+return ElevatedButton(
+onPressed: () {
+setState(() {
+_count++;
+});
+},
+child: Text('Count: $_count'),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Структура StatefulWidget"},
+    {"content": "StatefulWidget (конфигурация, immutable)
+↓ создаёт
+State (состояние, mutable)
+↓ хранит
+int _count, String _text, List<Data> _items
+↓ вызывает
+setState(() => ...)
+↓ перестраивает
+build()", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение"},
+    {"text": "| | StatelessWidget | StatefulWidget |", "type": "paragraph"},
+    {"text": "|---|---|---|", "type": "paragraph"},
+    {"text": "| <strong>Состояние</strong> | Нет | Да (через State) |", "type": "paragraph"},
+    {"text": "| <strong>Изменяемость</strong> | Immutable | Mutable State |", "type": "paragraph"},
+    {"text": "| <strong>Методы</strong> | build() | build(), initState(), dispose() |", "type": "paragraph"},
+    {"text": "| <strong>Конструктор</strong> | Обычно const | Не может быть const |", "type": "paragraph"},
+    {"text": "| <strong>Производительность</strong> | Быстрее (const) | Чуть медленнее |", "type": "paragraph"},
+    {"text": "| <strong>Использование</strong> | Статический UI | Динамический UI |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "State класс"},
+    {"level": 3, "type": "heading", "text": "Жизненный цикл State"},
+    {"content": "class _MyWidgetState extends State<MyWidget> {
+// 1. initState() — вызывается один раз при создании
+@override
+void initState() {
+super.initState();
+_initializeData();
+}
+
+// 2. didUpdateWidget() — при изменении виджета
+@override
+void didUpdateWidget(MyWidget oldWidget) {
+super.didUpdateWidget(oldWidget);
+_handleWidgetUpdate(oldWidget);
+}
+
+// 3. build() — отрисовка UI
+@override
+Widget build(BuildContext context) {
+return Container();
+}
+
+// 4. dispose() — очистка ресурсов
+@override
+void dispose() {
+_controller.dispose();
+super.dispose();
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Методы State"},
+    {"text": "| Метод | Когда вызывается |", "type": "paragraph"},
+    {"text": "|---|---|", "type": "paragraph"},
+    {"text": "| <code>initState()</code> | Один раз при создании |", "type": "paragraph"},
+    {"text": "| <code>didChangeDependencies()</code> | При изменении зависимостей |", "type": "paragraph"},
+    {"text": "| <code>didUpdateWidget()</code> | При обновлении виджета |", "type": "paragraph"},
+    {"text": "| <code>build()</code> | Каждый раз при перестройке |", "type": "paragraph"},
+    {"text": "| <code>dispose()</code> | При удалении виджета |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "setState"},
+    {"level": 3, "type": "heading", "text": "Механизм"},
+    {"content": "setState(() {
+_count++;  // Изменение состояния
+});
+
+// Что происходит:
+// 1. Флаг dirty = true
+// 2. Element помечается как needing build
+// 3. Framework вызывает build() в следующем кадре
+// 4. Widget Tree перестраивается
+// 5. RenderObject обновляется", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Правила setState"},
+    {"content": "// ✅ Правильно
+setState(() {
+_count++;
+_text = 'Updated';
+});
+
+// ❌ Нельзя вызывать build() вручную
+// build() вызывается автоматически framework'ом
+
+// ❌ Нельзя изменять widget (он immutable)
+// widget.name = 'New'; // Ошибка!
+
+// ✅ Можно изменять State
+_count = 10;", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Когда использовать что?"},
+    {"level": 3, "type": "heading", "text": "Используйте StatelessWidget когда:"},
+    {"content": "// Виджет зависит только от входных данных
+class ProfileCard extends StatelessWidget {
+final User user;
+
+ProfileCard({required this.user, super.key});
+
+@override
+Widget build(BuildContext context) {
+return Card(
+child: Column(
+children: [
+Text(user.name),
+Text(user.email),
+],
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Используйте StatefulWidget когда:"},
+    {"content": "// Виджет должен реагировать на события
+class ProfileEditor extends StatefulWidget {
+final User user;
+
+ProfileEditor({required this.user, super.key});
+
+@override
+State<ProfileEditor> createState() => _ProfileEditorState();
+}
+
+class _ProfileEditorState extends State<ProfileEditor> {
+late TextEditingController _nameController;
+
+@override
+void initState() {
+super.initState();
+_nameController = TextEditingController(text: widget.user.name);
+}
+
+@override
+Widget build(BuildContext context) {
+return TextField(controller: _nameController);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"items": ["<strong>StatelessWidget</strong> — для статического UI, быстрее, можно использовать <code>const</code>", "<strong>StatefulWidget</strong> — для динамического UI, с изменяемым состоянием", "<strong>Правило</strong>: всегда используйте StatelessWidget, если возможно", "<strong>State</strong> хранится в отдельном классе, отделённом от конфигурации"], "type": "ul"}
+  ]
+}

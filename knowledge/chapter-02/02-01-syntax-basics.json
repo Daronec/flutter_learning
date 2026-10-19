@@ -1,0 +1,168 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "2.1 Основы синтаксиса Dart: переменные, типы данных"},
+    {"level": 2, "type": "heading", "text": "Основы синтаксиса"},
+    {"level": 3, "type": "heading", "text": "Точка входа"},
+    {"content": "void main() {
+print('Hello, Dart!');
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Комментарии"},
+    {"content": "// Однострочный комментарий
+
+/* Многострочный
+комментарий */
+
+/// Документирующий комментарий (для dartdoc)
+/// Описание метода
+int calculate(int a, int b) => a + b;
+
+/** Документирующий многострочный */", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Переменные"},
+    {"level": 3, "type": "heading", "text": "Объявление переменных"},
+    {"content": "// var — вывод типа из значения
+var name = 'Flutter';        // String
+var age = 25;                 // int
+var height = 1.75;            // double
+var isActive = true;          // bool
+
+// Явное указание типа
+String name = 'Flutter';
+int age = 25;
+double height = 1.75;
+bool isActive = true;
+
+// final — значение вычисляется один раз при инициализации
+final String appName = 'MyApp';
+final DateTime now = DateTime.now();
+
+// const — компиляционная константа (подтип final)
+const String appName = 'MyApp';
+const List<int> numbers = [1, 2, 3];
+const Map<String, dynamic> config = {'key': 'value'};", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "var vs final vs const"},
+    {"text": "| Ключевое слово | Когда вычисляется | Можно ли изменить |", "type": "paragraph"},
+    {"text": "|---|---|---|", "type": "paragraph"},
+    {"text": "| <code>var</code> | При первом присваивании | Да (если не immutable тип) |", "type": "paragraph"},
+    {"text": "| <code>final</code> | При первом присваивании (run-time) | Нет |", "type": "paragraph"},
+    {"text": "| <code>const</code> | При компиляции (compile-time) | Нет |", "type": "paragraph"},
+    {"content": "// final вычисляется в run-time
+final String greeting = 'Hello, ' + DateTime.now().year.toString();
+
+// const вычисляется в compile-time
+const String greeting = 'Hello';
+const int year = 2024;", "language": "dart", "type": "code"},
+    {"content": "**Правило**: `const` объект — это `final`, `final` объект — не обязательно `const`.", "type": "blockquote"},
+    {"level": 2, "type": "heading", "text": "Базовые типы данных"},
+    {"level": 3, "type": "heading", "text": "Числа"},
+    {"content": "// int — целые числа
+int age = 25;
+int hex = 0xFF;
+
+// double — числа с плавающей точкой
+double pi = 3.14159;
+double scientific = 1.5e3; // 1500.0
+
+// Преобразование
+String numStr = '123';
+int num = int.parse(numStr);    // 123
+double numD = double.parse('3.14'); // 3.14
+
+int fromDouble = 42.99.toInt(); // 42 (обрезание)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Строки"},
+    {"content": "// Объявление
+String name = 'Flutter';
+String greeting = \"Hello, World!\";
+
+// Интерполяция (вставка выражений)
+String user = 'Alice';
+int age = 25;
+String info = 'User: $user, Age: $age';
+String info2 = 'User: ${user.toUpperCase()}, Age: ${age + 1}';
+
+// Многострочные строки
+String multiLine = '''
+Первая строка
+Вторая строка
+Третья строка
+''';
+
+// Raw strings (без обработки escape-последовательностей)
+String raw = r'Не обрабатывать \\\\n \\\\t';", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Булев тип"},
+    {"content": "bool isActive = true;
+bool isComplete = false;
+
+// Условные выражения
+if (isActive) {
+print('Активно');
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Коллекции"},
+    {"level": 3, "type": "heading", "text": "List (упорядоченная коллекция)"},
+    {"content": "// Объявление
+List<String> fruits = ['Apple', 'Banana', 'Cherry'];
+var numbers = [1, 2, 3]; // Вывод типа: List<int>
+
+// const list
+const fruits = ['Apple', 'Banana']; // const List
+
+// Доступ
+fruits[0];        // 'Apple'
+fruits.length;    // 3
+fruits.add('Date');
+fruits.remove('Apple');", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Set (коллекция уникальных элементов)"},
+    {"content": "// Объявление
+Set<String> fruits = {'Apple', 'Banana', 'Cherry'};
+var numbers = {1, 2, 3}; // Вывод типа: Set<int>
+
+// Уникальность
+fruits.add('Apple'); // Не добавится, уже существует
+fruits.add('Date');  // Добавится", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Map (словарь, ключ-значение)"},
+    {"content": "// Объявление
+Map<String, dynamic> user = {
+'name': 'Alice',
+'age': 25,
+'isActive': true,
+};
+
+var config = {'key': 'value'}; // Вывод типа: Map<String, dynamic>
+
+// Доступ
+user['name'];           // 'Alice'
+user['age'] = 26;       // Изменение
+user['email'] = 'a@b';  // Добавление", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Null Safety"},
+    {"text": "Dart поддерживает null safety с Dart 2.12:", "type": "paragraph"},
+    {"content": "// Не-null по умолчанию
+String name = 'Flutter';   // ✅
+String name2;              // ❌ Ошибка! Нужно инициализировать
+
+// Nullable типы (добавляем ?)
+String? name = null;       // ✅
+String? name = 'Flutter';  // ✅
+
+// Null-assertion (!) — говорим, что точно не null
+String? maybeName = getName();
+String sureName = maybeName!; // Если null — будет ошибка
+
+// Null-coalescing (??)
+String displayName = name ?? 'Anonymous';
+
+// Null-aware operator (?.)
+int? length = name?.length; // null если name == null", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Типы данных — итоговая таблица"},
+    {"text": "| Тип | Пример | Описание |", "type": "paragraph"},
+    {"text": "|---|---|---|", "type": "paragraph"},
+    {"text": "| <code>int</code> | <code>42</code>, <code>-7</code> | Целые числа 64-бит |", "type": "paragraph"},
+    {"text": "| <code>double</code> | <code>3.14</code>, <code>1.5e3</code> | Числа с плавающей точкой 64-бит |", "type": "paragraph"},
+    {"text": "| <code>String</code> | <code>'Hello'</code> | UTF-16 строки |", "type": "paragraph"},
+    {"text": "| <code>bool</code> | <code>true</code>, <code>false</code> | Логический тип |", "type": "paragraph"},
+    {"text": "| <code>List</code> | <code>[1, 2, 3]</code> | Упорядоченная коллекция |", "type": "paragraph"},
+    {"text": "| <code>Set</code> | <code>{1, 2, 3}</code> | Уникальные элементы |", "type": "paragraph"},
+    {"text": "| <code>Map</code> | <code>{'key': 'val'}</code> | Пары ключ-значение |", "type": "paragraph"},
+    {"text": "| <code>dynamic</code> | <code>dynamic x = 42;</code> | Отключение проверки типов |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Dart — строго типизированный язык с null safety, который обеспечивает безопасность и надёжность кода. Понимание базовых типов и переменных — фундамент для работы с Flutter.", "type": "paragraph"}
+  ]
+}

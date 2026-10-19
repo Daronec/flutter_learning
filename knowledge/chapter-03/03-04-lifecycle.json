@@ -1,0 +1,232 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "3.4 Жизненный цикл виджета (lifecycle)"},
+    {"level": 2, "type": "heading", "text": "Lifecycle Stateless Widget"},
+    {"content": "Создание
+↓
+createElement()
+↓
+mount()
+↓
+build()
+↓
+[Изменение виджета]
+↓
+update() → build()
+↓
+unmount() → dispose()", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Методы StatelessWidget"},
+    {"content": "class MyWidget extends StatelessWidget {
+const MyWidget({super.key});
+
+@override
+Widget build(BuildContext context) {
+// build() вызывается:
+// 1. При первом отображении
+// 2. При каждом перестроении
+// 3. Когда родитель перестраивается
+return Text('Hello');
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Lifecycle Stateful Widget"},
+    {"content": "Создание
+↓
+StatefulWidget.createElement()
+↓
+State.initState()
+↓
+State.didChangeDependencies()
+↓
+build()
+↓
+[Пользовательское действие]
+↓
+setState() → build()
+↓
+[Виджет обновлён]
+↓
+State.didUpdateWidget()
+↓
+build()
+↓
+[Удаление виджета]
+↓
+State.dispose()", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Методы State"},
+    {"content": "class _MyWidgetState extends State<MyWidget> {
+
+// 1. Инициализация (вызывается один раз)
+@override
+void initState() {
+super.initState();
+// Создание контроллеров, подписок, анимаций
+_controller = AnimationController(...);
+_subscription = stream.listen(...);
+}
+
+// 2. Изменение зависимостей
+@override
+void didChangeDependencies() {
+super.didChangeDependencies();
+// Theme, MediaQuery могут измениться
+}
+
+// 3. Перестроение UI
+@override
+Widget build(BuildContext context) {
+return Container();
+}
+
+// 4. Обновление виджета
+@override
+void didUpdateWidget(MyWidget oldWidget) {
+super.didUpdateWidget(oldWidget);
+// oldWidget — старый виджет
+// widget — новый виджет
+}
+
+// 5. Очистка (вызывается один раз)
+@override
+void dispose() {
+// Уничтожение контроллеров, отписка
+_controller.dispose();
+_subscription.cancel();
+super.dispose();
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Детальный разбор методов"},
+    {"level": 3, "type": "heading", "text": "initState()"},
+    {"content": "@override
+void initState() {
+super.initState();
+
+// ✅ Создание:
+// - TextEditingController
+// - AnimationController
+// - StreamSubscription
+// - PageController
+
+_nameController = TextEditingController();
+_animationController = AnimationController(
+vsync: this,
+duration: Duration(seconds: 1),
+);
+
+// ❌ НЕ делать в initState:
+// - async/await (используйте Future.microtask)
+// - Navigator.push (используйте Future.microtask)
+
+// ✅ Правильный async в initState
+Future.microtask(() async {
+var data = await fetchData();
+setState(() {
+_data = data;
+});
+});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "didChangeDependencies()"},
+    {"content": "@override
+void didChangeDependencies() {
+super.didChangeDependencies();
+
+// Вызывается:
+// 1. Сразу после initState()
+// 2. Когда InheritedWidget выше в дереве изменился
+// 3. Когда MediaQuery, Theme и т.д. изменились
+
+// Пример: получение данных из InheritedWidget
+var theme = Theme.of(context);
+var media = MediaQuery.of(context);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "didUpdateWidget()"},
+    {"content": "@override
+void didUpdateWidget(OldWidget oldWidget) {
+super.didUpdateWidget(oldWidget);
+
+// Вызывается когда виджет обновляется
+// oldWidget — предыдущая конфигурация
+// widget — новая конфигурация
+
+if (oldWidget.userId != widget.userId) {
+// Загрузить данные для нового пользователя
+_loadUser(widget.userId);
+}
+
+// Обновить контроллер если текст изменился
+if (oldWidget.text != widget.text) {
+_controller.text = widget.text;
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "dispose()"},
+    {"content": "@override
+void dispose() {
+// ОБЯЗАТЕЛЬНО освобождать ресурсы:
+
+// Контроллеры
+_nameController.dispose();
+_animationController.dispose();
+_pageController.dispose();
+
+// Подписки
+_subscription.cancel();
+
+// Таймеры
+_timer?.cancel();
+
+super.dispose();
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Build Trigger"},
+    {"level": 3, "type": "heading", "text": "Что вызывает build()?"},
+    {"text": "| Триггер | Описание |", "type": "paragraph"},
+    {"text": "|---|---|", "type": "paragraph"},
+    {"text": "| <code>setState()</code> | Явное обновление состояния |", "type": "paragraph"},
+    {"text": "| Родительский <code>setState()</code> | Перестройка родителя |", "type": "paragraph"},
+    {"text": "| <code>didChangeDependencies()</code> | Изменение InheritedWidget |", "type": "paragraph"},
+    {"text": "| <code>didUpdateWidget()</code> | Обновление конфигурации |", "type": "paragraph"},
+    {"text": "| Вставка/удаление виджета | Изменение дерева |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Оптимизация build()"},
+    {"content": "// ❌ Плохо: build() вызывается при каждом setState родителя
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+Text('Static text'),  // Перестраивается каждый раз
+CounterWidget(),       // Перестраивается каждый раз
+Text('More static'),   // Перестраивается каждый раз
+],
+);
+}
+
+// ✅ Хорошо: const виджеты не перестраиваются
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+const Text('Static text'),  // Кэшируется
+CounterWidget(),             // Только этот перестраивается
+const Text('More static'),   // Кэшируется
+],
+);
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Flutter Inspector — отладка lifecycle"},
+    {"content": "В DevTools можно увидеть:
+- Сколько раз был вызван build()
+- Какие виджеты перестраиваются
+- Время перестройки каждого виджета
+- Причины перестройки", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"content": "// Проверка mounted
+Future.microtask(() async {
+var data = await fetchData();
+if (mounted) {
+setState(() {
+_data = data;
+});
+}
+});", "language": "dart", "type": "code"},
+    {"items": ["<strong>initState</strong>: создавайте ресурсы, не делайте async", "<strong>dispose</strong>: всегда освобождайте ресурсы", "<strong>const</strong>: используйте const виджеты где возможно", "<strong>разделение</strong>: выносите сложные виджеты в отдельные классы", "<strong>isCompleted</strong>: проверяйте <code>mounted</code> перед setState после async"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Понимание жизненного цикла виджетов критически важно для:", "type": "paragraph"},
+    {"items": ["Правильной инициализации и очистки", "Избежания утечек памяти", "Оптимизации производительности", "Предсказуемого поведения приложения"], "type": "ul"}
+  ]
+}

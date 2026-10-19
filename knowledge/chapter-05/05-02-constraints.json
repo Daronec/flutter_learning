@@ -1,0 +1,165 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Constraints — как работают ограничения"},
+    {"text": "Constraints (ограничения) — это фундаментальный механизм, на котором строится весь layout в Flutter. Понимание constraints критически важно для создания корректных и предсказуемых макетов.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Основной принцип"},
+    {"content": "**Flutter — это фреймворк, основанный на ограничениях.** Каждый виджет получает ограничения от родителя и сообщает свой размер родителю.", "type": "blockquote"},
+    {"level": 2, "type": "heading", "text": "Три фазы layout-алгоритма"},
+    {"text": "Layout в Flutter проходит через три последовательных фазы:", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "1. Top-down: передача ограничений"},
+    {"content": "Родитель
+│
+│  отправляет Constraints
+▼
+Дочерний виджет", "language": "", "type": "code"},
+    {"text": "Родитель передаёт дочернему виджету <code>BoxConstraints</code>, которые определяют <strong>минимальный</strong> и <strong>максимальный</strong> размер по каждой оси.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "2. Bottom-up: передача размеров"},
+    {"content": "Дочерний виджет
+│
+│  отправляет свой Size
+▼
+Родитель", "language": "", "type": "code"},
+    {"text": "Дочерний виджет выбирает размер <strong>в пределах</strong> полученных ограничений и сообщает его родителю.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "3. ParentData: передача позиционирования"},
+    {"content": "Дочерний виджет
+│
+│  отправляет Offset (через ParentData)
+▼
+Родитель", "language": "", "type": "code"},
+    {"text": "Дочерний виджет сообщает родителю, где он расположен (для виджетов, которые могут содержать несколько детей).", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "BoxConstraints — структура ограничений"},
+    {"text": "<code>BoxConstraints</code> определяет допустимый диапазон размеров:", "type": "paragraph"},
+    {"content": "BoxConstraints({
+this.minWidth = 0.0,
+this.maxWidth = double.infinity,
+this.minHeight = 0.0,
+this.maxHeight = double.infinity,
+})", "language": "dart", "type": "code"},
+    {"text": "| Параметр | Описание | Значение по умолчанию |", "type": "paragraph"},
+    {"text": "|----------|----------|----------------------|", "type": "paragraph"},
+    {"text": "| <code>minWidth</code> | Минимальная ширина | 0.0 |", "type": "paragraph"},
+    {"text": "| <code>maxWidth</code> | Максимальная ширина | ∞ (double.infinity) |", "type": "paragraph"},
+    {"text": "| <code>minHeight</code> | Минимальная высота | 0.0 |", "type": "paragraph"},
+    {"text": "| <code>maxHeight</code> | Максимальная высота | ∞ (double.infinity) |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Типы ограничений"},
+    {"content": "// Неограниченные ограничения (можно выбрать любой размер)
+BoxConstraints.loose(Size(300, 200))
+// minWidth: 0, maxWidth: 300, minHeight: 0, maxHeight: 200
+
+// Жёсткие ограничения (размер фиксирован)
+BoxConstraints.tight(Size(300, 200))
+// minWidth: 300, maxWidth: 300, minHeight: 200, maxHeight: 200
+
+// Ограничения только по ширине
+BoxConstraints.tightForWidth(300)
+// minWidth: 300, maxWidth: 300, minHeight: 0, maxHeight: ∞
+
+// Ограничения только по высоте
+BoxConstraints.tightForHeight(200)
+// minWidth: 0, maxWidth: ∞, minHeight: 200, maxHeight: 200", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Визуализация потока ограничений"},
+    {"content": "┌─────────────────────────────────────────────────────────┐
+│                    Scaffold                               │
+│  Constraints: 0 ≤ w ≤ ∞, 0 ≤ h ≤ ∞                     │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │              Container                              │  │
+│  │  Constraints: 0 ≤ w ≤ 400, 0 ≤ h ≤ 300            │  │
+│  │  Size chosen: 300 × 200                            │  │
+│  │  ┌─────────────────────────────────────────────┐  │  │
+│  │  │            Text                               │  │  │
+│  │  │  Constraints: 0 ≤ w ≤ 300, 0 ≤ h ≤ 200      │  │  │
+│  │  │  Size chosen: 150 × 30 (естественный размер)  │  │  │
+│  │  └─────────────────────────────────────────────┘  │  │
+│  └───────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Подробный пример layout-процесса"},
+    {"content": "Scaffold(
+body: Container(
+constraints: BoxConstraints(maxWidth: 400, maxHeight: 300),
+child: const Text('Hello'),
+),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Шаг 1: Scaffold → Container"},
+    {"content": "Scaffold передаёт Container:
+minWidth: 0,  maxWidth: ∞
+minHeight: 0, maxHeight: ∞", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Шаг 2: Container обрабатывает ограничения"},
+    {"content": "Container(
+constraints: BoxConstraints(maxWidth: 400, maxHeight: 300),
+child: Text('Hello'),
+)", "language": "dart", "type": "code"},
+    {"text": "Container <strong>пересекает</strong> полученные ограничения со своими:", "type": "paragraph"},
+    {"content": "Полученные:     0 ≤ w ≤ ∞,  0 ≤ h ≤ ∞
+Свои:           0 ≤ w ≤ 400, 0 ≤ h ≤ 300
+───────────────────────────────────────
+Пересечение:    0 ≤ w ≤ 400, 0 ≤ h ≤ 300", "language": "", "type": "code"},
+    {"text": "Container передаёт Text: <code>0 ≤ w ≤ 400, 0 ≤ h ≤ 300</code>", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Шаг 3: Text выбирает размер"},
+    {"content": "Text получает: 0 ≤ w ≤ 400, 0 ≤ h ≤ 300
+Text выбирает:  w = 150, h = 30 (естественный размер текста)", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Шаг 4: Text сообщает размер Container"},
+    {"content": "Text сообщает Container: Size(150, 30)", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Шаг 5: Container сообщает размер Scaffold"},
+    {"content": "Container сообщает Scaffold: Size(150, 30)", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Правила поведения виджетов с ограничениями"},
+    {"text": "| Виджет | Поведение |", "type": "paragraph"},
+    {"text": "|--------|----------|", "type": "paragraph"},
+    {"text": "| <strong>SizedBox</strong> | Игнорирует ограничения, задаёт фиксированный размер |", "type": "paragraph"},
+    {"text": "| <strong>Container</strong> | Пересекает ограничения с собственными constraints |", "type": "paragraph"},
+    {"text": "| <strong>Text</strong> | Выбирает размер, достаточный для отображения текста (в пределах ограничений) |", "type": "paragraph"},
+    {"text": "| <strong>Container с child</strong> | Пересекает ограничения, child получает пересечённые |", "type": "paragraph"},
+    {"text": "| <strong>Padding</strong> | Уменьшает доступное пространство на величину отступов |", "type": "paragraph"},
+    {"text": "| <strong>Center</strong> | Выбирает естественный размер, центрирует child |", "type": "paragraph"},
+    {"text": "| <strong>Expanded</strong> | Занимает всё доступное свободное пространство |", "type": "paragraph"},
+    {"text": "| <strong>ConstrainedBox</strong> | Модифицирует ограничения, передаваемые child |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Padding и ограничения"},
+    {"text": "<code>Padding</code> уменьшает доступное пространство для child:", "type": "paragraph"},
+    {"content": "Container(
+constraints: BoxConstraints(maxWidth: 400, maxHeight: 300),
+child: Padding(
+padding: const EdgeInsets.all(20),
+child: const Text('Hello'),
+),
+)", "language": "dart", "type": "code"},
+    {"content": "Container передаёт Padding:     0 ≤ w ≤ 400, 0 ≤ h ≤ 300
+Padding вычитает отступы:       0 ≤ w ≤ 360, 0 ≤ h ≤ 260
+Padding передаёт Text:          0 ≤ w ≤ 360, 0 ≤ h ≤ 260", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "ConstrainedBox — модификация ограничений"},
+    {"text": "<code>ConstrainedBox</code> позволяет изменить ограничения, передаваемые child:", "type": "paragraph"},
+    {"content": "ConstrainedBox(
+constraints: BoxConstraints(
+minWidth: 200,
+maxWidth: 400,
+minHeight: 100,
+maxHeight: 300,
+),
+child: const Text('Hello'),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Как ConstrainedBox работает"},
+    {"content": "Родитель передаёт ConstrainedBox:   0 ≤ w ≤ ∞,  0 ≤ h ≤ ∞
+ConstrainedBox свои ограничения:    200 ≤ w ≤ 400, 100 ≤ h ≤ 300
+─────────────────────────────────────────────────────────────
+Пересечение (child получает):       200 ≤ w ≤ 400, 100 ≤ h ≤ 300", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "ConstrainedBox vs Container с constraints"},
+    {"content": "// ConstrainedBox — всегда пересекает ограничения
+ConstrainedBox(
+constraints: const BoxConstraints(maxWidth: 200),
+child: const Text('Текст'),
+)
+
+// Container с constraints — накладывает ограничения, но child может быть меньше
+Container(
+constraints: const BoxConstraints(maxWidth: 200),
+child: const Text('Текст'),
+)", "language": "dart", "type": "code"},
+    {"text": "Разница проявляется, когда child имеет собственные ограничения. <code>ConstrainedBox</code> <strong>всегда</strong> накладывает свои ограничения на child, а <code>Container</code> может вести себя иначе в зависимости от контекста.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "UnconstrainedBox — снятие ограничений"},
+    {"text": "<code>UnconstrainedBox</code> позволяет child получить неограниченные размеры:", "type": "paragraph"},
+    {"content": "UnconstrainedBox(
+child: const Text('Текст'),
+)
+// Text получает неограниченные ограничения и выбирает свой естественный размер", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["Помните: <strong>каждый виджет получает ограничения от родителя</strong> и <strong>выбирает размер в пределах этих ограничений</strong>", "<code>BoxConstraints.tight</code> создаёт жёсткие ограничения — child обязан выбрать именно этот размер", "<code>BoxConstraints.loose</code> создаёт мягкие ограничения — child может выбрать любой размер до максимума", "Используйте <code>ConstrainedBox</code> для принудительного наложения ограничений на child", "Используйте <code>UnconstrainedBox</code> для получения естественного размера child", "<code>Padding</code> уменьшает доступное пространство — учитывайте это при расчётах", "<code>Expanded</code> работает только внутри <code>Flex</code> (Row/Column) и занимает <strong>свободное</strong> пространство", "Если child не может выбрать размер в пределах ограничений, появится предупреждение (overflow)"], "type": "ul"}
+  ]
+}

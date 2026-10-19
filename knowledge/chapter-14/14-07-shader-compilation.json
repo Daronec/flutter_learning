@@ -1,0 +1,237 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "14-07. Shader Compilation и Precompilation"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Shader compilation — это процесс компиляции графических шейдеров, которые отвечают за рендеринг на GPU. В Flutter это может вызывать задержки (jank), особенно на первых запусках или при появлении новых визуальных эффектов.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Что такое Shaders"},
+    {"level": 3, "type": "heading", "text": "Графический стек Flutter"},
+    {"content": "┌─────────────────────────────────────────────┐
+│              Flutter Framework               │
+│  (Dart code, Widget tree, RenderObject tree)│
+├─────────────────────────────────────────────┤
+│             Skia / Impeller                  │
+│  (Rendering engine, 2D graphics)            │
+├─────────────────────────────────────────────┤
+│              GPU Driver                      │
+│  (OpenGL, Vulkan, Metal)                    │
+├─────────────────────────────────────────────┤
+│              Hardware GPU                    │
+└─────────────────────────────────────────────┘", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Что такое Shader"},
+    {"text": "Shader — это программа, выполняемая на GPU. Она определяет, как пиксели на экране должны быть окрашены:", "type": "paragraph"},
+    {"content": "// Пример простого fragment shader
+precision mediump float;
+uniform vec4 u_color;
+
+void main() {
+gl_FragColor = u_color;
+}", "language": "glsl", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Когда происходит Shader Compilation"},
+    {"text": "| Эффект | Тип шейдера |", "type": "paragraph"},
+    {"text": "|--------|------------|", "type": "paragraph"},
+    {"text": "| Blur (размытие) | Gaussian blur shader |", "type": "paragraph"},
+    {"text": "| ClipRRect | Clip shader |", "type": "paragraph"},
+    {"text": "| Gradient | Gradient shader |", "type": "paragraph"},
+    {"text": "| Shadow (тени) | Shadow shader |", "type": "paragraph"},
+    {"text": "| Opacity | Blend shader |", "type": "paragraph"},
+    {"text": "| CustomPainter | Custom shader |", "type": "paragraph"},
+    {"text": "| BackdropFilter | Backdrop shader |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Shader Compilation Issues"},
+    {"level": 3, "type": "heading", "text": "Проблема: задержка при первом рендеринге"},
+    {"text": "Когда Flutter встречает новый визуальный эффект, он должен скомпилировать соответствующий шейдер. Этот процесс может занять от нескольких миллисекунд до сотен миллисекунд, что вызывает заметный jank:", "type": "paragraph"},
+    {"content": "┌──────────────────────────────────────────────────────┐
+│  Frame 1: Widget с Blur появляется                    │
+│  ┌─────────────────────────────────────────────────┐  │
+│  │ Build: 2ms                                      │  │
+│  │ Layout: 1ms                                     │  │
+│  │ Paint: 3ms                                      │  │
+│  │ Shader Compilation: 50ms ⚠️                     │  │
+│  │ GPU: 8ms                                        │  │
+│  │ Итого: 64ms (пропущенный кадр!)                 │  │
+│  └─────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────┘", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Визуальная индикация"},
+    {"text": "При shader compilation в DevTools можно увидеть:", "type": "paragraph"},
+    {"content": "Performance overlay показывает:
+┌──────────────────┐
+│  FPS: 28         │  ← Падение FPS
+│  Jank: 1         │  ← Пропущенный кадр
+│  Build: 2.1ms    │
+│  Layout: 0.8ms   │
+│  Paint: 3.4ms    │
+│  Raster: 58.7ms  │  ← Высокое время raster (shader compilation)
+└──────────────────┘", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Типичные причины"},
+    {"text": "| Причина | Решение |", "type": "paragraph"},
+    {"text": "|---------|---------|", "type": "paragraph"},
+    {"text": "| Blur эффекты | Precompile shaders |", "type": "paragraph"},
+    {"text": "| ClipRRect с радиусом | Precompile shaders |", "type": "paragraph"},
+    {"text": "| Gradient | Precompile shaders |", "type": "paragraph"},
+    {"text": "| CustomPainter | Precompile shaders |", "type": "paragraph"},
+    {"text": "| BackdropFilter | Precompile shaders |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Pre-warming Shaders"},
+    {"level": 3, "type": "heading", "text": "Что такое Pre-warming"},
+    {"text": "Pre-warming shaders — это процесс компиляции шейдеров заранее, до того как они понадобятся пользователю. Это позволяет избежать задержек при первом рендеринге.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Включение Pre-warming"},
+    {"content": "void main() {
+// Включение pre-warming шейдеров
+WidgetsFlutterBinding.ensureInitialized();
+
+// Запуск приложения
+runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return MaterialApp(
+title: 'Shader Precompilation Demo',
+theme: ThemeData(
+primarySwatch: Colors.blue,
+),
+home: const HomePage(),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Precompilation через build-конфигурацию"},
+    {"content": "# Precompile shaders при сборке
+flutter precache
+
+# Для конкретного устройства
+flutter precache --android
+
+# Для iOS
+flutter precache --ios
+
+# Для всех устройств
+flutter precache", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Ручная компиляция шейдеров"},
+    {"content": "import 'package:flutter/material.dart';
+
+class ShaderPrecompilationPage extends StatelessWidget {
+const ShaderPrecompilationPage({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Shader Precompilation')),
+body: FutureBuilder<void>(
+future: _precompileShaders(),
+builder: (context, snapshot) {
+if (snapshot.connectionState == ConnectionState.waiting) {
+return const Center(child: CircularProgressIndicator());
+}
+
+return const SingleChildScrollView(
+child: Column(
+children: [
+// Эти эффекты теперь будут рендериться плавно
+_BlurEffect(),
+_GradientEffect(),
+_ShadowEffect(),
+_ClipRRectEffect(),
+],
+),
+);
+},
+),
+);
+}
+
+Future<void> _precompileShaders() async {
+// Принудительная компиляция шейдеров
+await Future.wait([
+// Blur
+_compileBlurShader(),
+// Gradient
+_compileGradientShader(),
+// Shadow
+_compileShadowShader(),
+]);
+}
+
+Future<void> _compileBlurShader() async {
+// Создаём временный виджет с blur
+final renderBox = RenderPointerListener();
+// Flutter автоматически компилирует шейдеры при рендеринге
+}
+
+Future<void> _compileGradientShader() async {
+// Создаём временный виджет с gradient
+}
+
+Future<void> _compileShadowShader() async {
+// Создаём временный виджет с shadow
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Precompilation через Asset"},
+    {"content": "# pubspec.yaml
+flutter:
+shaders:
+- assets/shaders/blur.frag
+- assets/shaders/gradient.frag", "language": "yaml", "type": "code"},
+    {"content": "// assets/shaders/blur.frag
+#version 460 core
+#extension GL_EXT_nonuniform_qualifier : require
+
+in vec2 v_uv;
+out vec4 fragColor;
+
+uniform sampler2D u_texture;
+uniform float u_radius;
+
+void main() {
+vec4 sum = vec4(0.0);
+float total = 0.0;
+
+for (float x = -4.0; x <= 4.0; x += 1.0) {
+for (float y = -4.0; y <= 4.0; y += 1.0) {
+float weight = exp(-(x*x + y*y) / (2.0 * u_radius * u_radius));
+sum += texture(u_texture, v_uv + vec2(x, y) * 0.002) * weight;
+total += weight;
+}
+}
+
+fragColor = sum / total;
+}", "language": "glsl", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Impeller Renderer"},
+    {"level": 3, "type": "heading", "text": "Что такое Impeller"},
+    {"text": "Impeller — это новый графический рендерер от Flutter, который решает проблему shader compilation:", "type": "paragraph"},
+    {"text": "| Характеристика | Skia | Impeller |", "type": "paragraph"},
+    {"text": "|---------------|------|----------|", "type": "paragraph"},
+    {"text": "| Shader Compilation | Runtime | Precompiled |", "type": "paragraph"},
+    {"text": "| Jank при новых эффектах | Да | Нет |", "type": "paragraph"},
+    {"text": "| Поддержка Android | Да | Да |", "type": "paragraph"},
+    {"text": "| Поддержка iOS | Да | Да |", "type": "paragraph"},
+    {"text": "| Поддержка Web | Нет | Нет |", "type": "paragraph"},
+    {"text": "| Поддержка macOS | Нет | Да |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Включение Impeller"},
+    {"content": "void main() {
+// Включение Impeller для iOS/macOS
+// Для Android Impeller доступен в beta
+FlutterBinding.ensureInitialized();
+
+// Проверка поддерживаемого рендерера
+debugRenderer = RendererType.impeller;
+
+runApp(const MyApp());
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Impeller в Android"},
+    {"content": "# Включение Impeller для Android (beta)
+flutter run --dart-define=FLUTTER_ENGINE=impeller", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "Рекомендации по работе с шейдерами"},
+    {"items": ["<strong>Используйте <code>flutter precache</code> при сборке</strong> — это компилирует шейдеры заранее", "<strong>Избегайте избыточных blur и clip эффектов</strong> — каждый создаёт новый шейдер", "<strong>Используйте Impeller</strong> — он решает проблему shader compilation", "<strong>Тестируйте на реальных устройствах</strong> — эмуляторы могут не показывать проблемы", "<strong>Используйте Performance Overlay</strong> — отслеживайте время raster"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Сравнение подходов"},
+    {"text": "| Подход | Эффективность | Сложность |", "type": "paragraph"},
+    {"text": "|--------|--------------|-----------|", "type": "paragraph"},
+    {"text": "| <code>flutter precache</code> | Средняя | Низкая |", "type": "paragraph"},
+    {"text": "| Impeller | Высокая | Низкая |", "type": "paragraph"},
+    {"text": "| Ручная компиляция | Средняя | Высокая |", "type": "paragraph"},
+    {"text": "| Asset shaders | Высокая | Средняя |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Чек-лист оптимизации шейдеров"},
+    {"items": ["[ ] Используется <code>flutter precache</code> при сборке", "[ ] Impeller включён (если поддерживается)", "[ ] Избыточные blur/clip эффекты удалены", "[ ] Тестирование на реальных устройствах", "[ ] Performance Overlay показывает стабильный FPS", "[ ] Нет красных кадров на Timeline"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Shader compilation — это одна из основных причин jank в Flutter-приложениях. Использование <code>flutter precache</code>, Impeller и правильное управление визуальными эффектами позволяет обеспечить плавный пользовательский опыт.", "type": "paragraph"}
+  ]
+}

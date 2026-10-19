@@ -1,0 +1,170 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "2.2 Функции: параметры, стрелочный синтаксис, async/await"},
+    {"level": 2, "type": "heading", "text": "Объявление функций"},
+    {"level": 3, "type": "heading", "text": "Базовый синтаксис"},
+    {"content": "// Полное объявление
+int add(int a, int b) {
+return a + b;
+}
+
+// Стрелочный синтаксис (для однострочных функций)
+int add(int a, int b) => a + b;
+
+// Без возвращаемого значения
+void greet(String name) {
+print('Hello, $name!');
+}
+
+// Стрелочный вариант
+void greet(String name) => print('Hello, $name!');", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Параметры функций"},
+    {"level": 3, "type": "heading", "text": "Обязательные параметры"},
+    {"content": "// Позиционные параметры
+int multiply(int a, int b) {
+return a * b;
+}
+
+// Вызов
+multiply(3, 4); // 12", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Именованные параметры"},
+    {"content": "// С фигурными скобками — именованные параметры
+String greet({String name = 'World', String greeting = 'Hello'}) {
+return '$greeting, $name!';
+}
+
+// Вызов с именованными параметрами
+greet(name: 'Alice');                    // 'Hello, Alice!'
+greet(greeting: 'Hi', name: 'Bob');      // 'Hi, Bob!'
+greet();                                  // 'Hello, World!'", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Опциональные параметры"},
+    {"content": "// Позиционные опциональные (в квадратных скобках)
+String greet([String name = 'World']) {
+return 'Hello, $name!';
+}
+
+// Именованные опциональные (в фигурных скобках)
+String greet2({String name = 'World', String greeting = 'Hello'}) {
+return '$greeting, $name!';
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "@required аннотация"},
+    {"content": "// Именованный обязательный параметр
+void sendEmail({required String to, required String subject, String? body}) {
+// ...
+}
+
+// Вызов — обязательно указать required параметры
+sendEmail(to: 'user@example.com', subject: 'Hello');", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Функции как объекты"},
+    {"level": 3, "type": "heading", "text": "Function type"},
+    {"content": "// Функция как переменная
+int add(int a, int b) => a + b;
+var func = add;
+func(3, 4); // 12
+
+// Анонимные функции
+var numbers = [1, 2, 3, 4, 5];
+var doubled = numbers.map((n) => n * 2).toList();
+// [2, 4, 6, 8, 10]", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Closure (замыкание)"},
+    {"content": "// Closure — функция запоминает окружение
+Function makeAdder(int amount) {
+return (int number) => number + amount;
+}
+
+var add5 = makeAdder(5);
+add5(10); // 15", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Асинхронное программирование"},
+    {"level": 3, "type": "heading", "text": "Future"},
+    {"content": "// Future — результат асинхронной операции
+Future<String> fetchData() async {
+await Future.delayed(Duration(seconds: 2));
+return 'Data loaded';
+}
+
+// Использование
+void main() {
+fetchData().then((data) {
+print(data); // 'Data loaded'
+});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "async/await"},
+    {"content": "// async — функция возвращает Future
+// await — ожидание завершения Future
+
+Future<void> loadData() async {
+try {
+String data = await fetchData();
+print(data);
+} catch (e) {
+print('Ошибка: $e');
+}
+}
+
+// Несколько последовательных async вызовов
+Future<void> loadAllData() async {
+String users = await fetchUsers();
+String posts = await fetchPosts();
+String comments = await fetchComments();
+
+print('Loaded: $users, $posts, $comments');
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "async* и Stream"},
+    {"content": "// async* — генерирует Stream
+Stream<int> countUpTo(int max) async* {
+for (int i = 1; i <= max; i++) {
+yield i; // отправляет значение в Stream
+}
+}
+
+// Использование
+void main() {
+countUpTo(5).forEach((num) {
+print(num); // 1, 2, 3, 4, 5
+});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "sync* и yield (устаревший, вместо — Stream.fromIterable)"},
+    {"content": "// sync* — синхронный генератор (устаревший в новых версиях Dart)
+// Рекомендуется использовать Iterable вместо
+Iterable<int> countSync(int max) sync* {
+for (int i = 1; i <= max; i++) {
+yield i;
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Error handling в async"},
+    {"content": "// try/catch с async/await
+Future<void> safeFetch() async {
+try {
+String data = await fetchData();
+print(data);
+} catch (e, stackTrace) {
+print('Ошибка: $e');
+print('Стек: $stackTrace');
+} finally {
+print('Завершено');
+}
+}
+
+// .catchError для Future
+fetchData().catchError((e) {
+print('Ошибка: $e');
+});", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Замыкания и контекст"},
+    {"level": 3, "type": "heading", "text": "this в closures"},
+    {"content": "class Counter {
+int count = 0;
+
+void increment() {
+// this.count доступен
+Future.delayed(Duration(seconds: 1), () {
+// В обычном closure: this НЕ доступен
+// В arrow function: this доступен
+count++;
+print(count);
+});
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Функции в Dart — это полноценные объекты первого класса. Понимание параметров, стрелочного синтаксиса и async/await — основа написания эффективного Dart-кода.", "type": "paragraph"}
+  ]
+}

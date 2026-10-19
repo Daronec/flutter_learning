@@ -1,0 +1,409 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "14-03. Избегание лишних rebuild'ов"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Один из самых частых источников проблем с производительностью в Flutter — это избыточные rebuild'ы виджетов. Каждый вызов <code>setState()</code> запускает перестройку всего поддерева виджетов, что может привести к заметным задержкам, особенно в сложных интерфейсах.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Как работает setState"},
+    {"level": 3, "type": "heading", "text": "Что делает setState"},
+    {"content": "setState(() {
+_counter++;
+});", "language": "dart", "type": "code"},
+    {"text": "Метод <code>setState()</code> выполняет следующие действия:", "type": "paragraph"},
+    {"items": ["Помечает виджет как нуждающийся в перестройке", "Запускает <code>build()</code> метод для этого виджета и всех его дочерних виджетов", "Создаёт новое дерево виджетов", "Сравнивает с предыдущим деревом", "Обновляет только изменившиеся элементы"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Проблема: rebuild всего дерева"},
+    {"content": "class ProblemWidget extends StatefulWidget {
+@override
+State<ProblemWidget> createState() => _ProblemWidgetState();
+}
+
+class _ProblemWidgetState extends State<ProblemWidget> {
+int _counter = 0;
+String _name = 'User';
+
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+// При изменении _counter перестраивается ВСЁ дерево
+Text('$_name'),
+Text('$_counter'),
+ElevatedButton(
+onPressed: () => setState(() => _counter++),
+child: const Text('Increment'),
+),
+ElevatedButton(
+onPressed: () => setState(() => _name = 'Admin'),
+child: const Text('Change Name'),
+),
+],
+);
+}
+}", "language": "dart", "type": "code"},
+    {"text": "При нажатии кнопки \"Increment\" перестраивается весь <code>Column</code>, включая <code>Text('$_name')</code>, хотя он не изменился.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Stateless vs Stateful виджеты"},
+    {"level": 3, "type": "heading", "text": "Когда использовать StatelessWidget"},
+    {"text": "<code>StatelessWidget</code> не перестраивается при изменении состояния — он rebuild'ится только когда родитель вызывает <code>setState()</code>:", "type": "paragraph"},
+    {"content": "// StatelessWidget — не перестраивается сам по себе
+class CounterDisplay extends StatelessWidget {
+final int count;
+const CounterDisplay({super.key, required this.count});
+
+@override
+Widget build(BuildContext context) {
+return Text('$count');
+}
+}
+
+class NameDisplay extends StatelessWidget {
+final String name;
+const NameDisplay({super.key, required this.name});
+
+@override
+Widget build(BuildContext context) {
+return Text(name);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Когда использовать StatefulWidget"},
+    {"text": "<code>StatefulWidget</code> нужен, когда виджет должен управлять своим собственным состоянием:", "type": "paragraph"},
+    {"content": "class CounterButton extends StatefulWidget {
+final Function(int) onIncrement;
+const CounterButton({super.key, required this.onIncrement});
+
+@override
+State<CounterButton> createState() => _CounterButtonState();
+}
+
+class _CounterButtonState extends State<CounterButton> {
+int _pressCount = 0;
+
+void _handleTap() {
+setState(() => _pressCount++);
+widget.onIncrement(_pressCount);
+}
+
+@override
+Widget build(BuildContext context) {
+return ElevatedButton(
+onPressed: _handleTap,
+child: Text('Pressed: $_pressCount'),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Разделение состояния"},
+    {"text": "Ключевой принцип: выносите состояние в отдельные виджеты, чтобы минимизировать область rebuild'а:", "type": "paragraph"},
+    {"content": "// Плохо — всё в одном виджете
+class BadExample extends StatefulWidget {
+@override
+State<BadExample> createState() => _BadExampleState();
+}
+
+class _BadExampleState extends State<BadExample> {
+int _counter = 0;
+String _name = 'User';
+bool _isVisible = true;
+
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+Text(_name),
+Text('$_counter'),
+Visibility(
+visible: _isVisible,
+child: const Text('Hidden'),
+),
+ElevatedButton(
+onPressed: () => setState(() => _counter++),
+child: const Text('Inc'),
+),
+],
+);
+}
+}
+
+// Хорошо — разделение по виджетам
+class GoodExample extends StatefulWidget {
+@override
+State<GoodExample> createState() => _GoodExampleState();
+}
+
+class _GoodExampleState extends State<GoodExample> {
+int _counter = 0;
+String _name = 'User';
+bool _isVisible = true;
+
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+// Этот виджет rebuild'ится только при изменении _name
+NameDisplay(name: _name),
+// Этот виджет rebuild'ится только при изменении _counter
+CounterDisplay(count: _counter),
+// Этот виджет rebuild'ится только при изменении _isVisible
+VisibilityWidget(visible: _isVisible),
+// Этот виджет rebuild'ится только при изменении _counter
+IncrementButton(
+onIncrement: () => setState(() => _counter++),
+),
+],
+);
+}
+}
+
+class NameDisplay extends StatelessWidget {
+final String name;
+const NameDisplay({super.key, required this.name});
+
+@override
+Widget build(BuildContext context) => Text(name);
+}
+
+class CounterDisplay extends StatelessWidget {
+final int count;
+const CounterDisplay({super.key, required this.count});
+
+@override
+Widget build(BuildContext context) => Text('$count');
+}
+
+class VisibilityWidget extends StatelessWidget {
+final bool visible;
+const VisibilityWidget({super.key, required this.visible});
+
+@override
+Widget build(BuildContext context) =>
+Visibility(visible: visible, child: const Text('Hidden'));
+}
+
+class IncrementButton extends StatelessWidget {
+final VoidCallback onIncrement;
+const IncrementButton({super.key, required this.onIncrement});
+
+@override
+Widget build(BuildContext context) =>
+ElevatedButton(onPressed: onIncrement, child: const Text('Inc'));
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Selector Widget"},
+    {"level": 3, "type": "heading", "text": "Паттерн Selector"},
+    {"text": "Selector — это паттерн, который позволяет перестраивать только те виджеты, которые зависят от конкретных частей состояния.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Реализация Selector"},
+    {"content": "// Базовый Selector
+class Selector<T, S> extends StatelessWidget {
+final T Function(BuildContext) selector;
+final Widget Function(BuildContext, S) builder;
+final Widget? child;
+
+const Selector({
+super.key,
+required this.selector,
+required this.builder,
+this.child,
+});
+
+@override
+Widget build(BuildContext context) {
+// Получаем значение через selector
+final selected = selector(context);
+return builder(context, selected);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Использование с Provider"},
+    {"content": "import 'package:provider/provider.dart';
+
+// Модель состояния
+class AppState extends ChangeNotifier {
+int _counter = 0;
+String _name = 'User';
+bool _isLoading = false;
+
+int get counter => _counter;
+String get name => _name;
+bool get isLoading => _isLoading;
+
+void increment() {
+_counter++;
+notifyListeners();
+}
+
+void updateName(String newName) {
+_name = newName;
+notifyListeners();
+}
+
+void setLoading(bool loading) {
+_isLoading = loading;
+notifyListeners();
+}
+}
+
+// Виджет, rebuild'ится только при изменении counter
+class CounterWidget extends StatelessWidget {
+const CounterWidget({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Selector<AppState, int>(
+selector: (context) => context.select((AppState state) => state.counter),
+builder: (context, counter, _) {
+return Text('Counter: $counter');
+},
+);
+}
+}
+
+// Виджет, rebuild'ится только при изменении name
+class NameWidget extends StatelessWidget {
+const NameWidget({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Selector<AppState, String>(
+selector: (context) => context.select((AppState state) => state.name),
+builder: (context, name, _) {
+return Text('Name: $name');
+},
+);
+}
+}
+
+// Виджет, rebuild'ится только при изменении isLoading
+class LoadingWidget extends StatelessWidget {
+const LoadingWidget({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Selector<AppState, bool>(
+selector: (context) => context.select((AppState state) => state.isLoading),
+builder: (context, isLoading, _) {
+if (isLoading) {
+return const CircularProgressIndicator();
+}
+return const SizedBox.shrink();
+},
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Механизм select"},
+    {"text": "Метод <code>context.select()</code> — это ключевая функция для избежания лишних rebuild'ов:", "type": "paragraph"},
+    {"content": "// select отслеживает конкретное значение
+// Виджет перестраивается ТОЛЬКО когда это значение меняется
+int counter = context.select((AppState state) => state.counter);
+
+// Аналогично для вложенных свойств
+String userName = context.select((AppState state) => state.user.name);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Сравнение подходов"},
+    {"text": "| Подход | Rebuild'ится при | Сложность |", "type": "paragraph"},
+    {"text": "|--------|-----------------|-----------|", "type": "paragraph"},
+    {"text": "| <code>setState()</code> в родительском | Любое изменение в State | Низкая |", "type": "paragraph"},
+    {"text": "| Разделение виджетов | Изменение конкретного состояния | Средняя |", "type": "paragraph"},
+    {"text": "| <code>Selector</code> + <code>select</code> | Изменение выбранного значения | Низкая |", "type": "paragraph"},
+    {"text": "| <code>ValueListenableBuilder</code> | Изменение ValueListenable | Низкая |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "ValueListenableBuilder"},
+    {"level": 3, "type": "heading", "text": "Использование ValueListenableBuilder"},
+    {"text": "<code>ValueListenableBuilder</code> — это встроенный виджет Flutter для реактивного обновления:", "type": "paragraph"},
+    {"content": "class MyWidget extends StatefulWidget {
+@override
+State<MyWidget> createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<MyWidget> {
+final ValueNotifier<int> _counter = ValueNotifier<int>(0);
+final ValueNotifier<String> _name = ValueNotifier<String>('User');
+
+@override
+void dispose() {
+_counter.dispose();
+_name.dispose();
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+// Rebuild'ится только при изменении _counter
+ValueListenableBuilder<int>(
+valueListenable: _counter,
+builder: (context, value, child) {
+return Text('Counter: $value');
+},
+),
+// Rebuild'ится только при изменении _name
+ValueListenableBuilder<String>(
+valueListenable: _name,
+builder: (context, value, child) {
+return Text('Name: $value');
+},
+),
+ElevatedButton(
+onPressed: () => _counter.value++,
+child: const Text('Increment Counter'),
+),
+ElevatedButton(
+onPressed: () => _name.value = 'Admin',
+child: const Text('Change Name'),
+),
+],
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "InheritedWidget и наследуемые зависимости"},
+    {"level": 3, "type": "heading", "text": "Создание кастомного Selector"},
+    {"content": "class SelectableWidget<T> extends InheritedWidget {
+final T Function(BuildContext) selector;
+final Widget child;
+
+const SelectableWidget({
+super.key,
+required this.selector,
+required super.child,
+});
+
+static SelectableWidget<T> of<T>(BuildContext context) {
+return context.dependOnInheritedWidgetOfExactType<SelectableWidget<T>>()!;
+}
+
+@override
+bool updateShouldNotify(SelectableWidget<T> oldWidget) {
+return true;
+}
+}
+
+class SelectorExample extends StatefulWidget {
+@override
+State<SelectorExample> createState() => _SelectorExampleState();
+}
+
+class _SelectorExampleState extends State<SelectorExample> {
+int _counter = 0;
+String _name = 'User';
+
+@override
+Widget build(BuildContext context) {
+return SelectableWidget<int>(
+selector: (context) => _counter,
+child: Column(
+children: [
+// Rebuild'ится только при изменении _counter
+Text('$_counter'),
+// Rebuild'ится только при изменении _name
+Text('$_name'),
+ElevatedButton(
+onPressed: () => setState(() => _counter++),
+child: const Text('Inc'),
+),
+],
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "Рекомендации по избежанию лишних rebuild'ов"},
+    {"items": ["<strong>Используйте StatelessWidget там, где это возможно</strong> — они не имеют собственного состояния", "<strong>Разделяйте виджеты по состоянию</strong> — каждый виджет должен зависеть только от своего состояния", "<strong>Используйте <code>context.select()</code> с Provider</strong> — это самый простой и эффективный способ", "<strong>Используйте <code>ValueListenableBuilder</code> для простых случаев</strong> — встроенный виджет без зависимостей", "<strong>Избегайте <code>setState()</code> в больших деревьях виджетов</strong> — выносите состояние вниз", "<strong>Используйте <code>const</code> для статических дочерних виджетов</strong> — это уменьшает работу при сравнении"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Чек-лист оптимизации rebuild'ов"},
+    {"items": ["[ ] Все независимые части UI вынесены в отдельные виджеты", "[ ] Используется <code>context.select()</code> для подписки на конкретные значения", "[ ] Нет <code>setState()</code> в корневом виджете с большим деревом дочерних виджетов", "[ ] <code>ValueNotifier</code> используется для простых уведомлений", "[ ] Все статические виджеты помечены как <code>const</code>", "[ ] Performance Overlay показывает стабильный FPS"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Избегание лишних rebuild'ов — это одна из самых важных техник оптимизации в Flutter. Правильное разделение виджетов и использование <code>Selector</code>/<code>select</code> позволяет перестраивать только те части интерфейса, которые действительно изменились. Это приводит к значительному улучшению производительности, особенно в сложных приложениях.", "type": "paragraph"}
+  ]
+}

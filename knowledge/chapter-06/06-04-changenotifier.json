@@ -1,0 +1,350 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "ChangeNotifier и Consumer"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "<code>ChangeNotifier</code> — это базовый класс из <code>flutter/foundation.dart</code>, который реализует паттерн Наблюдатель (Observer). Он позволяет виджетам подписываться на изменения данных и автоматически обновлять UI при их изменении.", "type": "paragraph"},
+    {"content": "**Ключевая идея:** `ChangeNotifier` хранит данные и уведомляет всех подписчиков об их изменении.", "type": "blockquote"},
+    {"level": 2, "type": "heading", "text": "Основы ChangeNotifier"},
+    {"level": 3, "type": "heading", "text": "Базовый класс"},
+    {"content": "import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
+// Создаём модель, наследуясь от ChangeNotifier
+class CounterModel with ChangeNotifier {
+int _value = 0;
+
+// Геттер для чтения значения
+int get value => _value;
+
+// Метод изменения состояния
+void increment() {
+_value++;
+notifyListeners(); // Уведомляем всех слушателей
+}
+
+void decrement() {
+_value--;
+notifyListeners();
+}
+
+void reset() {
+_value = 0;
+notifyListeners();
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Как работает notifyListeners()"},
+    {"content": "notifyListeners() вызван
+↓
+Перебирается список всех зарегистрированных слушателей
+↓
+Каждому слушателю отправляется уведомление
+↓
+Каждый слушатель вызывает setState() или rebuild()
+↓
+UI обновляется", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Использование Consumer"},
+    {"level": 3, "type": "heading", "text": "Consumer — базовый пример"},
+    {"content": "import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class ConsumerExample extends StatelessWidget {
+const ConsumerExample({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Consumer Example')),
+body: Center(
+child: Consumer<CounterModel>(
+builder: (context, counter, child) {
+return Column(
+mainAxisSize: MainAxisSize.min,
+children: [
+Text(
+'Значение: ${counter.value}',
+style: Theme.of(context).textTheme.headlineLarge,
+),
+const SizedBox(height: 16),
+child!, // Статический дочерний виджет
+],
+);
+},
+child: const Divider(height: 32), // Не перестраивается
+),
+),
+floatingActionButton: FloatingActionButton(
+onPressed: () => context.read<CounterModel>().increment(),
+child: const Icon(Icons.add),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Consumer с несколькими значениями"},
+    {"content": "class UserDisplay extends StatelessWidget {
+const UserDisplay({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Consumer2<UserModel, ThemeModel>(
+builder: (context, user, theme, child) {
+return Card(
+child: ListTile(
+leading: CircleAvatar(
+backgroundColor: theme.primaryColor,
+child: Text(user.name[0]),
+),
+title: Text(user.name),
+subtitle: Text(user.email),
+),
+);
+},
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Consumer с Selector"},
+    {"content": "class OptimizedCounter extends StatelessWidget {
+const OptimizedCounter({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Selector<CounterModel, int>(
+selector: (context, counter) => counter.value,
+builder: (context, value, child) {
+return Text(
+'Счётчик: $value',
+style: const TextStyle(fontSize: 48),
+);
+},
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Создание ChangeNotifier классов"},
+    {"level": 3, "type": "heading", "text": "Простой ChangeNotifier"},
+    {"content": "class SimpleModel with ChangeNotifier {
+String _text = 'Привет, мир!';
+
+String get text => _text;
+
+void updateText(String newText) {
+_text = newText;
+notifyListeners();
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "ChangeNotifier с коллекцией"},
+    {"content": "class TodoModel with ChangeNotifier {
+final List<TodoItem> _items = [];
+
+// Делаем копию списка для безопасности
+List<TodoItem> get items => List.unmodifiable(_items);
+
+int get completedCount => _items.where((item) => item.isCompleted).length;
+
+void addTodo(String title) {
+_items.add(TodoItem(title: title, isCompleted: false));
+notifyListeners();
+}
+
+void toggleTodo(int index) {
+_items[index] = TodoItem(
+title: _items[index].title,
+isCompleted: !_items[index].isCompleted,
+);
+notifyListeners();
+}
+
+void removeTodo(int index) {
+_items.removeAt(index);
+notifyListeners();
+}
+
+void clearCompleted() {
+_items.removeWhere((item) => item.isCompleted);
+notifyListeners();
+}
+}
+
+class TodoItem {
+final String title;
+final bool isCompleted;
+
+TodoItem({required this.title, required this.isCompleted});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "ChangeNotifier с асинхронными операциями"},
+    {"content": "class UserDataModel with ChangeNotifier {
+User? _user;
+bool _loading = false;
+String? _error;
+
+User? get user => _user;
+bool get loading => _loading;
+String? get error => _error;
+
+Future<void> fetchUser(int userId) async {
+_loading = true;
+_error = null;
+notifyListeners();
+
+try {
+_user = await UserService.fetchUser(userId);
+} catch (e) {
+_error = e.toString();
+} finally {
+_loading = false;
+notifyListeners();
+}
+}
+
+Future<void> updateUser(String name) async {
+if (_user == null) return;
+
+_loading = true;
+notifyListeners();
+
+try {
+_user = User(id: _user!.id, name: name);
+await UserService.saveUser(_user!);
+} catch (e) {
+_error = e.toString();
+} finally {
+_loading = false;
+notifyListeners();
+}
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Использование notifyListeners()"},
+    {"level": 3, "type": "heading", "text": "Когда вызывать notifyListeners()"},
+    {"content": "class SettingsModel with ChangeNotifier {
+bool _isDarkMode = false;
+int _fontSize = 16;
+String _language = 'ru';
+
+bool get isDarkMode => _isDarkMode;
+int get fontSize => _fontSize;
+String get language => _language;
+
+// ✅ Вызываем notifyListeners() при каждом изменении
+void toggleDarkMode() {
+_isDarkMode = !_isDarkMode;
+notifyListeners();
+}
+
+void setFontSize(int size) {
+_fontSize = size;
+notifyListeners();
+}
+
+void setLanguage(String lang) {
+_language = lang;
+notifyListeners();
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Оптимизация: вызываем notifyListeners() только при необходимости"},
+    {"content": "class OptimizedModel with ChangeNotifier {
+List<String> _items = [];
+
+List<String> get items => List.unmodifiable(_items);
+
+// ❌ Плохо — notifyListeners() вызывается всегда
+void addItem(String item) {
+_items.add(item);
+notifyListeners(); // Всегда
+}
+
+// ✅ Хорошо — notifyListeners() только при реальном изменении
+void addItemOptimized(String item) {
+if (!_items.contains(item)) {
+_items.add(item);
+notifyListeners();
+}
+}
+
+// ✅ Хорошо — batch-изменения
+void addMultipleItems(List<String> newItems) {
+final hasChanges = newItems.any((item) => !_items.contains(item));
+if (hasChanges) {
+_items.addAll(newItems.where((item) => !_items.contains(item)));
+notifyListeners();
+}
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Performance Tips"},
+    {"level": 3, "type": "heading", "text": "1. Используйте const для статических виджетов"},
+    {"content": "class EfficientList extends StatelessWidget {
+final List<String> items;
+const EfficientList({super.key, required this.items});
+
+@override
+Widget build(BuildContext context) {
+return ListView.builder(
+itemCount: items.length,
+itemBuilder: (context, index) {
+return ListTile(
+title: Text(items[index]),
+subtitle: const Text('Статический подзаголовок'),
+);
+},
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "2. Используйте Selector для оптимизации"},
+    {"content": "// ❌ Плохо — перестраивается при любом изменении модели
+Consumer<UserModel>(
+builder: (context, user, child) {
+return Text(user.name);
+},
+)
+
+// ✅ Хорошо — перестраивается только при изменении name
+Selector<UserModel, String>(
+selector: (context, user) => user.name,
+builder: (context, name, child) {
+return Text(name);
+},
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "3. Избегайте вложенных Consumer"},
+    {"content": "// ❌ Плохо — вложенные Consumer
+Consumer<UserModel>(
+builder: (context, user, child) {
+return Consumer<OrderModel>(
+builder: (context, order, child2) {
+return Text('${user.name}: ${order.total}');
+},
+);
+},
+)
+
+// ✅ Хорошо — один Consumer с Selector
+Selector2<UserModel, OrderModel, String>(
+selector: (context, user, order) => '${user.name}: ${order.total}',
+builder: (context, text, child) {
+return Text(text);
+},
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "4. Используйте context.read вместо context.watch"},
+    {"content": "// ❌ Плохо — перестраивается при изменении модели
+ElevatedButton(
+onPressed: () {
+final user = context.watch<UserModel>(); // Подписка
+user.logout();
+},
+child: const Text('Выйти'),
+)
+
+// ✅ Хорошо — не перестраивается при изменении модели
+ElevatedButton(
+onPressed: () {
+final user = context.read<UserModel>(); // Без подписки
+user.logout();
+},
+child: const Text('Выйти'),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "✅ Делайте"},
+    {"items": ["Используйте <code>with ChangeNotifier</code> для миксинов", "Делайте геттеры для публичного доступа к данным", "Вызывайте <code>notifyListeners()</code> после каждого изменения", "Используйте <code>List.unmodifiable()</code> для списков", "Используйте <code>Selector</code> для оптимизации", "Проверяйте <code>mounted</code> перед <code>notifyListeners()</code> в асинхронном коде"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "❌ Не делайте"},
+    {"items": ["Не вызывайте <code>notifyListeners()</code> без необходимости", "Не храните в <code>ChangeNotifier</code> виджеты", "Не выполняйте тяжёлые вычисления в <code>notifyListeners()</code>", "Не создавайте <code>ChangeNotifier</code> внутри <code>build()</code>"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "<code>ChangeNotifier</code> — это простой и эффективный способ управления состоянием. В сочетании с <code>Consumer</code> и <code>Provider</code> он покрывает большинство сценариев управления состоянием в Flutter-приложениях.", "type": "paragraph"},
+    {"content": "**Правило:** Используйте `ChangeNotifier` для управления состоянием, которое нужно разделить между несколькими виджетами. Для простых локальных состояний используйте `setState()`.", "type": "blockquote"}
+  ]
+}

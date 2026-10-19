@@ -1,0 +1,140 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Публикация в Google Play Store"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Google Play Store — крупнейший магазин приложений для Android. Публикация приложения требует подготовки, соблюдения правил платформы и правильного следования процессу релиза.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Подготовка аккаунта"},
+    {"level": 3, "type": "heading", "text": "Регистрация разработчика"},
+    {"items": ["Перейдите на <a href=\"https://play.google.com/console\" target=\"_blank\">Google Play Console</a>", "Зарегистрируйте аккаунт разработчика ($25 — единовременный платёж)", "Заполните профиль разработчика (название, email, адрес)", "Подтвердите личность"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Создание приложения"},
+    {"items": ["Нажмите <strong>Создать приложение</strong>", "Укажите название приложения", "Выберите язык", "Укажите категорию приложения", "Выберите тип монетизации (с рекламой / без рекламы / платное)", "Примите условия распределения"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Настройка приложения в Play Console"},
+    {"level": 3, "type": "heading", "text": "Основная информация"},
+    {"text": "<strong>Файл: <code>android/app/src/main/AndroidManifest.xml</code></strong>", "type": "paragraph"},
+    {"content": "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\">
+<application
+android:label=\"YourApp\"
+android:name=\"${applicationName}\"
+android:icon=\"@mipmap/ic_launcher\">
+
+<activity
+android:name=\".MainActivity\"
+android:exported=\"true\"
+android:launchMode=\"singleTop\">
+<intent-filter>
+<action android:name=\"android.intent.action.MAIN\"/>
+<category android:name=\"android.intent.category.LAUNCHER\"/>
+</intent-filter>
+</activity>
+</application>
+</manifest>", "language": "xml", "type": "code"},
+    {"text": "<strong>Файл: <code>pubspec.yaml</code></strong>", "type": "paragraph"},
+    {"content": "name: your_app
+description: Описание вашего приложения
+version: 1.0.0+1    # version+build_number
+
+environment:
+sdk: \">=3.0.0 <4.0.0\"
+
+dependencies:
+flutter:
+sdk: flutter", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Скриншоты и графические материалы"},
+    {"text": "| Элемент | Размер | Количество |", "type": "paragraph"},
+    {"text": "|---------|--------|------------|", "type": "paragraph"},
+    {"text": "| Иконка приложения | 512×512 px | 1 |", "type": "paragraph"},
+    {"text": "| Скриншот телефона (большие) | 1080×1920 px | 2–8 |", "type": "paragraph"},
+    {"text": "| Скриншот телефона (маленькие) | 400×800 px | 2–8 |", "type": "paragraph"},
+    {"text": "| Скриншот планшета | 1280×800 px | 2 |", "type": "paragraph"},
+    {"text": "| Промо-баннер | 1024×500 px | 1 |", "type": "paragraph"},
+    {"text": "| Видео-трейлер | до 30 секунд | 1 |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Классификация контента"},
+    {"text": "Заполните анкету классификации:", "type": "paragraph"},
+    {"items": ["Возрастная категория", "Тип собираемых данных", "Наличие рекламы", "Типы разрешений", "Целевая аудитория"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Процесс релиза"},
+    {"level": 3, "type": "heading", "text": "Типы релизов"},
+    {"text": "| Тип | Описание | Доступ |", "type": "paragraph"},
+    {"text": "|-----|----------|--------|", "type": "paragraph"},
+    {"text": "| Production | Основной релиз для всех пользователей | Открытый доступ |", "type": "paragraph"},
+    {"text": "| Internal | Внутреннее тестирование | До 100 тестировщиков |", "type": "paragraph"},
+    {"text": "| Closed | Закрытое тестирование | Зарегистрированные тестировщики |", "type": "paragraph"},
+    {"text": "| Open | Открытое тестирование | Любой пользователь |", "type": "paragraph"},
+    {"text": "| Beta | Бета-версия | Любой пользователь |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Создание релиза"},
+    {"content": "# 1. Сборка AAB
+flutter build appbundle --release
+
+# 2. Проверка подписи
+apksigner verify --verbose \\\\
+build/app/outputs/bundle/release/app-release.aab
+
+# 3. Загрузка в Play Console
+# - Перейдите в Release → Production (или Testing)
+# - Создайте новый релиз
+# - Загрузите AAB файл
+# - Заполните примечания к релизу", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Примечания к релизу (Release Notes)"},
+    {"content": "Версия 1.0.0:
+• Начальная публикация приложения
+• Основной функционал:
+- Регистрация и авторизация
+- Просмотр каталога
+- Оформление заказов
+• Исправления ошибок из бета-версии", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Каналы доставки (Release Tracks)"},
+    {"level": 3, "type": "heading", "text": "Настройка каналов"},
+    {"content": "Production (основной канал)
+├── 1.0.0+10 — стабильная версия
+├── 1.0.1+11 — исправления
+└── 1.1.0+12 — новые функции
+
+Beta (бета-канал)
+├── 1.2.0+13 — новые функции для тестирования
+└── 1.2.1+14 — исправления багов
+
+Internal (внутренний канал)
+├── 1.3.0+15 — экспериментальные функции
+└── 1.3.1+16 — горячие исправления", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Автоматизация релизов"},
+    {"content": "# .github/workflows/play-store-release.yml
+name: Release to Google Play
+
+on:
+push:
+tags:
+- 'v*'
+
+jobs:
+release:
+runs-on: ubuntu-latest
+steps:
+- uses: actions/checkout@v4
+
+- name: Setup Java
+uses: actions/setup-java@v4
+with:
+distribution: 'temurin'
+java-version: '17'
+
+- name: Setup Flutter
+uses: subosito/flutter-action@v2
+with:
+flutter-version: '3.x.x'
+
+- name: Build AAB
+run: |
+flutter pub get
+flutter build appbundle --release
+
+- name: Upload to Play Store
+uses: r0adkll/upload-google-play@v1
+with:
+serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT }}
+packageName: com.yourcompany.yourapp
+releaseFiles: build/app/outputs/bundle/release/app-release.aab
+track: production
+status: completed", "language": "yaml", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Используйте AAB</strong>, а не APK для Google Play", "<strong>Тестируйте в Internal Testing</strong> перед production релизом", "<strong>Пишите понятные release notes</strong> для пользователей", "<strong>Используйте feature flags</strong> для постепенного включения функций", "<strong>Мониторьте метрики</strong> после публикации (краши, отзывы, рейтинги)", "<strong>Следите за политикой</strong> Google Play — правила регулярно обновляются"], "type": "ul"}
+  ]
+}

@@ -1,0 +1,616 @@
+# Отправка формы и обработка данных
+
+После валидации формы данные нужно собрать, обработать и отправить на сервер. Flutter предоставляет методы для сохранения, сброса и обработки данных формы.
+
+## FormState.save()
+
+### Метод save()
+
+`save()` вызывает `onSaved` колбэк для каждого поля формы, позволяя сохранить значения в переменные:
+
+```dart
+class RegistrationScreen extends StatefulWidget {
+  const RegistrationScreen({super.key});
+
+  @override
+  State<RegistrationScreen> createState() => _RegistrationScreenState();
+}
+
+class _RegistrationScreenState extends State<RegistrationScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  // Переменные для хранения данных
+  String? _name;
+  String? _email;
+  String? _password;
+  bool? _agreeTerms;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Регистрация')),
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            // Поле с onSaved
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Имя'),
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'Введите имя' : null,
+              onSaved: (value) => _name = value,
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Email'),
+              validator: (value) {
+                if (value == null || value.isEmpty) return 'Введите email';
+                if (!value.contains('@')) return 'Некорректный email';
+                return null;
+              },
+              onSaved: (value) => _email = value,
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Пароль'),
+              obscureText: true,
+              validator: (value) {
+                if (value == null || value.isEmpty) return 'Введите пароль';
+                if (value.length < 8) return 'Минимум 8 символов';
+                return null;
+              },
+              onSaved: (value) => _password = value,
+            ),
+            CheckboxListTile(
+              title: const Text('Согласен с условиями'),
+              value: _agreeTerms,
+              onChanged: (value) => setState(() => _agreeTerms = value),
+            ),
+            ElevatedButton(
+              onPressed: _submitForm,
+              child: const Text('Зарегистрироваться'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      // Сохраняем все значения через onSaved
+      _formKey.currentState!.save();
+
+      // Данные доступны
+      print('Имя: $_name');
+      print('Email: $_email');
+      print('Пароль: $_password');
+      print('Согласие: $_agreeTerms');
+
+      // Отправка на сервер
+      _registerUser(_name!, _email!, _password!, _agreeTerms!);
+    }
+  }
+
+  Future<void> _registerUser(
+      String name, String email, String password, bool agreeTerms) async {
+    if (!agreeTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Примите условия использования')),
+      );
+      return;
+    }
+
+    try {
+      // Имитация запроса к серверу
+      await Future.delayed(const Duration(seconds: 2));
+      print('Регистрация успешна: $name, $email');
+
+      // Успешная регистрация
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Регистрация успешна!')),
+      );
+
+      // Сброс формы
+      _formKey.currentState!.reset();
+    } catch (e) {
+      print('Ошибка регистрации: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ошибка регистрации')),
+      );
+    }
+  }
+}
+```
+
+## FormState.reset()
+
+### Метод reset()
+
+`reset()` сбрасывает все поля формы к исходному состоянию:
+
+```dart
+class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({super.key});
+
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  // Контроллеры для хранения значений
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _bioController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Предзаполнение данными
+    _nameController.text = 'Иван Иванов';
+    _emailController.text = 'ivan@example.com';
+    _bioController.text = 'Flutter разработчик';
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _bioController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Редактирование профиля')),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            TextFormField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: 'Имя'),
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'Введите имя' : null,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+              validator: (value) {
+                if (value == null || value.isEmpty) return 'Введите email';
+                if (!value.contains('@')) return 'Некорректный email';
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _bioController,
+              decoration: const InputDecoration(labelText: 'О себе'),
+              maxLines: 3,
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Сброс к исходным значениям
+                      _formKey.currentState!.reset();
+                    },
+                    child: const Text('Отменить'),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _saveProfile,
+                    child: const Text('Сохранить'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _saveProfile() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      // Получаем данные из контроллеров
+      final name = _nameController.text;
+      final email = _emailController.text;
+      final bio = _bioController.text;
+
+      print('Сохранено: имя=$name, email=$email, bio=$bio');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Профиль сохранён')),
+      );
+    }
+  }
+}
+```
+
+## FormState.validate()
+
+### Метод validate()
+
+`validate()` проверяет все поля формы и возвращает `true`, если все поля валидны:
+
+```dart
+class MultiStepForm extends StatefulWidget {
+  const MultiStepForm({super.key});
+
+  @override
+  State<MultiStepForm> createState() => _MultiStepFormState();
+}
+
+class _MultiStepFormState extends State<MultiStepForm> {
+  final _formKey = GlobalKey<FormState>();
+  int _currentStep = 0;
+
+  final List<String> _stepTitles = [
+    'Личные данные',
+    'Контактная информация',
+    'Подтверждение',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(_stepTitles[_currentStep])),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              // Индикатор шагов
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  _stepTitles.length,
+                  (index) => Row(
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: index <= _currentStep
+                              ? Colors.blue
+                              : Colors.grey,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${index + 1}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      if (index < _stepTitles.length - 1)
+                        Expanded(
+                          child: Container(
+                            height: 2,
+                            color: index < _currentStep
+                                ? Colors.blue
+                                : Colors.grey,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Содержимое текущего шага
+              Expanded(
+                child: _buildStepContent(),
+              ),
+
+              // Навигация
+              Row(
+                children: [
+                  if (_currentStep > 0)
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          setState(() => _currentStep--);
+                        },
+                        child: const Text('Назад'),
+                      ),
+                    ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _nextStep,
+                      child: Text(
+                        _currentStep == _stepTitles.length - 1
+                            ? 'Отправить'
+                            : 'Далее',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStepContent() {
+    switch (_currentStep) {
+      case 0:
+        return Column(
+          children: [
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Имя'),
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'Введите имя' : null,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Фамилия'),
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'Введите фамилию' : null,
+            ),
+          ],
+        );
+      case 1:
+        return Column(
+          children: [
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Email'),
+              keyboardType: TextInputType.emailAddress,
+              validator: (value) {
+                if (value == null || value.isEmpty) return 'Введите email';
+                if (!value.contains('@')) return 'Некорректный email';
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Телефон'),
+              keyboardType: TextInputType.phone,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Введите телефон';
+                }
+                return null;
+              },
+            ),
+          ],
+        );
+      case 2:
+        return const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.check_circle, size: 64, color: Colors.green),
+              SizedBox(height: 16),
+              Text(
+                'Данные валидны!\nНажмите "Отправить"',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18),
+              ),
+            ],
+          ),
+        );
+      default:
+        return const SizedBox();
+    }
+  }
+
+  void _nextStep() {
+    // Валидация текущего шага
+    if (_formKey.currentState!.validate()) {
+      if (_currentStep < _stepTitles.length - 1) {
+        setState(() => _currentStep++);
+      } else {
+        // Финальная отправка
+        _formKey.currentState!.save();
+        _submitForm();
+      }
+    }
+  }
+
+  void _submitForm() {
+    // Отправка данных на сервер
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Форма отправлена!')),
+    );
+  }
+}
+```
+
+## Обработка отправки формы
+
+### Полная обработка формы
+
+```dart
+class CompleteFormSubmission extends StatefulWidget {
+  const CompleteFormSubmission({super.key});
+
+  @override
+  State<CompleteFormSubmission> createState() =>
+      _CompleteFormSubmissionState();
+}
+
+class _CompleteFormSubmissionState extends State<CompleteFormSubmission> {
+  final _formKey = GlobalKey<FormState>();
+  bool _isSubmitting = false;
+
+  String? _name;
+  String? _email;
+  String? _phone;
+  String? _message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Обратная связь')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Имя',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) =>
+                    value == null || value.isEmpty ? 'Введите имя' : null,
+                onSaved: (value) => _name = value,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Введите email';
+                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                      .hasMatch(value)) {
+                    return 'Некорректный email';
+                  }
+                  return null;
+                },
+                onSaved: (value) => _email = value,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Телефон',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.phone,
+                onSaved: (value) => _phone = value,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Сообщение',
+                  border: OutlineInputBorder(),
+                  alignLabelWithHint: true,
+                ),
+                maxLines: 4,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Введите сообщение';
+                  }
+                  if (value.length < 10) {
+                    return 'Минимум 10 символов';
+                  }
+                  return null;
+                },
+                onSaved: (value) => _message = value,
+              ),
+              const SizedBox(height: 24),
+              _isSubmitting
+                  ? const Center(child: CircularProgressIndicator())
+                  : ElevatedButton(
+                      onPressed: _submitForm,
+                      child: const Text('Отправить'),
+                    ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _submitForm() async {
+    // Валидация
+    if (!_formKey.currentState!.validate()) return;
+
+    // Сохранение данных
+    _formKey.currentState!.save();
+
+    // Блокируем кнопку
+    setState(() => _isSubmitting = true);
+
+    try {
+      // Имитация запроса к серверу
+      await _sendToServer(_name!, _email!, _phone, _message!);
+
+      // Успех
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Сообщение отправлено!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Сброс формы
+        _formKey.currentState!.reset();
+      }
+    } catch (e) {
+      // Ошибка
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Ошибка: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
+  }
+
+  Future<void> _sendToServer(
+      String name, String email, String? phone, String message) async {
+    // Имитация HTTP-запроса
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Имитация успешного запроса
+    print('Отправка:');
+    print('  Имя: $name');
+    print('  Email: $email');
+    print('  Телефон: $phone');
+    print('  Сообщение: $message');
+
+    // Если нужно — выбросить ошибку для тестирования
+    // throw Exception('Сервер недоступен');
+  }
+}
+```
+
+## Best Practices
+
+1. **Всегда вызывайте `validate()` перед `save()`** — чтобы убедиться, что данные корректны.
+2. **Используйте `save()`** для сбора данных из всех полей.
+3. **Используйте `reset()`** после успешной отправки — для очистки формы.
+4. **Блокируйте кнопку отправки** во время запроса — чтобы избежать дублирования.
+5. **Обрабатывайте ошибки** — показывайте пользователю понятные сообщения.
+6. **Используйте `GlobalKey<FormState>`** — не создавайте новый ключ при каждой перерисовке.
+7. **Для многостраничных форм** — валидируйте каждый шаг отдельно.
+8. **Используйте `onSaved`** для сохранения данных, а не `TextEditingController`.
+9. **Показывайте индикатор загрузки** — пользователь должен понимать, что происходит.
+10. **Очищайте форму после отправки** — используйте `reset()` для удобства пользователя.
+
+## Сводка методов FormState
+
+| Метод | Описание | Возвращает |
+|---|---|---|
+| `validate()` | Валидирует все поля | `bool` (true если все валидно) |
+| `save()` | Вызывает `onSaved` для каждого поля | `void` |
+| `reset()` | Сбрасывает все поля | `void` |
+| `restore()` | Восстанавливает предыдущие значения | `void` |
+| `hasError` | Есть ли ошибки | `bool` |

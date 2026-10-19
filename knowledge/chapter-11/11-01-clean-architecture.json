@@ -1,0 +1,242 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Clean Architecture в Flutter"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Clean Architecture — это концепция проектирования приложений, предложенная Робертом Мартином (Uncle Bob). Она разделяет приложение на слои, каждый из которых отвечает за свою зону ответственности, и строго контролирует направление зависимостей.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Принципы Clean Architecture"},
+    {"level": 3, "type": "heading", "text": "Правило зависимости"},
+    {"content": "Источники изменений должны зависеть от абстракций, а не наоборот.", "type": "blockquote"},
+    {"text": "В Clean Architecture зависимости направлены <strong>внутрь</strong>, к доменной логике. Внешние слои зависят от внутренних, но не наоборот.", "type": "paragraph"},
+    {"content": "┌─────────────────────────────────────────┐
+│         Presentation Layer              │  ← UI, виджеты
+│  (Widgets, Screens, State Management)   │
+├─────────────────────────────────────────┤
+│           Domain Layer                  │  ← Бизнес-логика
+│  (Entities, Use Cases, Repositories)    │
+├─────────────────────────────────────────┤
+│           Data Layer                    │  ← Источники данных
+│  (Repositories, DTOs, Network, Storage) │
+├─────────────────────────────────────────┤
+│      External Frameworks & Services     │  ← API, БД, Файлы
+└─────────────────────────────────────────┘", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Слой Domain (Доменная модель)"},
+    {"text": "Слой domain содержит чистую бизнес-логику. Он <strong>не зависит</strong> ни от одного из внешних слоёв.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Entities"},
+    {"text": "Сущности — это основные объекты предметной области:", "type": "paragraph"},
+    {"content": "// domain/entities/user.dart
+class User {
+final String id;
+final String name;
+final String email;
+final DateTime createdAt;
+
+User({
+required this.id,
+required this.name,
+required this.email,
+required this.createdAt,
+});
+
+User copyWith({
+String? id,
+String? name,
+String? email,
+DateTime? createdAt,
+}) {
+return User(
+id: id ?? this.id,
+name: name ?? this.name,
+email: email ?? this.email,
+createdAt: createdAt ?? this.createdAt,
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Use Cases (Сценарии использования)"},
+    {"text": "Каждый use case инкапсулирует одну бизнес-операцию:", "type": "paragraph"},
+    {"content": "// domain/use_cases/get_user_by_id.dart
+import 'package:fpdart/fpdart.dart';
+import '../../entities/user.dart';
+import '../repositories/user_repository.dart';
+
+class GetUserById {
+final UserRepository repository;
+
+GetUserById(this.repository);
+
+Future<Either<Failure, User>> call(String userId) async {
+return await repository.getUserById(userId);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Repository Interfaces"},
+    {"text": "Интерфейсы репозиториев объявляются в domain-слое:", "type": "paragraph"},
+    {"content": "// domain/repositories/user_repository.dart
+import 'package:fpdart/fpdart.dart';
+import '../entities/user.dart';
+
+abstract class UserRepository {
+Future<Either<Failure, User>> getUserById(String id);
+Future<Either<Failure, List<User>>> getAllUsers();
+Future<Either<Failure, Unit>> createUser(User user);
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Слой Data (Данные)"},
+    {"text": "Слой data реализует интерфейсы репозиториев и управляет источниками данных.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "DTO (Data Transfer Object)"},
+    {"content": "// data/models/user_model.dart
+import 'package:json_annotation/json_annotation.dart';
+import '../../domain/entities/user.dart';
+
+part 'user_model.g.dart';
+
+@JsonSerializable()
+class UserModel extends User {
+UserModel({
+required super.id,
+required super.name,
+required super.email,
+required super.createdAt,
+});
+
+factory UserModel.fromJson(Map<String, dynamic> json) =>
+_$UserModelFromJson(json);
+
+Map<String, dynamic> toJson() => _$UserModelToJson(this);
+
+factory UserModel.fromEntity(User entity) {
+return UserModel(
+id: entity.id,
+name: entity.name,
+email: entity.email,
+createdAt: entity.createdAt,
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Реализация репозитория"},
+    {"content": "// data/repositories/user_repository_impl.dart
+import 'package:fpdart/fpdart.dart';
+import '../../domain/entities/user.dart';
+import '../../domain/repositories/user_repository.dart';
+import '../../domain/failures/failure.dart';
+import '../datasources/user_remote_datasource.dart';
+import '../models/user_model.dart';
+
+class UserRepositoryImpl implements UserRepository {
+final UserRemoteDatasource datasource;
+
+UserRepositoryImpl({required this.datasource});
+
+@override
+Future<Either<Failure, User>> getUserById(String id) async {
+try {
+final userModel = await datasource.fetchUserById(id);
+return Right(userModel);
+} on ServerException catch (e) {
+return Left(ServerFailure(e.message));
+}
+}
+
+@override
+Future<Either<Failure, List<User>>> getAllUsers() async {
+try {
+final users = await datasource.fetchAllUsers();
+return Right(users);
+} on ServerException catch (e) {
+return Left(ServerFailure(e.message));
+}
+}
+
+@override
+Future<Either<Failure, Unit>> createUser(User user) async {
+try {
+await datasource.createUser(user);
+return const Right(unit);
+} on ServerException catch (e) {
+return Left(ServerFailure(e.message));
+}
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Слой Presentation (Презентация)"},
+    {"text": "Слой presentation содержит виджеты и управляет состоянием UI.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Блок (Bloc)"},
+    {"content": "// presentation/blocs/user_bloc.dart
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fpdart/fpdart.dart';
+import '../../domain/use_cases/get_user_by_id.dart';
+import '../../domain/failures/failure.dart';
+
+// Events
+abstract class UserEvent {}
+class LoadUserById extends UserEvent {
+final String userId;
+LoadUserById(this.userId);
+}
+
+// States
+abstract class UserState {}
+class UserLoading extends UserState {}
+class UserLoaded extends UserState {
+final User user;
+UserLoaded(this.user);
+}
+class UserError extends UserState {
+final Failure failure;
+UserError(this.failure);
+}
+
+// Bloc
+class UserBloc extends Bloc<UserEvent, UserState> {
+final GetUserById getUserById;
+
+UserBloc({required this.getUserById}) : super(UserLoading()) {
+on<LoadUserById>(_onLoadUser);
+}
+
+Future<void> _onLoadUser(
+LoadUserById event,
+Emitter<UserState> emit,
+) async {
+emit(UserLoading());
+final result = await getUserById(event.userId);
+emit(result.fold(
+(failure) => UserError(failure),
+(user) => UserLoaded(user),
+));
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Виджет"},
+    {"content": "// presentation/widgets/user_card.dart
+class UserCard extends StatelessWidget {
+final User user;
+
+const UserCard({super.key, required this.user});
+
+@override
+Widget build(BuildContext context) {
+return Card(
+child: Padding(
+padding: const EdgeInsets.all(16),
+child: Column(
+crossAxisAlignment: CrossAxisAlignment.start,
+children: [
+Text(user.name, style: Theme.of(context).textTheme.headlineSmall),
+const SizedBox(height: 8),
+Text(user.email),
+],
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение слоёв"},
+    {"text": "| Слой | Зависит от | Содержит | Зависимости от внешних |", "type": "paragraph"},
+    {"text": "|------|-----------|----------|----------------------|", "type": "paragraph"},
+    {"text": "| Domain | Ничего | Entities, Use Cases, Interfaces | Нет |", "type": "paragraph"},
+    {"text": "| Data | Domain | Реализации репозиториев, DTO, DataSource | Да (API, БД) |", "type": "paragraph"},
+    {"text": "| Presentation | Domain | Виджеты, BLoCs, State | Да (UI-фреймворки) |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Преимущества Clean Architecture"},
+    {"items": ["<strong>Тестируемость</strong> — доменный слой тестируется без UI и зависимостей", "<strong>Независимость от фреймворков</strong> — бизнес-логика не привязана к Flutter", "<strong>Независимость от UI</strong> — UI можно заменить без изменения логики", "<strong>Независимость от баз данных</strong> — можно менять БД без изменения domain", "<strong>Независимость от внешних сервисов</strong> — API можно заменить изолированно"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Недостатки"},
+    {"items": ["Высокий порог входа для новых разработчиков", "Большое количество файлов и классов", "Избыточность для небольших проектов"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Лучшие практики"},
+    {"items": ["<strong>Начинайте с domain-слоя</strong> — определите сущности и use cases", "<strong>Используйте Either/Result</strong> для обработки ошибок", "<strong>Один use case — одна операция</strong>", "<strong>Не допускайте утечки DTO в domain</strong>", "<strong>Используйте генерацию кода</strong> для DTO (json_serializable, freezed)", "<strong>Регулярно проверяйте направление зависимостей</strong>"], "type": "ol"}
+  ]
+}

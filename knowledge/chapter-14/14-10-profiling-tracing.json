@@ -1,0 +1,268 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "14-10. Profiling vs Tracing — Методы диагностики"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Profiling и Tracing — это два основных метода диагностики производительности Flutter-приложений. Profiling помогает понять, какие части кода наиболее затратны, а Tracing позволяет детально проанализировать каждый этап выполнения.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Profiling Mode"},
+    {"level": 3, "type": "heading", "text": "Что такое Profiling Mode"},
+    {"text": "Profiling Mode — это режим запуска приложения, оптимизированный для сбора данных о производительности без значительного влияния на выполнение:", "type": "paragraph"},
+    {"text": "| Режим | Назначение | Производительность |", "type": "paragraph"},
+    {"text": "|-------|-----------|-------------------|", "type": "paragraph"},
+    {"text": "| Debug | Разработка с Hot Reload | Низкая |", "type": "paragraph"},
+    {"text": "| Profile | Диагностика производительности | Близка к Release |", "type": "paragraph"},
+    {"text": "| Release | Финальная сборка | Максимальная |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Запуск в Profiling Mode"},
+    {"content": "# Запуск в Profiling Mode
+flutter run --profile
+
+# Запуск с конкретным устройством
+flutter run --profile -d <device_id>
+
+# Запуск с конкретным портом для DevTools
+flutter run --profile --trace-startup", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Запуск из VS Code"},
+    {"content": "// .vscode/launch.json
+{
+\"version\": \"0.2.0\",
+\"configurations\": [
+{
+\"name\": \"Flutter Profile\",
+\"request\": \"launch\",
+\"type\": \"dart\",
+\"program\": \"lib/main.dart\",
+\"args\": [\"--profile\"]
+}
+]
+}", "language": "json", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Запуск из Android Studio"},
+    {"items": ["Откройте конфигурацию запуска", "Выберите режим <code>Profile</code> вместо <code>Debug</code>", "Запустите приложение"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "CPU Profiling"},
+    {"level": 3, "type": "heading", "text": "Запуск CPU Profiler"},
+    {"content": "import 'dart:developer' as developer;
+
+void main() {
+runApp(const MyApp());
+}
+
+// Ручной запуск профилирования
+void startCpuProfiling() {
+developer.startServiceExtension('ext.flutter.profiler');
+}
+
+void stopCpuProfiling() {
+developer.postEvent('Flutter.CPUProfile', <String, dynamic>{});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Flame Chart"},
+    {"text": "Flame Chart — это визуализация CPU-профиля в виде горизонтальных полосок:", "type": "paragraph"},
+    {"content": "main() [100ms]
+├── runApp() [95ms]
+│   ├── BuildPhase [30ms]
+│   │   ├── HomePage.build() [25ms]
+│   │   │   ├── ListView.builder [15ms]
+│   │   │   │   ├── _UserTile.build() [10ms]
+│   │   │   │   └── _UserTile.build() [5ms]
+│   │   │   └── Text widget [5ms]
+│   │   └── SettingsWidget.build() [5ms]
+│   ├── LayoutPhase [20ms]
+│   │   └── RenderObject.layout() [20ms]
+│   └── PaintPhase [45ms]
+│       ├── RenderObject.paint() [30ms]
+│       └── ImagePainter.paint() [15ms]
+└── EventLoop [5ms]", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Анализ CPU-профиля"},
+    {"text": "| Метрика | Описание | Норма |", "type": "paragraph"},
+    {"text": "|---------|----------|-------|", "type": "paragraph"},
+    {"text": "| Self Time | Время, затраченное только на эту функцию | < 50ms |", "type": "paragraph"},
+    {"text": "| Total Time | Время функции + все дочерние | < 16.7ms на кадр |", "type": "paragraph"},
+    {"text": "| Call Count | Количество вызовов функции | Минимизировать |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Timeline Tracing"},
+    {"level": 3, "type": "heading", "text": "Что такое Timeline Tracing"},
+    {"text": "Timeline Tracing — это запись всех событий приложения во времени. Это позволяет детально проанализировать каждый кадр и выявить причины задержек.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Запись Timeline"},
+    {"content": "import 'dart:developer' as developer;
+
+void startTimeline() {
+// Начало записи
+developer.log('Timeline start', name: 'app.timeline');
+}
+
+void stopTimeline() {
+// Конец записи
+developer.log('Timeline stop', name: 'app.timeline');
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Типы событий на Timeline"},
+    {"text": "| Событие | Описание | Цвет |", "type": "paragraph"},
+    {"text": "|---------|----------|------|", "type": "paragraph"},
+    {"text": "| Dart | Dart-код | Синий |", "type": "paragraph"},
+    {"text": "| Platform | Нативный код | Зелёный |", "type": "paragraph"},
+    {"text": "| GPU | Графический процессор | Оранжевый |", "type": "paragraph"},
+    {"text": "| Rendering | Рендеринг | Красный |", "type": "paragraph"},
+    {"text": "| GC | Garbage Collection | Фиолетовый |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Анализ фреймов на Timeline"},
+    {"content": "┌──────────────────────────────────────────────────────────────┐
+│  Frame Analysis                                              │
+│                                                              │
+│  Frame 1: 16.2ms ✓ (60 FPS)                                  │
+│  Build: 2.1ms                                                │
+│  Layout: 1.3ms                                               │
+│  Paint: 3.4ms                                                │
+│  Composite: 0.8ms                                            │
+│  GPU: 8.6ms                                                  │
+│                                                              │
+│  Frame 2: 16.5ms ✓ (60 FPS)                                  │
+│  Build: 2.3ms                                                │
+│  Layout: 1.1ms                                               │
+│  Paint: 3.2ms                                                │
+│  Composite: 0.9ms                                            │
+│  GPU: 9.0ms                                                  │
+│                                                              │
+│  Frame 3: 67.8ms ✗ (JANK!)                                   │
+│  Build: 2.0ms                                                │
+│  Layout: 1.2ms                                               │
+│  Paint: 3.1ms                                                │
+│  Shader Compilation: 55.0ms ⚠️                               │
+│  Composite: 0.8ms                                            │
+│  GPU: 5.7ms                                                  │
+└──────────────────────────────────────────────────────────────┘", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Горячие точки на Timeline"},
+    {"content": "// Метка для отслеживания конкретного участка кода
+void performTask() {
+developer.timelineSync('Starting task', details: {
+'taskId': '001',
+'priority': 'high',
+});
+
+// Выполнение задачи
+heavyComputation();
+
+developer.timelineSync('Task completed', details: {
+'taskId': '001',
+'duration': '150ms',
+});
+}
+
+// Использование timelineSync для маркировки
+void buildWidget() {
+developer.timelineSync('Building HomePage', details: {
+'widget': 'HomePage',
+'phase': 'build',
+});
+
+// Build-логика
+final widget = _buildContent();
+
+developer.timelineSync('HomePage built', details: {
+'widget': 'HomePage',
+'phase': 'build',
+'duration': '25ms',
+});
+
+return widget;
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Memory Profiling"},
+    {"level": 3, "type": "heading", "text": "Запуск Memory Profiler"},
+    {"content": "import 'dart:developer' as developer;
+
+// Ручной вызов GC
+void triggerGC() {
+developer.postEvent('Flutter.GC', <String, String>{});
+}
+
+// Мониторинг памяти
+void logMemoryUsage() {
+developer.Service.getVM().then((vm) {
+debugPrint('Total Heap: ${vm.totalHeapSize} bytes');
+debugPrint('Used Heap: ${vm.usedHeapSize} bytes');
+debugPrint('Total External: ${vm.totalExternalSize} bytes');
+});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Heap Snapshot"},
+    {"content": "┌─────────────────────────────────────────────────────────────┐
+│  Heap Snapshot Comparison                                   │
+│                                                             │
+│  Snapshot 1 (Start)    Snapshot 2 (After navigation)        │
+│  ┌─────────────────┐   ┌─────────────────┐                  │
+│  │ String: 1.2 MB  │   │ String: 1.3 MB  │                  │
+│  │ List: 0.8 MB    │   │ List: 1.5 MB    │                  │
+│  │ Map: 0.5 MB     │   │ Map: 2.3 MB     │                  │
+│  │ _PageState: 10  │   │ _PageState: 50  │                  │
+│  │ Total: 2.5 MB   │   │ Total: 5.1 MB   │                  │
+│  └─────────────────┘   └─────────────────┘                  │
+│                                                             │
+│  Δ: +2.6 MB (возможная утечка)                              │
+└─────────────────────────────────────────────────────────────┘", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Network Profiling"},
+    {"level": 3, "type": "heading", "text": "Network DevTools"},
+    {"text": "DevTools предоставляет вкладку Network для мониторинга сетевых запросов:", "type": "paragraph"},
+    {"items": ["Откройте DevTools", "Перейдите во вкладку Network", "Выполните действия в приложении", "Анализируйте запросы"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Анализ сетевых запросов"},
+    {"text": "| Метрика | Описание | Норма |", "type": "paragraph"},
+    {"text": "|---------|----------|-------|", "type": "paragraph"},
+    {"text": "| Duration | Время выполнения запроса | < 2s |", "type": "paragraph"},
+    {"text": "| Size | Размер ответа | Минимизировать |", "type": "paragraph"},
+    {"text": "| Status | HTTP статус код | 200 |", "type": "paragraph"},
+    {"text": "| Cache | Использование кэша | Кэшировано |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Оптимизация сетевых запросов"},
+    {"content": "class OptimizedHttpClient {
+final Dio _dio = Dio(BaseOptions(
+connectTimeout: const Duration(seconds: 5),
+receiveTimeout: const Duration(seconds: 10),
+headers: {
+'Accept': 'application/json',
+'Content-Type': 'application/json',
+},
+));
+
+// Сжатие запросов
+OptimizedHttpClient() {
+_dio.interceptors.add(InterceptorsWrapper(
+onRequest: (options, handler) {
+// Сжатие тела запроса
+options.headers['Accept-Encoding'] = 'gzip';
+return handler.next(options);
+},
+onResponse: (response, handler) {
+// Декомпрессия ответа
+if (response.headers.value('Content-Encoding') == 'gzip') {
+// Автоматическая декомпрессия Dio
+}
+return handler.next(response);
+},
+onError: (DioException e, handler) {
+// Обработка ошибок
+return handler.next(e);
+},
+));
+}
+
+Future<Response> getData(String url) async {
+return _dio.get(url);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение Profiling и Tracing"},
+    {"level": 3, "type": "heading", "text": "Когда использовать Profiling"},
+    {"text": "| Сценарий | Profiling | Tracing |", "type": "paragraph"},
+    {"text": "|----------|-----------|---------|", "type": "paragraph"},
+    {"text": "| Поиск медленных функций | Да | Нет |", "type": "paragraph"},
+    {"text": "| Анализ CPU-нагрузок | Да | Нет |", "type": "paragraph"},
+    {"text": "| Поиск утечек памяти | Да | Нет |", "type": "paragraph"},
+    {"text": "| Анализ каждого кадра | Нет | Да |", "type": "paragraph"},
+    {"text": "| Поиск причин jank | Нет | Да |", "type": "paragraph"},
+    {"text": "| Анализ GPU-нагрузок | Нет | Да |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Сравнение инструментов"},
+    {"text": "| Инструмент | Profiling | Tracing | Что показывает |", "type": "paragraph"},
+    {"text": "|------------|-----------|---------|---------------|", "type": "paragraph"},
+    {"text": "| DevTools Performance | Да | Да | FPS, Build, Layout, Paint |", "type": "paragraph"},
+    {"text": "| DevTools Memory | Да | Нет | Heap, Allocations, Leaks |", "type": "paragraph"},
+    {"text": "| DevTools Network | Да | Да | Запросы, Время, Размер |", "type": "paragraph"},
+    {"text": "| DevTools Widgets | Да | Нет | Иерархия, Свойства |", "type": "paragraph"},
+    {"text": "| Timeline | Нет | Да | События во времени |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "Рекомендации по диагностике"},
+    {"items": ["<strong>Начинайте с Performance Overlay</strong> — быстрая оценка FPS", "<strong>Используйте DevTools Timeline</strong> — детальный анализ каждого кадра", "<strong>Профилируйте на реальном устройстве</strong> — эмуляторы могут не показывать проблемы", "<strong>Сравнивайте до и после оптимизации</strong> — документируйте улучшения", "<strong>Используйте Flame Chart</strong> — для поиска наиболее затратных функций", "<strong>Регулярно проверяйте Memory</strong> — для обнаружения утечек"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Чек-лист диагностики"},
+    {"items": ["[ ] Performance Overlay показывает стабильный FPS", "[ ] DevTools Timeline не показывает красных кадров", "[ ] Flame Chart не показывает функций > 50ms", "[ ] Memory Profiler не показывает утечек", "[ ] Network Profiler показывает оптимизированные запросы", "[ ] Тестирование на реальных устройствах завершено"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Profiling и Tracing — это мощные инструменты для диагностики производительности Flutter-приложений. Profiling помогает найти наиболее затратные функции, а Tracing позволяет детально проанализировать каждый кадр. Использование обоих подходов обеспечивает полную картину производительности приложения.", "type": "paragraph"}
+  ]
+}

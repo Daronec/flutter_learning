@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "chapter-09",
+  "lessons": [
+    {
+      "id": "09-01-http-protocol",
+      "slug": "http-protocol",
+      "title": "HTTP-протокол: основы и работа с сетью в Flutter",
+      "order": 1,
+      "file": "content/09-01-http-protocol.md",
+      "summary": "HTTP (HyperText Transfer Protocol) — это прикладной протокол передачи данных, лежащий в основе обмена информацией между клиентом и сервером в вебе и мобильных приложениях.",
+      "tags": []
+    },
+    {
+      "id": "09-02-http-package",
+      "slug": "http-package",
+      "title": "Пакет http — базовые запросы в Flutter",
+      "order": 2,
+      "file": "content/09-02-http-package.md",
+      "summary": "Пакет http — это официальный пакет Dart для выполнения HTTP-запросов. Он является наиболее простым и широко используемым способом работы с сетью в Flutter.",
+      "tags": []
+    },
+    {
+      "id": "09-03-dio",
+      "slug": "dio",
+      "title": "Dio — продвинутый HTTP-клиент для Flutter",
+      "order": 3,
+      "file": "content/09-03-dio.md",
+      "summary": "Dio — это мощный HTTP-клиент для Dart/Flutter, который поддерживает интерсепторы, глобальную конфигурацию, FormData, отмену запросов, таймауты и многое другое.",
+      "tags": []
+    },
+    {
+      "id": "09-04-json-serialization",
+      "slug": "json-serialization",
+      "title": "JSON: сериализация и десериализация в Dart",
+      "order": 4,
+      "file": "content/09-04-json-serialization.md",
+      "summary": "JSON (JavaScript Object Notation) — это текстовый формат обмена данными. В Flutter мы постоянно работаем с JSON при обмене данными с сервером.",
+      "tags": []
+    },
+    {
+      "id": "09-05-data-models",
+      "slug": "data-models",
+      "title": "Модель данных: создание DTO и моделей",
+      "order": 5,
+      "file": "content/09-05-data-models.md",
+      "summary": "Модели данных — это классы, представляющие структуру данных вашего приложения. Правильная организация моделей упрощает работу с данными, улучшает читаемость и облегчает тестирование.",
+      "tags": []
+    },
+    {
+      "id": "09-06-codegen",
+      "slug": "codegen",
+      "title": "Автоматизация сериализации: jsonserializable и freezed",
+      "order": 6,
+      "file": "content/09-06-codegen.md",
+      "summary": "Вместо ручной написания fromJson и toJson можно использовать инструменты автоматической генерации кода. Это экономит время и уменьшает количество ошибок.",
+      "tags": []
+    },
+    {
+      "id": "09-07-rest-api",
+      "slug": "rest-api",
+      "title": "REST API — принципы и паттерны в Flutter",
+      "order": 7,
+      "file": "content/09-07-rest-api.md",
+      "summary": "REST (Representational State Transfer) — это архитектурный стиль для построения распределённых систем. Большинство современных API следуют принципам REST.",
+      "tags": []
+    },
+    {
+      "id": "09-08-graphql",
+      "slug": "graphql",
+      "title": "GraphQL — основы и интеграция с Flutter",
+      "order": 8,
+      "file": "content/09-08-graphql.md",
+      "summary": "GraphQL — это язык запросов и серверная runtime-технология для API, разработанная Facebook. В отличие от REST, GraphQL позволяет клиенту запрашивать точно те данные, которые нужны.",
+      "tags": []
+    },
+    {
+      "id": "09-09-error-handling",
+      "slug": "error-handling",
+      "title": "Обработка ошибок и retry-логика",
+      "order": 9,
+      "file": "content/09-09-error-handling.md",
+      "summary": "Надёжная обработка ошибок — критически важная часть сетевого взаимодействия. Пользователь должен получать понятные сообщения, а приложение — корректно восстанавливаться после сбоев.",
+      "tags": []
+    },
+    {
+      "id": "09-10-interceptors",
+      "slug": "interceptors",
+      "title": "Interceptors и перехват запросов в Dio",
+      "order": 10,
+      "file": "content/09-10-interceptors.md",
+      "summary": "Interceptors (интерсепторы) — это механизм перехвата HTTP-запросов и ответов на глобальном уровне. Они позволяют модифицировать запросы, ответы и ошибки до того, как они достигнут кода приложения.",
+      "tags": []
+    }
+  ]
+}

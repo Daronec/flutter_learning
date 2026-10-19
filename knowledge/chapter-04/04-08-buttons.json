@@ -1,0 +1,189 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "TextButton, ElevatedButton, OutlinedButton — кнопки"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Кнопки — основной элемент взаимодействия с приложением. Начиная с Material 3, Flutter предоставляет три основных типа кнопок: <code>ElevatedButton</code>, <code>TextButton</code> и <code>OutlinedButton</code>.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "ElevatedButton"},
+    {"text": "Кнопка с тенью и фоном. Используется для основных действий на экране.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные свойства"},
+    {"text": "| Свойство | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>onPressed</code> | <code>VoidCallback?</code> | Callback при нажатии |", "type": "paragraph"},
+    {"text": "| <code>child</code> | <code>Widget?</code> | Содержимое кнопки |", "type": "paragraph"},
+    {"text": "| <code>style</code> | <code>ButtonStyle?</code> | Стилизация кнопки |", "type": "paragraph"},
+    {"text": "| <code>focusNode</code> | <code>FocusNode?</code> | Узел фокуса |", "type": "paragraph"},
+    {"text": "| <code>autofocus</code> | <code>bool</code> | Автофокус |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Пример использования"},
+    {"content": "ElevatedButton(
+onPressed: () {
+print('Кнопка нажата');
+},
+child: const Text('Основное действие'),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Стилизация ElevatedButton"},
+    {"content": "ElevatedButton(
+onPressed: () {},
+style: ElevatedButton.styleFrom(
+// Цвета
+foregroundColor: Colors.white,
+backgroundColor: Colors.blue,
+disabledForegroundColor: Colors.grey,
+disabledBackgroundColor: Colors.grey[300],
+// Размеры
+padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+minimumSize: const Size(88, 36),
+// Скругление
+shape: RoundedRectangleBorder(
+borderRadius: BorderRadius.circular(8),
+),
+// Тень
+elevation: 4,
+// Переходы
+animationDuration: const Duration(milliseconds: 200),
+),
+child: const Text('Стильная кнопка'),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "TextButton"},
+    {"text": "Кнопка только с текстом (без фона и тени). Используется для второстепенных действий.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Пример использования"},
+    {"content": "TextButton(
+onPressed: () {
+print('Текстовая кнопка');
+},
+child: const Text('Подробнее'),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Стилизация TextButton"},
+    {"content": "TextButton(
+onPressed: () {},
+style: TextButton.styleFrom(
+foregroundColor: Colors.blue,
+padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+shape: RoundedRectangleBorder(
+borderRadius: BorderRadius.circular(4),
+),
+),
+child: const Text('Отмена'),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "OutlinedButton"},
+    {"text": "Кнопка с рамкой (outline). Используется для действий, которые не являются основными.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Пример использования"},
+    {"content": "OutlinedButton(
+onPressed: () {
+print('Кнопка с рамкой');
+},
+child: const Text('Отменить'),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Стилизация OutlinedButton"},
+    {"content": "OutlinedButton(
+onPressed: () {},
+style: OutlinedButton.styleFrom(
+foregroundColor: Colors.blue,
+side: const BorderSide(width: 2, color: Colors.blue),
+padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+shape: RoundedRectangleBorder(
+borderRadius: BorderRadius.circular(8),
+),
+),
+child: const Text('Настроить'),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "ButtonStyle"},
+    {"text": "<code>ButtonStyle</code> определяет визуальное состояние кнопки.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Свойства ButtonStyle"},
+    {"text": "| Свойство | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>backgroundColor</code> | <code>MaterialStateProperty<Color?></code> | Цвет фона |", "type": "paragraph"},
+    {"text": "| <code>foregroundColor</code> | <code>MaterialStateProperty<Color?></code> | Цвет переднего плана |", "type": "paragraph"},
+    {"text": "| <code>elevation</code> | <code>MaterialStateProperty<double?></code> | Высота тени |", "type": "paragraph"},
+    {"text": "| <code>padding</code> | <code>MaterialStateProperty<EdgeInsets?></code> | Внутренние отступы |", "type": "paragraph"},
+    {"text": "| <code>minimumSize</code> | <code>MaterialStateProperty<Size?></code> | Минимальный размер |", "type": "paragraph"},
+    {"text": "| <code>shape</code> | <code>MaterialStateProperty<OutlinedBorder?></code> | Форма кнопки |", "type": "paragraph"},
+    {"text": "| <code>overlayColor</code> | <code>MaterialStateProperty<Color?></code> | Цвет оверлея |", "type": "paragraph"},
+    {"text": "| <code>shadowColor</code> | <code>MaterialStateProperty<Color?></code> | Цвет тени |", "type": "paragraph"},
+    {"text": "| <code>surfaceTintColor</code> | <code>MaterialStateProperty<Color?></code> | Цвет тени поверхности |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "MaterialStateProperty"},
+    {"content": "// Кастомный цвет в зависимости от состояния
+ButtonStyle(
+backgroundColor: MaterialStateProperty.resolveWith((states) {
+if (states.contains(MaterialState.pressed)) {
+return Colors.blue.shade700;
+}
+if (states.contains(MaterialState.disabled)) {
+return Colors.grey[300];
+}
+return Colors.blue;
+}),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "MaterialState состояния"},
+    {"text": "| Состояние | Описание |", "type": "paragraph"},
+    {"text": "|-----------|----------|", "type": "paragraph"},
+    {"text": "| <code>pressed</code> | Кнопка нажата |", "type": "paragraph"},
+    {"text": "| <code>hovered</code> | Курсор над кнопкой |", "type": "paragraph"},
+    {"text": "| <code>focused</code> | Кнопка в фокусе |", "type": "paragraph"},
+    {"text": "| <code>disabled</code> | Кнопка отключена |", "type": "paragraph"},
+    {"text": "| <code>selected</code> | Кнопка выбрана |", "type": "paragraph"},
+    {"text": "| <code>error</code> | Кнопка в состоянии ошибки |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "IconButton и FloatingActionButton"},
+    {"level": 3, "type": "heading", "text": "IconButton"},
+    {"content": "IconButton(
+onPressed: () {
+print('Иконка нажата');
+},
+icon: const Icon(Icons.favorite),
+color: Colors.red,
+hoverColor: Colors.redAccent,
+splashRadius: 24,
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "FloatingActionButton"},
+    {"content": "FloatingActionButton(
+onPressed: () {},
+child: const Icon(Icons.add),
+backgroundColor: Colors.blue,
+foregroundColor: Colors.white,
+elevation: 4,
+tooltip: 'Добавить',
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "FloatingActionButton.extended"},
+    {"content": "FloatingActionButton.extended(
+onPressed: () {},
+label: const Text('Добавить'),
+icon: const Icon(Icons.add),
+backgroundColor: Colors.blue,
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Кнопки в разных состояниях"},
+    {"content": "// Активная кнопка
+ElevatedButton(
+onPressed: () {},
+child: const Text('Активна'),
+)
+
+// Отключённая кнопка
+ElevatedButton(
+onPressed: null, // null = отключено
+child: const Text('Отключена'),
+)
+
+// Кнопка с индикатором загрузки
+ElevatedButton(
+onPressed: isLoading ? null : () => submitForm(),
+child: isLoading
+? const SizedBox(
+height: 20,
+width: 20,
+child: CircularProgressIndicator(strokeWidth: 2),
+)
+: const Text('Отправить'),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"content": "ElevatedButton(
+onPressed: isLoading ? null : submit,
+child: isLoading
+? const SizedBox(
+height: 20,
+width: 20,
+child: CircularProgressIndicator(strokeWidth: 2),
+)
+: const Text('Отправить'),
+)", "language": "dart", "type": "code"},
+    {"items": ["<strong>Используйте <code>ElevatedButton</code></strong> для основных действий на экране (например, «Отправить форму»).", "<strong>Используйте <code>TextButton</code></strong> для второстепенных действий (например, «Отмена», «Подробнее»).", "<strong>Используйте <code>OutlinedButton</code></strong> для действий, которые не являются основными, но важными.", "<strong>Всегда обрабатывайте состояние disabled</strong> — отключайте кнопки при невалидных данных формы.", "<strong>Используйте <code>ButtonStyle</code></strong> для единообразного стилирования кнопок во всём приложении.", "<strong>Используйте <code>MaterialStateProperty.resolveWith</code></strong> для кастомизации цветов в зависимости от состояния.", "<strong>Показывайте индикатор загрузки</strong> при длительных операциях:", "<strong>Используйте <code>tooltip</code></strong> для <code>IconButton</code> и <code>FloatingActionButton</code> для улучшения доступности."], "type": "ol"}
+  ]
+}

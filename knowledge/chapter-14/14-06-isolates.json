@@ -1,0 +1,339 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "14-06. Isolates и многопоточность"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Flutter работает в одном потоке (main thread), что означает, что длительные операции блокируют интерфейс. Isolates — это механизм многопоточности в Dart, который позволяет выполнять код параллельно, не блокируя основной поток.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Основы Dart"},
+    {"level": 3, "type": "heading", "text": "Single-threaded модель"},
+    {"text": "Dart использует single-threaded модель выполнения с event loop:", "type": "paragraph"},
+    {"content": "┌─────────────────────────────────────────────┐
+│                  Event Loop                  │
+│                                              │
+│  ┌─────────┐    ┌─────────┐    ┌─────────┐  │
+│  │ Microtask│    │  Timer   │    │  IO     │  │
+│  │ Queue    │    │ Queue    │    │ Queue   │  │
+│  └─────────┘    └─────────┘    └─────────┘  │
+│                                              │
+│  Microtasks > Timers > I/O                   │
+└─────────────────────────────────────────────┘", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Проблема блокировки UI"},
+    {"content": "class BlockingWidget extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+// Эта операция блокирует UI на 5 секунд!
+final result = heavyComputation();
+return Text(result);
+}
+
+String heavyComputation() {
+// Симуляция тяжёлой вычислительной операции
+var sum = 0;
+for (var i = 0; i < 1000000000; i++) {
+sum += i;
+}
+return 'Result: $sum';
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Isolates"},
+    {"level": 3, "type": "heading", "text": "Что такое Isolate"},
+    {"text": "Isolate — это независимый поток выполнения с собственной памятью. В отличие от потоков (threads), Isolates не разделяют память — они обмениваются данными через сообщения.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Сравнение: Thread vs Isolate"},
+    {"text": "| Характеристика | Thread | Isolate |", "type": "paragraph"},
+    {"text": "|---------------|--------|---------|", "type": "paragraph"},
+    {"text": "| Память | Общая | Изолированная |", "type": "paragraph"},
+    {"text": "| Синхронизация | Нужна (mutex, lock) | Не нужна |", "type": "paragraph"},
+    {"text": "| Безопасность | Нужно careful coding | По умолчанию безопасно |", "type": "paragraph"},
+    {"text": "| Обмен данными | Переменные | Сообщения (ports) |", "type": "paragraph"},
+    {"text": "| GIL | Нет | Нет |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Types of Isolates"},
+    {"text": "| Тип | Описание |", "type": "paragraph"},
+    {"text": "|-----|----------|", "type": "paragraph"},
+    {"text": "| Main Isolate | Основной поток приложения |", "type": "paragraph"},
+    {"text": "| Worker Isolate | Фоновый поток для вычислений |", "type": "paragraph"},
+    {"text": "| Dart Isolate | Новый Isolate через <code>Isolate.spawn</code> |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Isolate Basics"},
+    {"level": 3, "type": "heading", "text": "Создание Isolate"},
+    {"content": "import 'dart:isolate';
+
+// Функция, которая будет выполняться в Isolate
+// Должна быть top-level или static функцией
+void workerFunction(SendPort sendPort) {
+// Получаем порт для отправки сообщений
+final receivePort = ReceivePort();
+
+// Отправляем порт обратно
+sendPort.send(receivePort.sendPort);
+
+// Слушаем входящие сообщения
+receivePort.listen((message) {
+if (message is List) {
+final data = message[0] as List<int>;
+final result = processData(data);
+
+// Отправляем результат обратно
+sendPort.send(result);
+}
+});
+}
+
+// Обработка данных
+List<int> processData(List<int> data) {
+// Тяжёлые вычисления
+return data.map((e) => e * 2).toList();
+}
+
+// Использование
+Future<void> useIsolate() async {
+final receivePort = ReceivePort();
+
+// Создаём Isolate
+await Isolate.spawn(workerFunction, receivePort.sendPort);
+
+// Получаем порт для отправки сообщений в Isolate
+final sendPort = await receivePort.first;
+
+// Отправляем данные
+sendPort.send([1, 2, 3, 4, 5]);
+
+// Получаем результат
+receivePort.listen((message) {
+print('Результат: $message'); // [2, 4, 6, 8, 10]
+});
+
+// Закрываем порт
+receivePort.close();
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Isolate с ReceivePort для двунаправленной связи"},
+    {"content": "class IsolateWorker {
+late ReceivePort _receivePort;
+late SendPort _sendPort;
+bool _isRunning = false;
+
+Future<void> start() async {
+_receivePort = ReceivePort();
+
+await Isolate.spawn(_workerEntry, _receivePort.sendPort);
+
+// Ждём, пока Isolate отправит свой SendPort
+_sendPort = await _receivePort.first;
+_isRunning = true;
+}
+
+static void _workerEntry(SendPort mainSendPort) {
+final workerReceivePort = ReceivePort();
+
+// Отправляем свой порт главному Isolate
+mainSendPort.send(workerReceivePort.sendPort);
+
+// Обрабатываем сообщения
+workerReceivePort.listen((dynamic message) {
+switch (message.runtimeType) {
+case SendPort:
+// Инициализация завершена
+break;
+case List<int>:
+final data = message as List<int>;
+final result = _processData(data);
+// Отправляем результат
+mainSendPort.send(result);
+break;
+case String:
+if (message == 'stop') {
+workerReceivePort.close();
+}
+break;
+}
+});
+}
+
+static List<int> _processData(List<int> data) {
+return data.map((e) => e * 2).toList();
+}
+
+Future<List<int>> process(List<int> data) async {
+if (!_isRunning) {
+throw StateError('Worker not started');
+}
+_sendPort.send(data);
+return _receivePort.first as Future<List<int>>;
+}
+
+void stop() {
+_sendPort.send('stop');
+_receivePort.close();
+_isRunning = false;
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "compute() function"},
+    {"level": 3, "type": "heading", "text": "Что такое compute"},
+    {"text": "<code>compute()</code> — это встроенная функция Flutter, которая упрощает работу с Isolates. Она автоматически создаёт Isolate, выполняет функцию и возвращает результат.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Базовое использование"},
+    {"content": "// Вычисление в Isolate
+final result = await compute(_heavyComputation, inputData);
+
+// Функция должна быть top-level или static
+int _heavyComputation(int data) {
+var sum = 0;
+for (var i = 0; i < data; i++) {
+sum += i;
+}
+return sum;
+}
+
+// Использование в виджете
+class ComputeExample extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return ElevatedButton(
+onPressed: () async {
+final result = await compute(_heavyComputation, 1000000000);
+print('Результат: $result');
+},
+child: const Text('Вычислить'),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Вычисление с объектами"},
+    {"content": "class User {
+final String name;
+final List<int> scores;
+
+const User({required this.name, required this.scores});
+}
+
+// Вычисление среднего балла в Isolate
+double _calculateAverage(List<User> users) {
+double total = 0;
+int count = 0;
+for (final user in users) {
+for (final score in user.scores) {
+total += score;
+count++;
+}
+}
+return count > 0 ? total / count : 0;
+}
+
+// Использование
+Future<void> calculateAverage() async {
+final users = await fetchUsers();
+final average = await compute(_calculateAverage, users);
+print('Средний балл: $average');
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Вычисление с парсингом JSON"},
+    {"content": "// Парсинг большого JSON в Isolate
+class JsonParser {
+static List<Product> parseProducts(String jsonString) {
+final jsonData = jsonDecode(jsonString) as List;
+return jsonData.map((item) {
+return Product(
+id: item['id'] as int,
+name: item['name'] as String,
+price: (item['price'] as num).toDouble(),
+description: item['description'] as String,
+);
+}).toList();
+}
+}
+
+class Product {
+final int id;
+final String name;
+final double price;
+final String description;
+
+const Product({
+required this.id,
+required this.name,
+required this.price,
+required this.description,
+});
+}
+
+// Использование
+Future<void> loadProducts() async {
+final jsonString = await fetchJsonData();
+
+// Парсинг в Isolate — не блокирует UI
+final products = await compute(
+JsonParser.parseProducts,
+jsonString,
+);
+
+setState(() {
+_products = products;
+});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Вычисление с шифрованием"},
+    {"content": "import 'dart:convert';
+import 'package:crypto/crypto.dart';
+
+class CryptoHelper {
+static String hashPassword(String password) {
+final bytes = utf8.encode(password);
+final digest = sha256.convert(bytes);
+return digest.toString();
+}
+
+static List<String> hashPasswords(List<String> passwords) {
+return passwords.map(hashPassword).toList();
+}
+}
+
+// Использование
+Future<void> hashPasswords() async {
+final passwords = await fetchPasswords();
+final hashed = await compute(
+CryptoHelper.hashPasswords,
+passwords,
+);
+// Сохраняем хешированные пароли
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Когда использовать Isolate"},
+    {"level": 3, "type": "heading", "text": "Когда стоит использовать"},
+    {"text": "| Сценарий | Рекомендуется |", "type": "paragraph"},
+    {"text": "|----------|--------------|", "type": "paragraph"},
+    {"text": "| Тяжёлые вычисления (JSON, CSV) | Да |", "type": "paragraph"},
+    {"text": "| Шифрование/хеширование | Да |", "type": "paragraph"},
+    {"text": "| Обработка изображений | Да |", "type": "paragraph"},
+    {"text": "| Сортировка больших списков | Да |", "type": "paragraph"},
+    {"text": "| Парсинг больших файлов | Да |", "type": "paragraph"},
+    {"text": "| Простые операции | Нет |", "type": "paragraph"},
+    {"text": "| Работа с UI | Нет |", "type": "paragraph"},
+    {"text": "| Сетевые запросы | Нет (используйте Future) |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Когда НЕ использовать"},
+    {"content": "// НЕ нужно использовать Isolate для:
+
+// 1. Простых вычислений
+int simpleCalculation(int a, int b) => a + b;
+// Достаточно вызвать напрямую
+
+// 2. Сетевых запросов
+Future<String> fetchData() async {
+// HTTP-запрос уже асинхронный
+final response = await http.get(Uri.parse('https://api.example.com'));
+return response.body;
+}
+
+// 3. Работы с UI
+void updateUI() {
+// UI-операции должны быть в main thread
+setState(() {
+_text = 'Updated';
+});
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "Рекомендации по использованию Isolates"},
+    {"items": ["<strong>Используйте <code>compute()</code> для простых задач</strong> — это самый простой способ", "<strong>Функции для <code>compute()</code> должны быть top-level или static</strong> — не методы класса", "<strong>Избегайте создания Isolate для каждой операции</strong> — переиспользуйте Worker", "<strong>Передавайте только сериализуемые данные</strong> — Isolate обмениваются сообщениями", "<strong>Закрывайте ReceivePort после использования</strong> — избегайте утечек памяти", "<strong>Проверяйте, действительно ли задача тяжёлая</strong> — накладные расходы на создание Isolate"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Сравнение подходов"},
+    {"text": "| Подход | Сложность | Гибкость | Производительность |", "type": "paragraph"},
+    {"text": "|--------|-----------|----------|-------------------|", "type": "paragraph"},
+    {"text": "| <code>compute()</code> | Низкая | Средняя | Хорошая |", "type": "paragraph"},
+    {"text": "| <code>Isolate.spawn</code> | Высокая | Высокая | Отличная |", "type": "paragraph"},
+    {"text": "| <code>IsolateRunner</code> | Средняя | Высокая | Отличная |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Чек-лист использования Isolates"},
+    {"items": ["[ ] Задача действительно тяжёлая (> 50ms)", "[ ] Функция является top-level или static", "[ ] Данные для передачи сериализуемы", "[ ] ReceivePort закрывается после использования", "[ ] Нет работы с UI в Isolate", "[ ] Результаты тестированы на разных устройствах"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Isolates — это мощный инструмент для выполнения тяжёлых вычислений без блокировки UI. Функция <code>compute()</code> предоставляет простой способ использования Isolates для типичных задач, в то время как <code>Isolate.spawn</code> даёт полный контроль для сложных сценариев.", "type": "paragraph"}
+  ]
+}

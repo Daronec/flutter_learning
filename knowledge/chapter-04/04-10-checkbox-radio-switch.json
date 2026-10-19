@@ -1,0 +1,276 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Checkbox, Radio, Switch — элементы выбора"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "<code>Checkbox</code>, <code>Radio</code> и <code>Switch</code> — стандартные элементы пользовательского интерфейса для выбора вариантов. Каждый из них предназначен для определённого типа выбора.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Checkbox"},
+    {"text": "<code>Checkbox</code> — элемент для множественного выбора (вкл/выкл).", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные свойства Checkbox"},
+    {"text": "| Свойство | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>value</code> | <code>bool?</code> | Текущее состояние (true/false/null) |", "type": "paragraph"},
+    {"text": "| <code> onChanged</code> | <code>ValueChange<bool?>?</code> | Callback при изменении |", "type": "paragraph"},
+    {"text": "| <code>activeColor</code> | <code>Color?</code> | Цвет в активном состоянии |", "type": "paragraph"},
+    {"text": "| <code>checkColor</code> | <code>Color?</code> | Цвет галочки |", "type": "paragraph"},
+    {"text": "| <code>shape</code> | <code>MaterialStateProperty<OutlinedBorder?>?</code> | Форма чекбокса |", "type": "paragraph"},
+    {"text": "| <code>side</code> | <code>MaterialSide?</code> | Боковая сторона |", "type": "paragraph"},
+    {"text": "| <code>tristate</code> | <code>bool</code> | Третье состояние (null) |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Базовое использование"},
+    {"content": "bool _isChecked = false;
+
+Checkbox(
+value: _isChecked,
+onChanged: (value) {
+setState(() {
+_isChecked = value ?? false;
+});
+},
+activeColor: Colors.blue,
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Три-состояние (Tristate)"},
+    {"content": "bool? _isPartial = null; // null, true, false
+
+Checkbox(
+value: _isPartial,
+tristate: true,
+onChanged: (value) {
+setState(() {
+_isPartial = value;
+});
+},
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "CheckboxListTile"},
+    {"text": "Для отображения чекбокса с текстом используется <code>CheckboxListTile</code>:", "type": "paragraph"},
+    {"content": "CheckboxListTile(
+value: _isChecked,
+onChanged: (value) {
+setState(() {
+_isChecked = value ?? false;
+});
+},
+title: const Text('Принимаю условия'),
+subtitle: const Text('Политика конфиденциальности'),
+secondary: const Icon(Icons.info_outline),
+dense: false,
+controlAffinity: ListTileControlAffinity.trailing,
+contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Множественный выбор"},
+    {"content": "class MultiSelectExample extends StatefulWidget {
+@override
+_MultiSelectExampleState createState() => _MultiSelectExampleState();
+}
+
+class _MultiSelectExampleState extends State<MultiSelectExample> {
+final Map<String, bool> _selectedItems = {
+'Flutter': false,
+'Dart': false,
+'React': false,
+'Vue': false,
+};
+
+@override
+Widget build(BuildContext context) {
+return Column(
+children: _selectedItems.entries.map((entry) {
+return CheckboxListTile(
+value: entry.value,
+title: Text(entry.key),
+onChanged: (value) {
+setState(() {
+_selectedItems[entry.key] = value ?? false;
+});
+},
+);
+}).toList(),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Radio"},
+    {"text": "<code>Radio</code> — элемент для одиночного выбора из группы вариантов.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные свойства Radio"},
+    {"text": "| Свойство | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>value</code> | <code>T</code> | Значение этого радио-кнопки |", "type": "paragraph"},
+    {"text": "| <code>groupValue</code> | <code>T?</code> | Текущее выбранное значение группы |", "type": "paragraph"},
+    {"text": "| <code>onChanged</code> | <code>ValueChange<T>?</code> | Callback при изменении |", "type": "paragraph"},
+    {"text": "| <code>activeColor</code> | <code>Color?</code> | Цвет в активном состоянии |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Базовое использование"},
+    {"content": "String _selectedOption = 'option1';
+
+Radio<String>(
+value: 'option1',
+groupValue: _selectedOption,
+onChanged: (value) {
+setState(() {
+_selectedOption = value!;
+});
+},
+activeColor: Colors.blue,
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "RadioListTile"},
+    {"content": "RadioListTile<String>(
+value: 'option1',
+groupValue: _selectedOption,
+onChanged: (value) {
+setState(() {
+_selectedOption = value!;
+});
+},
+title: const Text('Вариант 1'),
+subtitle: const Text('Описание варианта 1'),
+secondary: const Icon(Icons.star),
+dense: true,
+contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Группа Radio кнопок"},
+    {"content": "class RadioGroupExample extends StatefulWidget {
+@override
+_RadioGroupExampleState createState() => _RadioGroupExampleState();
+}
+
+class _RadioGroupExampleState extends State<RadioGroupExample> {
+String _gender = 'male';
+String _size = 'm';
+
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+// Группа: Пол
+const Padding(
+padding: EdgeInsets.all(16),
+child: Text(
+'Пол',
+style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+),
+),
+RadioListTile<String>(
+value: 'male',
+groupValue: _gender,
+onChanged: (value) {
+setState(() => _gender = value!);
+},
+title: const Text('Мужской'),
+secondary: const Icon(Icons.male),
+),
+RadioListTile<String>(
+value: 'female',
+groupValue: _gender,
+onChanged: (value) {
+setState(() => _gender = value!);
+},
+title: const Text('Женский'),
+secondary: const Icon(Icons.female),
+),
+const Divider(),
+// Группа: Размер
+const Padding(
+padding: EdgeInsets.all(16),
+child: Text(
+'Размер',
+style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+),
+),
+RadioListTile<String>(
+value: 's',
+groupValue: _size,
+onChanged: (value) {
+setState(() => _size = value!);
+},
+title: const Text('Маленький (S)'),
+),
+RadioListTile<String>(
+value: 'm',
+groupValue: _size,
+onChanged: (value) {
+setState(() => _size = value!);
+},
+title: const Text('Средний (M)'),
+),
+RadioListTile<String>(
+value: 'l',
+groupValue: _size,
+onChanged: (value) {
+setState(() => _size = value!);
+},
+title: const Text('Большой (L)'),
+),
+],
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Switch"},
+    {"text": "<code>Switch</code> — элемент для переключения между двумя состояниями (вкл/выкл). Визуально отличается от <code>Checkbox</code> — используется для быстрых переключений.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные свойства Switch"},
+    {"text": "| Свойство | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>value</code> | <code>bool</code> | Текущее состояние |", "type": "paragraph"},
+    {"text": "| <code>onChanged</code> | <code>ValueChange<bool>?</code> | Callback при изменении |", "type": "paragraph"},
+    {"text": "| <code>activeColor</code> | <code>Color?</code> | Цвет в активном состоянии |", "type": "paragraph"},
+    {"text": "| <code>activeTrackColor</code> | <code>Color?</code> | Цвет дорожки в активном состоянии |", "type": "paragraph"},
+    {"text": "| <code>inactiveThumbColor</code> | <code>Color?</code> | Цвет ползунка в неактивном состоянии |", "type": "paragraph"},
+    {"text": "| <code>inactiveTrackColor</code> | <code>Color?</code> | Цвет дорожки в неактивном состоянии |", "type": "paragraph"},
+    {"text": "| <code>thumbColor</code> | <code>MaterialStateProperty<Color?>?</code> | Цвет ползунка (состояния) |", "type": "paragraph"},
+    {"text": "| <code>trackColor</code> | <code>MaterialStateProperty<Color?>?</code> | Цвет дорожки (состояния) |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Базовое использование"},
+    {"content": "bool _notificationsEnabled = true;
+
+Switch(
+value: _notificationsEnabled,
+onChanged: (value) {
+setState(() {
+_notificationsEnabled = value;
+});
+},
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "SwitchListTile"},
+    {"content": "SwitchListTile(
+value: _notificationsEnabled,
+onChanged: (value) {
+setState(() {
+_notificationsEnabled = value;
+});
+},
+title: const Text('Уведомления'),
+subtitle: const Text('Получать push-уведомления'),
+secondary: const Icon(Icons.notifications),
+activeColor: Colors.blue,
+contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Кастомный Switch"},
+    {"content": "Switch(
+value: _darkMode,
+onChanged: (value) {
+setState(() => _darkMode = value);
+},
+// Кастомные цвета
+activeColor: Colors.purple,
+activeTrackColor: Colors.purple.withOpacity(0.4),
+inactiveThumbColor: Colors.grey[400],
+inactiveTrackColor: Colors.grey[200],
+// Кастомный цвет ползунка по состояниям
+thumbColor: MaterialStateProperty.resolveWith((states) {
+if (states.contains(MaterialState.selected)) {
+return Colors.purple;
+}
+return Colors.grey[400];
+}),
+// Кастомный цвет дорожки по состояниям
+trackColor: MaterialStateProperty.resolveWith((states) {
+if (states.contains(MaterialState.selected)) {
+return Colors.purple.withOpacity(0.4);
+}
+return Colors.grey[200];
+}),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение элементов выбора"},
+    {"text": "| Элемент | Тип выбора | Визуал | Когда использовать |", "type": "paragraph"},
+    {"text": "|---------|-----------|--------|-------------------|", "type": "paragraph"},
+    {"text": "| <code>Checkbox</code> | Множественный | Квадрат с галочкой | Несколько независимых опций |", "type": "paragraph"},
+    {"text": "| <code>Radio</code> | Одиночный | Круг с точкой | Выбор одного из группы |", "type": "paragraph"},
+    {"text": "| <code>Switch</code> | Двоичный | Ползунок | Быстрое переключение вкл/выкл |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Используйте <code>CheckboxListTile</code></strong> для отображения чекбоксов с текстом — это обеспечивает правильное выравнивание и отступы.", "<strong>Используйте <code>RadioListTile</code></strong> для групп радио-кнопок — это упрощает разметку и обеспечивает визуальную согласованность.", "<strong>Используйте <code>SwitchListTile</code></strong> для переключателей с описанием — это стандартный паттерн в настройках.", "<strong>Используйте <code>tristate: true</code></strong> для чекбоксов, когда нужно состояние «не определено» (например, для чекбокса «выбрать все»).", "<strong>Группируйте связанные Radio-кнопки</strong> — все кнопки с одинаковым <code>groupValue</code> образуют группу.", "<strong>Используйте <code>Switch</code></strong> для быстрых переключений, а <code>Checkbox</code> — для подтверждения выбора.", "<strong>Добавляйте <code>secondary</code> иконки</strong> для улучшения визуального восприятия.", "<strong>Используйте <code>contentPadding</code></strong> для согласованных отступов во всех элементах выбора."], "type": "ol"}
+  ]
+}

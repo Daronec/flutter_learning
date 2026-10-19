@@ -1,0 +1,191 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "2.5 Generics (обобщённое программирование)"},
+    {"level": 2, "type": "heading", "text": "Что такое Generics?"},
+    {"text": "Generics — это механизм создания классов, функций и методов, которые работают с любыми типами данных, обеспечивая при этом типобезопасность.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Базовое использование"},
+    {"level": 3, "type": "heading", "text": "Generics в классах"},
+    {"content": "// Обобщённый класс
+class Container<T> {
+T value;
+
+Container(this.value);
+
+T get() => value;
+void set(T newValue) => value = newValue;
+}
+
+// Использование
+var intContainer = Container<int>(42);
+var strContainer = Container<String>('Hello');
+
+// Вывод типа (type inference)
+var numberContainer = Container(42); // Container<int>", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Generics в функциях"},
+    {"content": "// Обобщённая функция
+T firstElement<T>(List<T> list) {
+return list.first;
+}
+
+// Использование
+int first = firstElement<int>([1, 2, 3]); // 1
+String first = firstElement(['a', 'b', 'c']); // 'a'
+
+// Вывод типа
+var first = firstElement([1, 2, 3]); // int", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Generics в колбэках"},
+    {"content": "class Result<T> {
+final T? data;
+final String? error;
+
+Result.success(this.data) : error = null;
+Result.error(this.error) : data = null;
+
+bool get isSuccess => error == null;
+bool get isError => error != null;
+}
+
+// Использование
+Result<User> result = Result.success(User('Alice'));
+if (result.isSuccess) {
+print(result.data!.name);
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Ограничения Generics"},
+    {"level": 3, "type": "heading", "text": "extends"},
+    {"content": "// T должен быть subtype of num
+class NumberContainer<T extends num> {
+T value;
+
+NumberContainer(this.value);
+
+bool isPositive() => value > 0;
+}
+
+// ✅
+var nc = NumberContainer<int>(42);
+var nc2 = NumberContainer<double>(3.14);
+
+// ❌ Ошибка!
+// var nc3 = NumberContainer<String>('text');", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "with (mixins)"},
+    {"content": "mixin Loggable {
+void log(String msg) => print(msg);
+}
+
+// T должен поддерживать миксин Loggable
+class Observable<T extends Object with Loggable> {
+T value;
+
+Observable(this.value) {
+log('Created with: $value');
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Multiple bounds"},
+    {"content": "// Несколько ограничений
+class BoundedContainer<T extends Comparable<T> & Cloneable> {
+T value;
+
+BoundedContainer(this.value);
+
+T clone() => value.clone();
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Generics в коллекциях"},
+    {"level": 3, "type": "heading", "text": "List, Map, Set"},
+    {"content": "// Типизированные коллекции
+List<String> names = ['Alice', 'Bob'];
+Map<String, int> ages = {'Alice': 25, 'Bob': 30};
+Set<String> uniqueNames = {'Alice', 'Bob'};
+
+// Методы коллекций с generics
+names.map((name) => name.toUpperCase()).toList();
+ages.entries.where((e) => e.value > 24).toList();", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "whereType"},
+    {"content": "var mixed = [1, 'hello', 2, 'world', 3];
+
+// Фильтрация по типу
+List<int> ints = mixed.whereType<int>().toList();    // [1, 2, 3]
+List<String> strings = mixed.whereType<String>().toList(); // ['hello', 'world']", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Covariance и invariant"},
+    {"level": 3, "type": "heading", "text": "List<E> — invariant"},
+    {"content": "List<num> numbers = [1, 2, 3];
+List<int> ints = [1, 2, 3];
+
+// ❌ Ошибка! List<num> ≠ List<int>
+// numbers = ints;
+
+// ✅ Безопасно — создаём новый список
+List<num> fromInts = ints.cast<num>();", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "cast и as"},
+    {"content": "List<dynamic> mixed = [1, 'hello', 2.5];
+
+// Приведение типа
+List<int> asInts = mixed.cast<int>(); // Ошибка если есть не-int
+
+// Безопасное приведение
+List<int> safeInts = mixed.whereType<int>().toList();", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Generics и Flutter"},
+    {"level": 3, "type": "heading", "text": "Generic виджеты"},
+    {"content": "// Generic виджет
+class CardWidget<T> extends StatelessWidget {
+final T data;
+final Widget Function(T data) builder;
+
+const CardWidget({
+required this.data,
+required this.builder,
+super.key,
+});
+
+@override
+Widget build(BuildContext context) {
+return Card(
+child: builder(data),
+);
+}
+}
+
+// Использование
+CardWidget<User>(
+data: user,
+builder: (user) => Text(user.name),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Generic State"},
+    {"content": "class StatefulCard<T> extends StatefulWidget {
+final T initialData;
+
+const StatefulCard({required this.initialData, super.key});
+
+@override
+State<StatefulCard<T>> createState() => _StatefulCardState<T>();
+}
+
+class _StatefulCardState<T> extends State<StatefulCard<T>> {
+T? data;
+
+@override
+void initState() {
+super.initState();
+data = widget.initialData;
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Null-safe Generics"},
+    {"content": "// Nullable generic type
+Container<String?>? nullableContainer;
+
+// Non-nullable by default
+Container<String> container = Container('Hello');
+
+// Generic с nullable
+Result<User?> result = Result.success(null);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Итоговая таблица"},
+    {"text": "| Синтаксис | Описание | Пример |", "type": "paragraph"},
+    {"text": "|---|---|---|", "type": "paragraph"},
+    {"text": "| <code>class C<T></code> | Обобщённый класс | <code>Container<T></code> |", "type": "paragraph"},
+    {"text": "| <code>T func<T>()</code> | Обобщённая функция | <code>firstElement<T></code> |", "type": "paragraph"},
+    {"text": "| <code>T extends Type</code> | Ограничение | <code>T extends num</code> |", "type": "paragraph"},
+    {"text": "| <code>T with Mixin</code> | Ограничение миксином | <code>T with Loggable</code> |", "type": "paragraph"},
+    {"text": "| <code>cast<T>()</code> | Приведение коллекции | <code>list.cast<int>()</code> |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Generics обеспечивают типобезопасность и переиспользование кода. Понимание ограничений, covariance и null-safe generics — ключ к написанию качественного обобщённого кода в Dart.", "type": "paragraph"}
+  ]
+}

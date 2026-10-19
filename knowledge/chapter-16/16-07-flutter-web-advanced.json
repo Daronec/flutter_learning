@@ -1,0 +1,294 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Flutter для Web — особенности и ограничения"},
+    {"text": "Flutter для Web позволяет разворачивать Flutter-приложения в браузере. Однако веб-архитектура имеет специфические особенности и ограничения, которые необходимо учитывать при разработке.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Web Architecture"},
+    {"level": 3, "type": "heading", "text": "Режимы компиляции для Web"},
+    {"text": "| Режим | Компилятор | Размер бандла | Производительность | Использование |", "type": "paragraph"},
+    {"text": "|-------|-----------|---------------|-------------------|---------------|", "type": "paragraph"},
+    {"text": "| HTML | Dart2JS | ~2-4 MB | JIT/AOT | По умолчанию |", "type": "paragraph"},
+    {"text": "| CanvasKit | Dart2JS + CanvasKit | ~6-7 MB | AOT (максимум) | <code>--web-renderer canvaskit</code> |", "type": "paragraph"},
+    {"text": "| Skia | Dart2JS + Skia WASM | ~4-5 MB | AOT | <code>--web-renderer skwasm</code> |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Сравнение web-рендереров"},
+    {"text": "| Рендерер | Технология | Качество | Производительность | Размер |", "type": "paragraph"},
+    {"text": "|----------|-----------|----------|-------------------|--------|", "type": "paragraph"},
+    {"text": "| HTML | DOM + CSS | Стандартный | Высокая | ~1 MB |", "type": "paragraph"},
+    {"text": "| CanvasKit | WebGL (CanvasKit WASM) | Максимальный | Высокая | ~6 MB |", "type": "paragraph"},
+    {"text": "| Skia (SKWasm) | WebAssembly | Высокий | Средняя | ~4 MB |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Выбор рендерера"},
+    {"content": "# HTML renderer (по умолчанию)
+flutter run -d chrome
+
+# CanvasKit renderer
+flutter run -d chrome --web-renderer canvaskit
+
+# Skia renderer (SKWasm)
+flutter run -d chrome --web-renderer skwasm", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Особенности Web"},
+    {"level": 3, "type": "heading", "text": "Platform.isWeb"},
+    {"content": "import 'package:flutter/foundation.dart';
+
+class PlatformChecker {
+bool get isWeb => kIsWeb;
+bool get isAndroid => !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+bool get isIOS => !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+bool get isWindows => !kIsWeb && defaultTargetPlatform == TargetPlatform.windows;
+bool get isMacOS => !kIsWeb && defaultTargetPlatform == TargetPlatform.macOS;
+bool get isLinux => !kIsWeb && defaultTargetPlatform == TargetPlatform.linux;
+}
+
+// Использование в коде
+Widget build(BuildContext context) {
+if (kIsWeb) {
+return WebSpecificWidget();
+} else {
+return MobileSpecificWidget();
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Web-specific ограничения"},
+    {"text": "| Ограничение | Описание | Обходной путь |", "type": "paragraph"},
+    {"text": "|------------|----------|---------------|", "type": "paragraph"},
+    {"text": "| Нет доступа к файловой системе | Браузер не даёт прямой доступ | Используйте <code>file_uploader</code> пакет |", "type": "paragraph"},
+    {"text": "| Ограниченный доступ к устройствам | Камера, GPS через Web API | Используйте <code>web</code> пакеты |", "type": "paragraph"},
+    {"text": "| Нет native UI | Нет нативных диалогов | Используйте <code>url_launcher</code> или кастомные |", "type": "paragraph"},
+    {"text": "| Ограниченная память | Ограничения браузера | Оптимизируйте бандл |", "type": "paragraph"},
+    {"text": "| Нет Background Execution | Нет фонового выполнения | Используйте Service Workers |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Оптимизация Web-бандла"},
+    {"level": 3, "type": "heading", "text": "Анализ размера бандла"},
+    {"content": "# Анализ размера бандла
+flutter build web --source-maps
+
+# Вывод:
+# Total Web bundle size: 3.2 MB
+# JavaScript: 2.1 MB
+# CanvasKit: 1.1 MB", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Стратегии уменьшения размера"},
+    {"content": "# pubspec.yaml
+dependencies:
+flutter:
+sdk: flutter
+# Используйте только необходимые пакеты
+http: ^1.1.0
+# Избегайте крупных пакетов если можно
+# bad: flutter_svg + flutter_sparkline
+# good: custom SVG widget
+
+dev_dependencies:
+flutter_test:
+sdk: flutter
+flutter_lints: ^3.0.0", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Tree Shaking"},
+    {"content": "# Tree shaking включён по умолчанию в release
+flutter build web --release
+
+# Дополнительные флаги оптимизации
+flutter build web --release \\\\
+--dart-define=FLUTTER_WEB_CANVASKIT_URL=canvaskit.js \\\\
+--split-debug-info=build/debug_info", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Lazy Loading для CanvasKit"},
+    {"content": "// Кастомный main с lazy loading CanvasKit
+import 'package:flutter/web_ui.dart' as ui;
+
+void main() async {
+// Проверяем поддержку CanvasKit
+final supportsCanvasKit = await ui.WebGLInfo.instance.supportsWebGL();
+
+if (supportsCanvasKit) {
+// Используем CanvasKit
+ui.WebRendererDefault = ui.WebRenderer.canvaskit;
+} else {
+// Fallback на HTML
+ui.WebRendererDefault = ui.WebRenderer.html;
+}
+
+runApp(const MyApp());
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Web-specific API"},
+    {"level": 3, "type": "heading", "text": "Работа с URL и навигацией"},
+    {"content": "import 'package:flutter/foundation.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+class WebNavigator {
+/// Открыть ссылку в новой вкладке
+Future<bool> openInNewTab(String url) async {
+final uri = Uri.parse(url);
+if (await canLaunchUrl(uri)) {
+return await launchUrl(
+uri,
+mode: LaunchMode.externalApplication,
+);
+}
+return false;
+}
+
+/// Получить параметры URL
+Map<String, String> getQueryParameters() {
+if (!kIsWeb) return {};
+// В реальном проекте используйте 'web' пакет или 'url_strategy'
+final href = window.location.href; // через 'web' package
+final uri = Uri.parse(href);
+return uri.queryParameters;
+}
+
+/// Изменить URL без перезагрузки
+void navigateTo(String path) {
+if (kIsWeb) {
+window.history.pushState(null, '', path);
+}
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Работа с LocalStorage"},
+    {"content": "// Для работы с LocalStorage на Web используйте пакет 'web'
+// pubspec.yaml:
+// dependencies:
+//   web: ^0.3.0
+
+import 'package:web/web.dart' as web;
+
+class WebStorage {
+/// Сохранить данные в LocalStorage
+static void save(String key, String value) {
+if (kIsWeb) {
+web.window.localStorage.setItem(key, value);
+}
+}
+
+/// Получить данные из LocalStorage
+static String? load(String key) {
+if (kIsWeb) {
+return web.window.localStorage.getItem(key);
+}
+return null;
+}
+
+/// Удалить данные
+static void remove(String key) {
+if (kIsWeb) {
+web.window.localStorage.removeItem(key);
+}
+}
+
+/// Очистить всё
+static void clear() {
+if (kIsWeb) {
+web.window.localStorage.clear();
+}
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Работа с IndexedDB"},
+    {"content": "// Для более сложного хранения используйте IndexedDB
+// Пакет: indexed_db_flutter или isar с web поддержкой
+
+class WebDatabase {
+static const _dbName = 'flutter_web_db';
+static const _version = 1;
+static const _storeName = 'data';
+
+// В реальном проекте используйте пакет 'isar' или 'drift' с web поддержкой
+// Для простого хранения достаточно SharedPreferences + LocalStorage fallback
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Web Performance"},
+    {"level": 3, "type": "heading", "text": "Оптимизация загрузки"},
+    {"content": "<!-- web/index.html — оптимизация загрузки -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=\"UTF-8\">
+<title>My App</title>
+<script>
+// Кэшируем CanvasKit для ускорения повторных загрузок
+window.flutter_web_config = {
+\"canvaskitUrl\": \"canvaskit/canvaskit.js\",
+};
+</script>
+</head>
+<body>
+<script src=\"main.dart.js\" type=\"application/javascript\"></script>
+</body>
+</html>", "language": "html", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Preloading ресурсов"},
+    {"content": "// Предзагрузка ресурсов для ускорения
+class ResourcePreloader {
+static Future<void> preloadAssets() async {
+// Предзагрузка шрифтов
+await _preloadFonts();
+// Предзагрузка изображений
+await _preloadImages();
+}
+
+static Future<void> _preloadFonts() async {
+// Шрифты загружаются автоматически через pubspec.yaml
+}
+
+static Future<void> _preloadImages() async {
+// Предзагрузка критических изображений
+final image = NetworkImage('https://example.com/critical.jpg');
+// В реальном проекте используйте precacheImage
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Code Splitting"},
+    {"content": "// Разделение кода для lazy loading
+class LazyLoadedWidget extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+// В Flutter для Web code splitting работает через
+// динамический импорт (dart:deferred_library)
+return const ComplexWidget();
+}
+}
+
+// Для lazy loading используйте:
+// import 'package:my_app/lazy_module.dart' deferred as lazy;
+//
+// Future<void> loadLazyModule() async {
+//   await lazy.loadLibrary();
+//   lazy.doSomething();
+// }", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "SEO и Web-specific"},
+    {"level": 3, "type": "heading", "text": "SEO для Flutter Web"},
+    {"content": "// Flutter Web не индексируется поисковиками по умолчанию
+// Решения:
+
+// 1. Использовать SSR (Server-Side Rendering) — через next.dart или аналогичные
+// 2. Использовать Prerendered HTML
+// 3. Использовать SSG (Static Site Generation)
+
+// flutter build web --prerender-index
+// Это генерирует статический HTML для SEO", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "PWA (Progressive Web App)"},
+    {"content": "# pubspec.yaml — настройка PWA
+flutter:
+assets:
+- assets/icons/icon-192.png
+- assets/icons/icon-512.png
+- assets/manifest.json", "language": "yaml", "type": "code"},
+    {"content": "// assets/manifest.json
+{
+\"name\": \"Flutter Web App\",
+\"short_name\": \"FlutterApp\",
+\"start_url\": \"/\",
+\"display\": \"standalone\",
+\"background_color\": \"#ffffff\",
+\"theme_color\": \"#2196f3\",
+\"icons\": [
+{
+\"src\": \"icons/icon-192.png\",
+\"sizes\": \"192x192\",
+\"type\": \"image/png\"
+},
+{
+\"src\": \"icons/icon-512.png\",
+\"sizes\": \"512x512\",
+\"type\": \"image/png\"
+}
+]
+}", "language": "json", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"content": "if (kIsWeb) {
+// Web-specific implementation
+}", "language": "dart", "type": "code"},
+    {"content": "flutter build web --release --split-debug-info=build/symbols", "language": "bash", "type": "code"},
+    {"content": "flutter build web --web-renderer html", "language": "bash", "type": "code"},
+    {"items": ["<strong>Используйте <code>kIsWeb</code> для платформенного кода</strong> — проверяйте платформу:", "<strong>Оптимизируйте размер бандла</strong> — анализируйте с <code>flutter build web --source-maps</code>.", "<strong>Используйте CanvasKit только при необходимости</strong> — HTML-рендерер легче.", "<strong>Кэшируйте ресурсы</strong> — используйте Service Workers для PWA.", "<strong>Тестируйте на разных браузерах</strong> — Chrome, Firefox, Safari, Edge.", "<strong>Избегайте нативных API</strong> — используйте web-совместимые пакеты.", "<strong>Включайте <code>--split-debug-info</code></strong> — для профилирования:", "<strong>Используйте <code>--web-renderer html</code></strong> для простых приложений:", "<strong>Проверяйте производительность</strong> — используйте DevTools Performance tab.", "<strong>Поддерживайте fallback</strong> — для устройств с плохой поддержкой WebGL."], "type": "ol"}
+  ]
+}

@@ -1,0 +1,55 @@
+﻿{
+    "files":  [
+                  {
+                      "name":  "09-01-http-protocol.md",
+                      "path":  "chapter-09/09-01-http-protocol.md",
+                      "size":  11850
+                  },
+                  {
+                      "name":  "09-02-http-package.md",
+                      "path":  "chapter-09/09-02-http-package.md",
+                      "size":  10448
+                  },
+                  {
+                      "name":  "09-03-dio.md",
+                      "path":  "chapter-09/09-03-dio.md",
+                      "size":  9673
+                  },
+                  {
+                      "name":  "09-04-json-serialization.md",
+                      "path":  "chapter-09/09-04-json-serialization.md",
+                      "size":  7846
+                  },
+                  {
+                      "name":  "09-05-data-models.md",
+                      "path":  "chapter-09/09-05-data-models.md",
+                      "size":  8785
+                  },
+                  {
+                      "name":  "09-06-codegen.md",
+                      "path":  "chapter-09/09-06-codegen.md",
+                      "size":  8844
+                  },
+                  {
+                      "name":  "09-07-rest-api.md",
+                      "path":  "chapter-09/09-07-rest-api.md",
+                      "size":  7070
+                  },
+                  {
+                      "name":  "09-08-graphql.md",
+                      "path":  "chapter-09/09-08-graphql.md",
+                      "size":  6788
+                  },
+                  {
+                      "name":  "09-09-error-handling.md",
+                      "path":  "chapter-09/09-09-error-handling.md",
+                      "size":  11524
+                  },
+                  {
+                      "name":  "09-10-interceptors.md",
+                      "path":  "chapter-09/09-10-interceptors.md",
+                      "size":  11502
+                  }
+              ],
+    "chapter":  "chapter-09"
+}

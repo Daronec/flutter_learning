@@ -1,0 +1,275 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Hero-анимации в Flutter"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Hero-анимации создают эффект \"полёта\" элемента между двумя экранами. Один и тот же виджет плавно трансформируется при навигации.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Widget Hero"},
+    {"level": 3, "type": "heading", "text": "Базовое использование"},
+    {"content": "// Экран 1: Список с Hero-элементами
+class ListScreen extends StatelessWidget {
+const ListScreen({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Список товаров')),
+body: ListView.builder(
+itemCount: 10,
+itemBuilder: (context, index) {
+return ListTile(
+leading: Hero(
+tag: 'product-image-$index',
+child: ClipRRect(
+borderRadius: BorderRadius.circular(8),
+child: Image.network(
+'https://picsum.photos/80/80?random=$index',
+width: 50,
+height: 50,
+fit: BoxFit.cover,
+),
+),
+),
+title: Text('Товар $index'),
+subtitle: const Text('Нажмите для подробностей'),
+onTap: () {
+Navigator.push(
+context,
+MaterialPageRoute(
+builder: (context) => const DetailScreen(),
+),
+);
+},
+);
+},
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"content": "// Экран 2: Детали с Hero-элементом
+class DetailScreen extends StatelessWidget {
+const DetailScreen({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Детали товара')),
+body: SingleChildScrollView(
+child: Column(
+children: [
+Hero(
+tag: 'product-image-0',
+child: ClipRRect(
+borderRadius: BorderRadius.circular(16),
+child: Image.network(
+'https://picsum.photos/400/400?random=0',
+width: double.infinity,
+height: 300,
+fit: BoxFit.cover,
+),
+),
+),
+const SizedBox(height: 20),
+const Padding(
+padding: EdgeInsets.all(16),
+child: Column(
+crossAxisAlignment: CrossAxisAlignment.start,
+children: [
+Text('Название товара',
+style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+SizedBox(height: 8),
+Text('Описание товара...',
+style: TextStyle(fontSize: 16)),
+],
+),
+),
+],
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Ключевые требования Hero"},
+    {"text": "| Требование | Описание |", "type": "paragraph"},
+    {"text": "|------------|----------|", "type": "paragraph"},
+    {"text": "| <code>tag</code> | Уникальный идентификатор между двумя экранами |", "type": "paragraph"},
+    {"text": "| Один виджет | Hero должен быть на обоих экранах |", "type": "paragraph"},
+    {"text": "| Разные размеры | Hero автоматически анимирует размер |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Custom Hero Transitions"},
+    {"level": 3, "type": "heading", "text": "HeroFlightShuttleBuilder"},
+    {"content": "// Кастомный внешний вид во время анимации
+class CustomHeroScreen extends StatelessWidget {
+const CustomHeroScreen({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+body: Hero(
+tag: 'custom-hero',
+flightShuttleBuilder: (
+BuildContext flightContext,
+Animation<double> animation,
+HeroFlightDirection flightDirection,
+BuildContext fromHeroContext,
+BuildContext toHeroContext,
+) {
+// Определяем, летим ли мы от или к
+final isPop = flightDirection == HeroFlightDirection.pop;
+
+// Получаем размеры из контекста
+final fromSize = (fromHeroContext.widget as Container).constraints?.maxWidth ?? 200;
+final toSize = MediaQuery.of(context).size.width;
+
+return AnimatedBuilder(
+animation: animation,
+builder: (context, child) {
+return Transform.scale(
+scale: animation.value,
+child: Opacity(
+opacity: animation.value,
+child: (flightDirection == HeroFlightDirection.push)
+? toHeroContext.widget
+: fromHeroContext.widget,
+),
+);
+},
+);
+},
+child: Container(
+width: 200,
+height: 200,
+color: Colors.blue,
+child: const Center(
+child: Text('Hero', style: TextStyle(color: Colors.white)),
+),
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Hero createBoxShuttleBuilder"},
+    {"content": "// Альтернативный метод для создания анимированного контейнера
+flightShuttleBuilder: (
+flightContext,
+animation,
+flightDirection,
+fromHeroContext,
+toHeroContext,
+) {
+final isPop = flightDirection == HeroFlightDirection.pop;
+
+// Получаем цвета и размеры
+final fromBox = fromHeroContext.findRenderObject() as RenderBox;
+final toBox = toHeroContext.findRenderObject() as RenderBox;
+
+final fromSize = fromBox.size;
+final toSize = toBox.size;
+
+return HeroFlightShuttleBox(
+animation: animation,
+fromSize: fromSize,
+toSize: toSize,
+flightDirection: flightDirection,
+child: fromHeroContext.widget,
+);
+},", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Shared Axis Transitions"},
+    {"level": 3, "type": "heading", "text": "Hero с Material 3 Shared Axis"},
+    {"content": "// Использование SharedAxisTransition
+import 'package:flutter/material.dart';
+
+class SharedAxisHeroScreen extends StatelessWidget {
+const SharedAxisHeroScreen({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Shared Axis Hero')),
+body: Center(
+child: Hero(
+tag: 'shared-hero',
+transitionOnUserGestures: true, // Разрешить свайп назад
+child: Container(
+width: 150,
+height: 150,
+decoration: BoxDecoration(
+color: Colors.blue,
+borderRadius: BorderRadius.circular(16),
+),
+child: const Center(
+child: Text(
+'Hero',
+style: TextStyle(color: Colors.white, fontSize: 24),
+),
+),
+),
+),
+),
+floatingActionButton: FloatingActionButton(
+onPressed: () {
+Navigator.push(
+context,
+MaterialPageRoute(
+builder: (context) => const SharedAxisDetailScreen(),
+),
+);
+},
+child: const Icon(Icons.arrow_forward),
+),
+);
+}
+}
+
+class SharedAxisDetailScreen extends StatelessWidget {
+const SharedAxisDetailScreen({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Детали')),
+body: Center(
+child: Hero(
+tag: 'shared-hero',
+transitionOnUserGestures: true,
+child: Container(
+width: 300,
+height: 300,
+decoration: BoxDecoration(
+color: Colors.blue,
+borderRadius: BorderRadius.circular(24),
+),
+child: const Center(
+child: Text(
+'Hero',
+style: TextStyle(color: Colors.white, fontSize: 48),
+),
+),
+),
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Параметры Hero"},
+    {"text": "| Параметр | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>tag</code> | <code>Object</code> | Уникальный идентификатор |", "type": "paragraph"},
+    {"text": "| <code>flightShuttleBuilder</code> | <code>WidgetBuilder</code> | Кастомный shuttle |", "type": "paragraph"},
+    {"text": "| <code>builder</code> | <code>WidgetBuilder</code> | Кастомный builder |", "type": "paragraph"},
+    {"text": "| <code>transitionOnUserGestures</code> | <code>bool</code> | Разрешить свайп |", "type": "paragraph"},
+    {"text": "| <code>captureIn</code> | <code>Rect?</code> | Область захвата |", "type": "paragraph"},
+    {"text": "| <code>coverChild</code> | <code>Widget?</code> | Виджет-заглушка |", "type": "paragraph"},
+    {"text": "| <code>onEnd</code> | <code>VoidCallback?</code> | Callback по завершении |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Best Practices для Hero"},
+    {"items": ["<strong>Используйте уникальные <code>tag</code></strong> — без конфликтов между экранами", "<strong>Сохраняйте тип виджета</strong> — Hero должен быть того же типа на обоих экранах", "<strong>Используйте <code>ClipRRect</code></strong> для плавных скруглений", "<strong>Добавляйте <code>transitionOnUserGestures: true</code></strong> для свайпа назад", "<strong>Избегайте вложенных Hero</strong> — это может вызвать проблемы с производительностью", "<strong>Используйте <code>HeroFlightShuttleBox</code></strong> для простых кастомных анимаций"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Общие сценарии использования"},
+    {"text": "| Сценарий | Tag |", "type": "paragraph"},
+    {"text": "|----------|-----|", "type": "paragraph"},
+    {"text": "| Аватар пользователя | <code>avatar-${userId}</code> |", "type": "paragraph"},
+    {"text": "| Карточка товара | <code>product-${productId}</code> |", "type": "paragraph"},
+    {"text": "| Изображение галереи | <code>gallery-${imageId}</code> |", "type": "paragraph"},
+    {"text": "| Иконка кнопки | <code>fab-${action}</code> |", "type": "paragraph"},
+    {"text": "| Логотип | <code>app-logo</code> |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Лучшие практики"},
+    {"items": ["<strong>Используйте осмысленные <code>tag</code></strong> — например, <code>product-${product.id}</code>", "<strong>Проверяйте существование Hero</strong> на обоих экранах", "<strong>Используйте <code>ClipRRect</code></strong> для предотвращения артефактов", "<strong>Тестируйте на разных устройствах</strong> — размеры могут отличаться", "<strong>Не анимируйте слишком сложные виджеты</strong> — это может быть дорого"], "type": "ol"}
+  ]
+}

@@ -1,0 +1,310 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "14-08. Memory Management и утечки памяти"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Управление памятью — критически важная часть разработки Flutter-приложений. Утечки памяти могут привести к ухудшению производительности, падению приложения и плохому пользовательскому опыту.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Основы управления памятью"},
+    {"level": 3, "type": "heading", "text": "Garbage Collection в Dart"},
+    {"text": "Dart использует автоматический сборщик мусора (Garbage Collection):", "type": "paragraph"},
+    {"content": "┌─────────────────────────────────────────────┐
+│              Heap Memory                     │
+│                                              │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  │
+│  │ Object A │  │ Object B │  │ Object C │  │
+│  │ (active) │  │ (active) │  │ (unused) │  │
+│  └──────────┘  └──────────┘  └──────────┘  │
+│                                              │
+│  GC: Находит unused объекты и освобождает    │
+│  память                                      │
+└─────────────────────────────────────────────┘", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Типы памяти в Flutter"},
+    {"text": "| Тип | Описание |", "type": "paragraph"},
+    {"text": "|-----|----------|", "type": "paragraph"},
+    {"text": "| Heap | Динамическая память для объектов |", "type": "paragraph"},
+    {"text": "| Stack | Вызовы функций и локальные переменные |", "type": "paragraph"},
+    {"text": "| Native | Память, выделенная нативным кодом |", "type": "paragraph"},
+    {"text": "| GPU | Память графического процессора |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Причины утечек памяти"},
+    {"level": 3, "type": "heading", "text": "1. Неправильное управление контроллерами"},
+    {"content": "// Плохо — контроллер неDispose
+class BadExample extends StatefulWidget {
+@override
+State<BadExample> createState() => _BadExampleState();
+}
+
+class _BadExampleState extends State<BadExample> {
+late TextEditingController _controller;
+
+@override
+void initState() {
+super.initState();
+_controller = TextEditingController();
+// НЕТ dispose!
+}
+
+@override
+Widget build(BuildContext context) {
+return TextField(controller: _controller);
+}
+}
+
+// Хорошо — правильный dispose
+class GoodExample extends StatefulWidget {
+@override
+State<GoodExample> createState() => _GoodExampleState();
+}
+
+class _GoodExampleState extends State<GoodExample> {
+late TextEditingController _controller;
+
+@override
+void initState() {
+super.initState();
+_controller = TextEditingController();
+}
+
+@override
+void dispose() {
+_controller.dispose(); // Освобождает память
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return TextField(controller: _controller);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "2. Неподписки на Stream"},
+    {"content": "// Плохо — подписка не отменяется
+class BadStreamExample extends StatefulWidget {
+@override
+State<BadStreamExample> createState() => _BadStreamExampleState();
+}
+
+class _BadStreamExampleState extends State<BadStreamExample> {
+final StreamController<int> _controller = StreamController<int>();
+
+@override
+void initState() {
+super.initState();
+// Подписка остаётся даже после dispose
+_controller.stream.listen((value) {
+setState(() {});
+});
+}
+
+@override
+Widget build(BuildContext context) {
+return const Text('Bad Stream');
+}
+}
+
+// Хорошо — правильная отписка
+class GoodStreamExample extends StatefulWidget {
+@override
+State<GoodStreamExample> createState() => _GoodStreamExampleState();
+}
+
+class _GoodStreamExampleState extends State<GoodStreamExample> {
+late StreamSubscription<int> _subscription;
+final StreamController<int> _controller = StreamController<int>();
+
+@override
+void initState() {
+super.initState();
+_subscription = _controller.stream.listen((value) {
+setState(() {});
+});
+}
+
+@override
+void dispose() {
+_subscription.cancel(); // Отменяем подписку
+_controller.close();    // Закрываем контроллер
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return const Text('Good Stream');
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "3. Замыкания (Closures) и сильные ссылки"},
+    {"content": "// Плохо — замыкание удерживает ссылку на this
+class BadClosureExample extends StatefulWidget {
+@override
+State<BadClosureExample> createState() => _BadClosureExampleState();
+}
+
+class _BadClosureExampleState extends State<BadClosureExample> {
+Timer? _timer;
+
+@override
+void initState() {
+super.initState();
+// Замыкание удерживает ссылку на _BadClosureExampleState
+_timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+setState(() {});
+});
+}
+
+@override
+void dispose() {
+_timer?.cancel();
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return const Text('Bad Closure');
+}
+}
+
+// Хорошо — явное освобождение
+class GoodClosureExample extends StatefulWidget {
+@override
+State<GoodClosureExample> createState() => _GoodClosureExampleState();
+}
+
+class _GoodClosureExampleState extends State<GoodClosureExample> {
+Timer? _timer;
+
+@override
+void initState() {
+super.initState();
+_timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+if (mounted) {
+setState(() {});
+}
+});
+}
+
+@override
+void dispose() {
+_timer?.cancel();
+_timer = null; // Явно обнуляем
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return const Text('Good Closure');
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "4. Глобальные и статические ссылки"},
+    {"content": "// Плохо — глобальная ссылка удерживает объекты
+final List<Object> _globalCache = [];
+
+class GlobalReferenceExample extends StatefulWidget {
+@override
+State<GlobalReferenceExample> createState() =>
+_GlobalReferenceExampleState();
+}
+
+class _GlobalReferenceExampleState
+extends State<GlobalReferenceExample> {
+@override
+Widget build(BuildContext context) {
+// Добавляем в глобальный кэш, но никогда не удаляем
+_globalCache.add({'key': 'value', 'data': 'large data'});
+return const Text('Global Reference');
+}
+}
+
+// Хорошо — кэш с ограничением размера
+class BoundedCacheExample extends StatefulWidget {
+@override
+State<BoundedCacheExample> createState() => _BoundedCacheExampleState();
+}
+
+class _BoundedCacheExampleState extends State<BoundedCacheExample> {
+final Map<String, dynamic> _cache = {};
+static const int _maxSize = 100;
+
+void _addToCache(String key, dynamic value) {
+if (_cache.length >= _maxSize) {
+// Удаляем старый элемент
+final firstKey = _cache.keys.first;
+_cache.remove(firstKey);
+}
+_cache[key] = value;
+}
+
+@override
+Widget build(BuildContext context) {
+return const Text('Bounded Cache');
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Debugging Memory"},
+    {"level": 3, "type": "heading", "text": "DevTools Memory Tab"},
+    {"text": "DevTools предоставляет инструменты для анализа памяти:", "type": "paragraph"},
+    {"items": ["Откройте DevTools", "Перейдите во вкладку Memory", "Нажмите \"Take Heap Snapshot\"", "Сравните снимки для выявления утечек"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Heap Snapshot"},
+    {"content": "┌─────────────────────────────────────────────────────┐
+│  Heap Snapshot Analysis                              │
+│                                                      │
+│  Type              Count    Shallow    Retained      │
+│  String            1,234    45 KB       120 KB       │
+│  List              567      23 KB       89 KB        │
+│  Map               234      12 KB       45 KB        │
+│  _MyWidgetState    45       5 KB        23 KB        │
+│  TextEditingController 34   3 KB        15 KB        │
+│                                                      │
+│  Утечка: 34 TextEditingController без dispose         │
+└─────────────────────────────────────────────────────┘", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Profiling Memory в реальном времени"},
+    {"content": "import 'dart:developer' as developer;
+
+// Ручной вызов GC
+void triggerGC() {
+developer.postEvent('Flutter.GC', <String, String>{});
+}
+
+// Мониторинг памяти
+void logMemory() {
+final memory = developer.Service.getVM();
+debugPrint('Memory: ${memory.totalHeapSize} bytes');
+debugPrint('Used: ${memory.usedHeapSize} bytes');
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Использование debugDumpTree"},
+    {"content": "// Вывод дерева виджетов для анализа
+void debugWidgetTree() {
+debugDumpApp();          // Вывод всего приложения
+debugDumpLayerTree();    // Вывод графа слоёв
+debugDumpRenderTree();   // Вывод графа рендеринга
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Leak Tracker"},
+    {"content": "import 'package:leak_tracker/leak_tracker.dart';
+
+// Включение отслеживания утечек
+void main() {
+// Включение leak tracker
+debugLeakTrackingEnabled = true;
+
+runApp(const MyApp());
+}
+
+// При обнаружении утечки leak tracker выведет:
+// LEAK: TextEditingController was not disposed
+//   at: lib/main.dart:42:18
+//   leaked from: lib/main.dart:25:10", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "Рекомендации по управлению памятью"},
+    {"items": ["<strong>Всегда вызывайте <code>dispose()</code></strong> для контроллеров, подписок и ресурсов", "<strong>Используйте <code>mounted</code> проверку</strong> перед вызовом <code>setState()</code>", "<strong>Избегайте глобальных кэшей без ограничений</strong>", "<strong>Используйте DevTools Memory для анализа</strong>", "<strong>Регулярно вызывайте GC</strong> при тестировании", "<strong>Используйте <code>leak_tracker</code></strong> для обнаружения утечек"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Чек-лист проверки памяти"},
+    {"items": ["[ ] Все <code>TextEditingController</code> имеют <code>dispose()</code>", "[ ] Все <code>StreamSubscription</code> имеют <code>cancel()</code>", "[ ] Все <code>Timer</code> имеют <code>cancel()</code>", "[ ] Все <code>AnimationController</code> имеют <code>dispose()</code>", "[ ] Все <code>ScrollController</code> имеют <code>dispose()</code>", "[ ] Нет глобальных кэшей без ограничений", "[ ] DevTools Memory не показывает утечек", "[ ] Приложение стабильно при длительной работе"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Common Disposable Resources"},
+    {"text": "| Ресурс | Метод освобождения |", "type": "paragraph"},
+    {"text": "|--------|-------------------|", "type": "paragraph"},
+    {"text": "| <code>TextEditingController</code> | <code>dispose()</code> |", "type": "paragraph"},
+    {"text": "| <code>FocusNode</code> | <code>dispose()</code> |", "type": "paragraph"},
+    {"text": "| <code>AnimationController</code> | <code>dispose()</code> |", "type": "paragraph"},
+    {"text": "| <code>StreamSubscription</code> | <code>cancel()</code> |", "type": "paragraph"},
+    {"text": "| <code>Timer</code> | <code>cancel()</code> |", "type": "paragraph"},
+    {"text": "| <code>ScrollController</code> | <code>dispose()</code> |", "type": "paragraph"},
+    {"text": "| <code>TabController</code> | <code>dispose()</code> |", "type": "paragraph"},
+    {"text": "| <code>NavigatorObserver</code> | Ничего (не требует dispose) |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Управление памятью — это критически важная часть разработки Flutter-приложений. Правильное освобождение ресурсов, использование DevTools для анализа и соблюдение best practices позволяют создавать стабильные приложения без утечек памяти.", "type": "paragraph"}
+  ]
+}

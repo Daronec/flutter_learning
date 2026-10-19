@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "chapter-03",
+  "lessons": [
+    {
+      "id": "03-01-what-is-widget",
+      "slug": "what-is-widget",
+      "title": "3.1 Что такое Widget? Философия «всё — виджет»",
+      "order": 1,
+      "file": "content/03-01-what-is-widget.md",
+      "summary": "Widget — это неизменяемый описательный объект, который определяет часть UI и её поведение. В Flutter всё является виджетом: от текстовых надписей и кнопок до отступов, выравнивания и даже самого приложения.",
+      "tags": []
+    },
+    {
+      "id": "03-02-element-tree",
+      "slug": "element-tree",
+      "title": "3.2 Element и Tree — как работает widget-дерево",
+      "order": 2,
+      "file": "content/03-02-element-tree.md",
+      "summary": "Flutter использует три дерева для построения UI:",
+      "tags": []
+    },
+    {
+      "id": "03-03-stateless-vs-stateful",
+      "slug": "stateless-vs-stateful",
+      "title": "3.3 StatelessWidget vs StatefulWidget",
+      "order": 3,
+      "file": "content/03-03-stateless-vs-stateful.md",
+      "summary": "StatelessWidget — виджет без изменяемого состояния. Конфигурация виджета фиксирована после создания.",
+      "tags": []
+    },
+    {
+      "id": "03-04-lifecycle",
+      "slug": "lifecycle",
+      "title": "3.4 Жизненный цикл виджета (lifecycle)",
+      "order": 4,
+      "file": "content/03-04-lifecycle.md",
+      "summary": "Понимание жизненного цикла виджетов критически важно для:",
+      "tags": []
+    },
+    {
+      "id": "03-05-buildcontext",
+      "slug": "buildcontext",
+      "title": "3.5 Контекст (BuildContext) и его роль",
+      "order": 5,
+      "file": "content/03-05-buildcontext.md",
+      "summary": "BuildContext — это объект, представляющий позицию виджета в дереве виджетов. Технически, это ссылка на Element, который управляет виджетом.",
+      "tags": []
+    },
+    {
+      "id": "03-06-composition-vs-inheritance",
+      "slug": "composition-vs-inheritance",
+      "title": "3.6 Composition vs Inheritance — паттерн компоновки",
+      "order": 6,
+      "file": "content/03-06-composition-vs-inheritance.md",
+      "summary": "Flutter построен на паттерне Composition over Inheritance — вместо наследования виджетов, мы комбинируем (compose) существующие виджеты.",
+      "tags": []
+    },
+    {
+      "id": "03-07-custom-widgets",
+      "slug": "custom-widgets",
+      "title": "3.7 Кастомные виджеты: создание и переиспользование",
+      "order": 7,
+      "file": "content/03-07-custom-widgets.md",
+      "summary": "Создание кастомных виджетов — основа разработки в Flutter:",
+      "tags": []
+    },
+    {
+      "id": "03-08-keys",
+      "slug": "keys",
+      "title": "3.8 Key, ValueKey, UniqueKey — зачем нужны ключи",
+      "order": 8,
+      "file": "content/03-08-keys.md",
+      "summary": "Key — это идентификатор для виджетов, который помогает Flutter сопоставлять элементы при перестройке дерева.",
+      "tags": []
+    },
+    {
+      "id": "03-09-renderobject",
+      "slug": "renderobject",
+      "title": "3.9 RenderObject — связь между widget и пикселями",
+      "order": 9,
+      "file": "content/03-09-renderobject.md",
+      "summary": "RenderObject — это объект, который отвечает за layout (разметку) и painting (рисование) в Flutter. Это связующее звено между Widget (конфигурацией) и экраном (пикселями).",
+      "tags": []
+    }
+  ]
+}

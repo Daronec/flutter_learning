@@ -1,0 +1,40 @@
+﻿{
+    "files":  [
+                  {
+                      "name":  "01-01-what-is-flutter.md",
+                      "path":  "chapter-01/01-01-what-is-flutter.md",
+                      "size":  4502
+                  },
+                  {
+                      "name":  "01-02-architecture.md",
+                      "path":  "chapter-01/01-02-architecture.md",
+                      "size":  5777
+                  },
+                  {
+                      "name":  "01-03-dart-vs-flutter.md",
+                      "path":  "chapter-01/01-03-dart-vs-flutter.md",
+                      "size":  4034
+                  },
+                  {
+                      "name":  "01-04-installation.md",
+                      "path":  "chapter-01/01-04-installation.md",
+                      "size":  5559
+                  },
+                  {
+                      "name":  "01-05-project-structure.md",
+                      "path":  "chapter-01/01-05-project-structure.md",
+                      "size":  6119
+                  },
+                  {
+                      "name":  "01-06-first-run.md",
+                      "path":  "chapter-01/01-06-first-run.md",
+                      "size":  5184
+                  },
+                  {
+                      "name":  "01-07-hot-reload.md",
+                      "path":  "chapter-01/01-07-hot-reload.md",
+                      "size":  6537
+                  }
+              ],
+    "chapter":  "chapter-01"
+}

@@ -1,0 +1,223 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Выбор стратегии управления состоянием"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Один из самых сложных вопросов при разработке Flutter-приложений — выбор стратегии управления состоянием. Нет «лучшего» решения для всех случаев: каждый подход имеет свои преимущества и недостатки.", "type": "paragraph"},
+    {"content": "**Ключевая идея:** Выбор стратегии зависит от размера проекта, опыта команды и требований приложения.", "type": "blockquote"},
+    {"level": 2, "type": "heading", "text": "Сравнительная таблица"},
+    {"text": "| Характеристика | setState | Provider | Riverpod | BLoC | Redux | MobX |", "type": "paragraph"},
+    {"text": "|---|---|---|---|---|---|---|", "type": "paragraph"},
+    {"text": "| <strong>Сложность освоения</strong> | Очень низкая | Низкая | Средняя | Высокая | Высокая | Средняя |", "type": "paragraph"},
+    {"text": "| <strong>Шаблоны кода</strong> | Нет | Мало | Мало | Много | Много | Мало |", "type": "paragraph"},
+    {"text": "| <strong>Тестируемость</strong> | Низкая | Средняя | Высокая | Высокая | Высокая | Средняя |", "type": "paragraph"},
+    {"text": "| <strong>Производительность</strong> | Высокая | Высокая | Высокая | Средняя | Средняя | Высокая |", "type": "paragraph"},
+    {"text": "| <strong>Размер проекта</strong> | Малый | Средний | Средний/Большой | Большой | Большой | Средний/Большой |", "type": "paragraph"},
+    {"text": "| <strong>Зависимость от Flutter</strong> | Да | Да | Нет (можно тестировать) | Да | Нет | Нет |", "type": "paragraph"},
+    {"text": "| <strong>Обучающая кривая</strong> | Плоская | Пологая | Средняя | Крутая | Крутая | Средняя |", "type": "paragraph"},
+    {"text": "| <strong>Сообщество</strong> | Огромное | Большое | Растущее | Большое | Умеренное | Умеренное |", "type": "paragraph"},
+    {"text": "| <strong>DevTools</strong> | Встроенные | Встроенные | Встроенные | Встроенные | Встроенные | Встроенные |", "type": "paragraph"},
+    {"text": "| <strong>Типобезопасность</strong> | Да | Runtime | Compile-time | Да | Да | Runtime |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Дерево решений"},
+    {"content": "Нужно управлять состоянием?
+│
+├─ Нет → Используйте StatelessWidget
+│
+└─ Да
+│
+├─ Состояние нужно только в одном виджете?
+│   │
+│   ├─ Да → setState()
+│   │
+│   └─ Нет
+│       │
+│       ├─ Приложение маленькое (< 10 экранов)?
+│       │   │
+│       │   ├─ Да → Provider
+│       │   │
+│       │   └─ Нет
+│       │       │
+│       │       ├─ Команда знает Redux?
+│       │       │   │
+│       │       │   ├─ Да → Redux
+│       │       │   │
+│       │       │   └─ Нет
+│       │       │       │
+│       │       │       ├─ Нужна максимальная предсказуемость?
+│       │       │       │   │
+│       │       │       │   ├─ Да → BLoC
+│       │       │       │   │
+│       │       │       │   └─ Нет
+│       │       │       │       │
+│       │       │       │       ├─ Хотите современное решение?
+│       │       │       │       │   │
+│       │       │       │       │   ├─ Да → Riverpod
+│       │       │       │       │   │
+│       │       │       │       │   └─ Нет → Provider
+│       │       │       │       │
+│       │       │       │       └─ Хотите автоматическую реактивность?
+│       │       │       │           │
+│       │       │       │           └─ MobX", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Рекомендации по размеру проекта"},
+    {"level": 3, "type": "heading", "text": "Маленькие проекты (1-10 экранов)"},
+    {"text": "<strong>Рекомендация:</strong> <code>setState()</code> + <code>Provider</code>", "type": "paragraph"},
+    {"content": "// Пример: Простое приложение-счётчик
+void main() {
+runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+const MyApp({super.key});
+
+@override
+Widget build(BuildContext context) {
+return MaterialApp(
+home: CounterPage(),
+);
+}
+}
+
+class CounterPage extends StatefulWidget {
+const CounterPage({super.key});
+
+@override
+State<CounterPage> createState() => _CounterPageState();
+}
+
+class _CounterPageState extends State<CounterPage> {
+int _count = 0;
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+body: Center(child: Text('Счётчик: $_count')),
+floatingActionButton: FloatingActionButton(
+onPressed: () => setState(() => _count++),
+child: const Icon(Icons.add),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Средние проекты (10-50 экранов)"},
+    {"text": "<strong>Рекомендация:</strong> <code>Provider</code> или <code>Riverpod</code>", "type": "paragraph"},
+    {"content": "// Пример: Приложение с несколькими экранами
+void main() {
+runApp(
+MultiProvider(
+providers: [
+ChangeNotifierProvider(create: (_) => CounterModel()),
+ChangeNotifierProvider(create: (_) => UserModel()),
+],
+child: const MyApp(),
+),
+);
+}
+
+class MyApp extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return MaterialApp(
+home: HomePage(),
+);
+}
+}
+
+class HomePage extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+body: Center(
+child: Consumer<CounterModel>(
+builder: (context, counter, _) {
+return Text('Счётчик: ${counter.count}');
+},
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Большие проекты (50+ экранов)"},
+    {"text": "<strong>Рекомендация:</strong> <code>BLoC</code> или <code>Riverpod</code>", "type": "paragraph"},
+    {"content": "// Пример: BLoC для большого проекта
+void main() {
+runApp(
+MultiBlocProvider(
+providers: [
+BlocProvider(create: (_) => CounterBloc()),
+BlocProvider(create: (_) => AuthBloc()),
+BlocProvider(create: (_) => TodoBloc()),
+],
+child: const MyApp(),
+),
+);
+}
+
+class MyApp extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return MaterialApp(
+home: BlocBuilder<AuthBloc, AuthState>(
+builder: (context, state) {
+if (state is Authenticated) {
+return HomePage();
+}
+return LoginPage();
+},
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Рекомендации по типу приложения"},
+    {"level": 3, "type": "heading", "text": "CRUD-приложение"},
+    {"content": "Рекомендация: Provider или Riverpod
+
+Причина: Простое состояние, не нужна сложная архитектура", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Приложение с реальным временем (чаты, уведомления)"},
+    {"content": "Рекомендация: BLoC или Riverpod
+
+Причина: Хорошая обработка потоков данных", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Игра или анимационное приложение"},
+    {"content": "Рекомендация: setState() или MobX
+
+Причина: Высокая производительность, минимальные задержки", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Enterprise-приложение"},
+    {"content": "Рекомендация: BLoC или Redux
+
+Причина: Строгая архитектура, легко тестировать", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Практические примеры выбора"},
+    {"level": 3, "type": "heading", "text": "Пример 1: Приложение-список покупок"},
+    {"content": "Характеристики:
+- 5 экранов
+- Простое CRUD
+- Нет реального времени
+
+Выбор: Provider
+
+Причина: Простое решение для среднего проекта", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример 2: Социальная сеть"},
+    {"content": "Характеристики:
+- 30+ экранов
+- Реальное время (чат, уведомления)
+- Сложная бизнес-логика
+
+Выбор: BLoC
+
+Причина: Чёткое разделение ответственности, хорошая тестируемость", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример 3: Приложение для заметок"},
+    {"content": "Характеристики:
+- 10 экранов
+- Локальное хранение данных
+- Простая бизнес-логика
+
+Выбор: Riverpod
+
+Причина: Современное решение, хорошая производительность", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "✅ Делайте"},
+    {"items": ["Начинайте с простого решения", "Документируйте выбор архитектуры", "Используйте единую стратегию в проекте", "Тестируйте бизнес-логику отдельно от UI", "Рефакторите при необходимости"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "❌ Не делайте"},
+    {"items": ["Не выбирайте архитектуру «на вырост»", "Не смешивайте несколько стратегий", "Не усложняйте без необходимости", "Не игнорируйте производительность"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Выбор стратегии управления состоянием — это компромисс между простотой и масштабируемостью. Не существует идеального решения: каждый подход имеет свои преимущества и недостатки.", "type": "paragraph"},
+    {"content": "**Правило:** Начните с простого (setState → Provider) и усложняйте только при необходимости. Лучше иметь простое решение, которое работает, чем сложное, которое не нужно.", "type": "blockquote"}
+  ]
+}

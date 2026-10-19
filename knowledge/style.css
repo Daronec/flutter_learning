@@ -1,0 +1,244 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.7;
+    color: #1a1a2e;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 48px;
+}
+
+header h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.chapter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+}
+
+.chapter-card {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.chapter-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.2);
+}
+
+.chapter-number {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+}
+
+.chapter-card h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #16213e;
+    margin-bottom: 12px;
+}
+
+.chapter-card p {
+    color: #718096;
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+}
+
+.chapter-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #a0aec0;
+    font-size: 0.85rem;
+}
+
+.chapter-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.chapter-view-btn {
+    display: inline-block;
+    background: #edf2f7;
+    color: #667eea;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 12px;
+    transition: all 0.2s ease;
+}
+
+.chapter-card:hover .chapter-view-btn {
+    background: #667eea;
+    color: white;
+}
+
+/* Chapter view */
+.chapter-view {
+    display: none;
+}
+
+.chapter-view.active {
+    display: block;
+}
+
+.chapter-view-header {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 20px;
+    transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+    color: #764ba2;
+}
+
+.chapter-view-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #16213e;
+    margin-bottom: 8px;
+}
+
+.chapter-view-header p {
+    color: #718096;
+}
+
+.subchapter-list {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.subchapter-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 28px;
+    border-bottom: 1px solid #edf2f7;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+}
+
+.subchapter-item:last-child {
+    border-bottom: none;
+}
+
+.subchapter-item:hover {
+    background: #f7fafc;
+    padding-left: 36px;
+}
+
+.subchapter-num {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.subchapter-info {
+    flex: 1;
+}
+
+.subchapter-info h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 4px;
+}
+
+.subchapter-info span {
+    font-size: 0.85rem;
+    color: #a0aec0;
+}
+
+.subchapter-arrow {
+    color: #cbd5e0;
+    font-size: 1.2rem;
+    transition: all 0.2s ease;
+}
+
+.subchapter-item:hover .subchapter-arrow {
+    color: #667eea;
+    transform: translateX(4px);
+}
+
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .chapter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chapter-view-header h1 {
+        font-size: 1.5rem;
+    }
+}

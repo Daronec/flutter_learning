@@ -1,0 +1,55 @@
+﻿{
+    "files":  [
+                  {
+                      "name":  "02-01-syntax-basics.md",
+                      "path":  "chapter-02/02-01-syntax-basics.md",
+                      "size":  6197
+                  },
+                  {
+                      "name":  "02-02-functions.md",
+                      "path":  "chapter-02/02-02-functions.md",
+                      "size":  5374
+                  },
+                  {
+                      "name":  "02-03-classes-objects.md",
+                      "path":  "chapter-02/02-03-classes-objects.md",
+                      "size":  5753
+                  },
+                  {
+                      "name":  "02-04-mixins-interfaces.md",
+                      "path":  "chapter-02/02-04-mixins-interfaces.md",
+                      "size":  6105
+                  },
+                  {
+                      "name":  "02-05-generics.md",
+                      "path":  "chapter-02/02-05-generics.md",
+                      "size":  5676
+                  },
+                  {
+                      "name":  "02-06-async-await.md",
+                      "path":  "chapter-02/02-06-async-await.md",
+                      "size":  6156
+                  },
+                  {
+                      "name":  "02-07-collections.md",
+                      "path":  "chapter-02/02-07-collections.md",
+                      "size":  5618
+                  },
+                  {
+                      "name":  "02-08-extensions-operators.md",
+                      "path":  "chapter-02/02-08-extensions-operators.md",
+                      "size":  6172
+                  },
+                  {
+                      "name":  "02-09-exceptions.md",
+                      "path":  "chapter-02/02-09-exceptions.md",
+                      "size":  6985
+                  },
+                  {
+                      "name":  "02-10-packages-pubspec.md",
+                      "path":  "chapter-02/02-10-packages-pubspec.md",
+                      "size":  7559
+                  }
+              ],
+    "chapter":  "chapter-02"
+}

@@ -1,0 +1,353 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Positioned, Align, Center — абсолютное позиционирование"},
+    {"text": "Абсолютное позиционирование позволяет размещать виджеты в конкретных координатах относительно родительского контейнера. В Flutter для этого используются виджеты <code>Stack</code>, <code>Positioned</code>, <code>Align</code> и <code>Center</code>.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Stack — контейнер для наложения виджетов"},
+    {"text": "<code>Stack</code> — это родительский виджет, который размещает дочерние элементы поверх друг друга. Первый элемент находится внизу, последний — наверху.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Базовое использование"},
+    {"content": "Stack(
+children: [
+Container(
+width: 200,
+height: 200,
+color: Colors.blue,
+),
+Container(
+width: 100,
+height: 100,
+color: Colors.red,
+),
+Container(
+width: 50,
+height: 50,
+color: Colors.green,
+),
+],
+)
+// Синий внизу, красный посередине, зелёный сверху", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Positioned — абсолютное позиционирование"},
+    {"text": "<code>Positioned</code> размещает child в конкретных координатах относительно <code>Stack</code>:", "type": "paragraph"},
+    {"content": "Positioned({
+this.left,      // расстояние от левого края
+this.top,       // расстояние от верхнего края
+this.right,     // расстояние от правого края
+this.bottom,    // расстояние от нижнего края
+this.width,     // ширина child
+this.height,    // высота child
+required Widget child,
+})", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Правила использования Positioned"},
+    {"text": "| Правило | Описание |", "type": "paragraph"},
+    {"text": "|---------|----------|", "type": "paragraph"},
+    {"text": "| Можно задать <strong>left + top</strong> | Фиксирует позицию от левого верхнего угла |", "type": "paragraph"},
+    {"text": "| Можно задать <strong>left + right + width</strong> | Фиксирует горизонтальное положение и размер |", "type": "paragraph"},
+    {"text": "| Можно задать <strong>top + bottom + height</strong> | Фиксирует вертикальное положение и размер |", "type": "paragraph"},
+    {"text": "| Нельзя задать <strong>left + right</strong> без <strong>width</strong> | Flutter не может определить позицию |", "type": "paragraph"},
+    {"text": "| Нельзя задать <strong>top + bottom</strong> без <strong>height</strong> | Flutter не может определить позицию |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Примеры позиционирования"},
+    {"content": "Stack(
+children: [
+// Фоновый элемент
+Container(
+width: 300,
+height: 300,
+color: Colors.grey.shade300,
+),
+
+// Позиционирование от верхнего левого угла
+Positioned(
+left: 20,
+top: 20,
+child: Container(
+width: 80,
+height: 80,
+color: Colors.red,
+child: const Center(child: Text('LT')),
+),
+),
+
+// Позиционирование от верхнего правого угла
+Positioned(
+right: 20,
+top: 20,
+child: Container(
+width: 80,
+height: 80,
+color: Colors.green,
+child: const Center(child: Text('RT')),
+),
+),
+
+// Позиционирование от нижнего левого угла
+Positioned(
+left: 20,
+bottom: 20,
+child: Container(
+width: 80,
+height: 80,
+color: Colors.blue,
+child: const Center(child: Text('LB')),
+),
+),
+
+// Позиционирование от нижнего правого угла
+Positioned(
+right: 20,
+bottom: 20,
+child: Container(
+width: 80,
+height: 80,
+color: Colors.orange,
+child: const Center(child: Text('RB')),
+),
+),
+
+// Центрирование через Positioned
+Positioned(
+left: 110,  // (300 - 80) / 2
+top: 110,   // (300 - 80) / 2
+child: Container(
+width: 80,
+height: 80,
+color: Colors.purple,
+child: const Center(child: Text('C')),
+),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Позиционирование с width/height"},
+    {"content": "Stack(
+children: [
+Container(
+width: 300,
+height: 300,
+color: Colors.grey.shade300,
+),
+
+// Растягивание на всю ширину
+Positioned(
+top: 0,
+left: 0,
+right: 0,
+height: 50,
+child: Container(color: Colors.red),
+),
+
+// Растягивание на всю высоту
+Positioned(
+top: 0,
+right: 0,
+bottom: 0,
+width: 50,
+child: Container(color: Colors.blue),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Align — выравнивание внутри Stack"},
+    {"text": "<code>Align</code> размещает child в определённой позиции внутри Stack без явного задания координат:", "type": "paragraph"},
+    {"content": "Align({
+this.alignment = Alignment.center,  // позиция child внутри Stack
+this.widthFactor,                   // ширина = child.width × factor
+this.heightFactor,                  // высота = child.height × factor
+required Widget child,
+})", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Alignment — точки позиционирования"},
+    {"text": "| Значение | Описание | Координаты |", "type": "paragraph"},
+    {"text": "|----------|----------|------------|", "type": "paragraph"},
+    {"text": "| <code>topLeft</code> | Верхний левый угол | (-1, -1) |", "type": "paragraph"},
+    {"text": "| <code>topCenter</code> | Верхний центр | (0, -1) |", "type": "paragraph"},
+    {"text": "| <code>topRight</code> | Верхний правый угол | (1, -1) |", "type": "paragraph"},
+    {"text": "| <code>centerLeft</code> | Левый центр | (-1, 0) |", "type": "paragraph"},
+    {"text": "| <code>center</code> | Центр | (0, 0) |", "type": "paragraph"},
+    {"text": "| <code>centerRight</code> | Правый центр | (1, 0) |", "type": "paragraph"},
+    {"text": "| <code>bottomLeft</code> | Нижний левый угол | (-1, -1) |", "type": "paragraph"},
+    {"text": "| <code>bottomCenter</code> | Нижний центр | (0, 1) |", "type": "paragraph"},
+    {"text": "| <code>bottomRight</code> | Нижний правый угол | (1, 1) |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Примеры Align"},
+    {"content": "Stack(
+children: [
+Container(
+width: 300,
+height: 300,
+color: Colors.grey.shade300,
+),
+
+// По центру (по умолчанию)
+Align(
+alignment: Alignment.center,
+child: Container(
+width: 100,
+height: 100,
+color: Colors.red,
+child: const Center(child: Text('Center')),
+),
+),
+
+// Вверху слева
+Align(
+alignment: Alignment.topLeft,
+child: Container(
+width: 80,
+height: 80,
+color: Colors.green,
+child: const Center(child: Text('TL')),
+),
+),
+
+// Внизу справа
+Align(
+alignment: Alignment.bottomRight,
+child: Container(
+width: 80,
+height: 80,
+color: Colors.blue,
+child: const Center(child: Text('BR')),
+),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "WidthFactor и HeightFactor"},
+    {"content": "Stack(
+children: [
+Container(
+width: 300,
+height: 300,
+color: Colors.grey.shade300,
+),
+
+// Ширина = ширина child × 2
+Align(
+widthFactor: 2,
+child: Container(
+width: 50,
+height: 50,
+color: Colors.red,
+),
+),
+// Результат: контейнер шириной 100px, отцентрованный
+
+// Высота = высота child × 2
+Align(
+heightFactor: 2,
+child: Container(
+width: 50,
+height: 50,
+color: Colors.blue,
+),
+),
+// Результат: контейнер высотой 100px, отцентрованный
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Center — упрощённое центрирование"},
+    {"text": "<code>Center</code> — это частный случай <code>Align</code> с <code>alignment: Alignment.center</code>:", "type": "paragraph"},
+    {"content": "Center(
+child: Container(
+width: 100,
+height: 100,
+color: Colors.red,
+child: const Text('По центру'),
+),
+)
+// Эквивалентно:
+// Align(
+//   alignment: Alignment.center,
+//   child: Container(...),
+// )", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Stack + Positioned — реальные примеры"},
+    {"level": 3, "type": "heading", "text": "Бейдж с количеством"},
+    {"content": "Stack(
+clipBehavior: Clip.none,
+children: [
+Icon(Icons.notifications, size: 40, color: Colors.grey),
+Positioned(
+right: -5,
+top: -5,
+child: Container(
+padding: const EdgeInsets.all(4),
+decoration: const BoxDecoration(
+color: Colors.red,
+shape: BoxShape.circle,
+),
+constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+child: const Text(
+'3',
+style: TextStyle(
+color: Colors.white,
+fontSize: 10,
+fontWeight: FontWeight.bold,
+),
+textAlign: TextAlign.center,
+),
+),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Карточка с изображением и текстом поверх"},
+    {"content": "Stack(
+children: [
+// Изображение
+Image.asset(
+'assets/hero.jpg',
+width: 300,
+height: 200,
+fit: BoxFit.cover,
+),
+
+// Градиент снизу
+Positioned(
+left: 0,
+right: 0,
+bottom: 0,
+child: Container(
+height: 100,
+decoration: BoxDecoration(
+gradient: LinearGradient(
+begin: Alignment.topCenter,
+end: Alignment.bottomCenter,
+colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+),
+),
+),
+),
+
+// Текст поверх изображения
+Positioned(
+left: 16,
+right: 16,
+bottom: 16,
+child: Column(
+crossAxisAlignment: CrossAxisAlignment.start,
+children: const [
+Text(
+'Заголовок',
+style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+),
+SizedBox(height: 4),
+Text(
+'Описание',
+style: TextStyle(color: Colors.white70, fontSize: 14),
+),
+],
+),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Кнопка с иконкой"},
+    {"content": "Stack(
+alignment: Alignment.center,
+children: [
+Container(
+width: 100,
+height: 100,
+decoration: BoxDecoration(
+color: Colors.blue,
+shape: BoxShape.circle,
+),
+),
+const Icon(Icons.add, color: Colors.white, size: 30),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["Используйте <code>Stack</code> для наложения элементов друг на друга", "<code>Positioned</code> — для точного позиционирования с координатами", "<code>Align</code> — для выравнивания по точкам (углы, центр)", "<code>Center</code> — для простого центрирования", "<code>clipBehavior: Clip.none</code> — если child должен выходить за пределы Stack", "Используйте <code>widthFactor</code>/<code>heightFactor</code> в <code>Align</code> для масштабирования child", "Избегайте жёстких координат в <code>Positioned</code> — используйте <code>LayoutBuilder</code> для адаптивности", "Комбинируйте <code>Stack</code> с <code>Container</code> для создания сложных визуальных эффектов"], "type": "ul"}
+  ]
+}

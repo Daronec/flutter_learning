@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "chapter-06",
+  "lessons": [
+    {
+      "id": "06-01-what-is-state",
+      "slug": "what-is-state",
+      "title": "Что такое State? Локальное и глобальное состояние",
+      "order": 1,
+      "file": "content/06-01-what-is-state.md",
+      "summary": "В Flutter состояние (state) — это любая информация, которая может считываться при отображении виджета и которая может изменяться в течение жизни виджета. Понимание состояния является фундаментальным для разработки приложений на Flutter.",
+      "tags": []
+    },
+    {
+      "id": "06-02-setstate",
+      "slug": "setstate",
+      "title": "setState() — основы обновления состояния",
+      "order": 2,
+      "file": "content/06-02-setstate.md",
+      "summary": "setState() — это основной механизм обновления состояния в Flutter. Он является частью State-класса и сообщает фреймворку, что внутреннее состояние виджета изменилось, и его необходимо перестроить.",
+      "tags": []
+    },
+    {
+      "id": "06-03-provider",
+      "slug": "provider",
+      "title": "Provider — паттерн observer и наследование",
+      "order": 3,
+      "file": "content/06-03-provider.md",
+      "summary": "Provider — это обёртка над InheritedWidget, которая делает управление состоянием в Flutter простым и интуитивным. Это один из самых популярных пакетов для управления состоянием в экосистеме Flutter.",
+      "tags": []
+    },
+    {
+      "id": "06-04-changenotifier",
+      "slug": "changenotifier",
+      "title": "ChangeNotifier и Consumer",
+      "order": 4,
+      "file": "content/06-04-changenotifier.md",
+      "summary": "ChangeNotifier — это базовый класс из flutter/foundation.dart, который реализует паттерн Наблюдатель (Observer). Он позволяет виджетам подписываться на изменения данных и автоматически обновлять UI при их изменении.",
+      "tags": []
+    },
+    {
+      "id": "06-05-valuelistenablebuilder",
+      "slug": "valuelistenablebuilder",
+      "title": "ValueListenableBuilder и ListenableBuilder",
+      "order": 5,
+      "file": "content/06-05-valuelistenablebuilder.md",
+      "summary": "ValueListenableBuilder и ListenableBuilder — это виджеты-построители, которые позволяют реактивно обновлять UI при изменении данных. Они являются частью фреймворка Flutter и не требуют дополнительных пакетов.",
+      "tags": []
+    },
+    {
+      "id": "06-06-inheritedwidget",
+      "slug": "inheritedwidget",
+      "title": "InheritedWidget — механизм распространения данных",
+      "order": 6,
+      "file": "content/06-06-inheritedwidget.md",
+      "summary": "InheritedWidget — это фундаментальный механизм Flutter для распространения данных вниз по дереву виджетов. Он является основой для многих абстракций фреймворка, включая Theme, MediaQuery, Navigator и Provider.",
+      "tags": []
+    },
+    {
+      "id": "06-07-riverpod",
+      "slug": "riverpod",
+      "title": "ScopedModel и Riverpod — альтернативы Provider",
+      "order": 7,
+      "file": "content/06-07-riverpod.md",
+      "summary": "Помимо Provider, в экосистеме Flutter существуют другие популярные решения для управления состоянием. Riverpod — это наиболее современная альтернатива, разработанная тем же автором, что и Provider. ScopedModel — более старое решение, кот...",
+      "tags": []
+    },
+    {
+      "id": "06-08-bloc-pattern",
+      "slug": "bloc-pattern",
+      "title": "BLoC (Business Logic Component) — паттерн проектирования",
+      "order": 8,
+      "file": "content/06-08-bloc-pattern.md",
+      "summary": "BLoC (Business Logic Component) — это паттерн проектирования, который разделяет бизнес-логику и UI. Он основан на реактивном программировании и использует Streams для передачи данных между слоями приложения.",
+      "tags": []
+    },
+    {
+      "id": "06-09-streams-bloc",
+      "slug": "streams-bloc",
+      "title": "Streams и StreamController в BLoC",
+      "order": 9,
+      "file": "content/06-09-streams-bloc.md",
+      "summary": "Streams — это основа реактивного программирования в Dart. Они представляют собой последовательность асинхронных событий во времени. В BLoC паттерне Streams используются для передачи данных между слоями приложения.",
+      "tags": []
+    },
+    {
+      "id": "06-10-redux-mobx",
+      "slug": "redux-mobx",
+      "title": "Redux и MobX — альтернативные подходы",
+      "order": 10,
+      "file": "content/06-10-redux-mobx.md",
+      "summary": "Помимо Provider, Riverpod и BLoC, в Flutter существуют и другие подходы к управлению состоянием. Redux — это паттерн, заимствованный из мира JavaScript, а MobX — реактивная библиотека с автоматическим отслеживанием изменений.",
+      "tags": []
+    },
+    {
+      "id": "06-11-choosing-strategy",
+      "slug": "choosing-strategy",
+      "title": "Выбор стратегии управления состоянием",
+      "order": 11,
+      "file": "content/06-11-choosing-strategy.md",
+      "summary": "Один из самых сложных вопросов при разработке Flutter-приложений — выбор стратегии управления состоянием. Нет «лучшего» решения для всех случаев: каждый подход имеет свои преимущества и недостатки.",
+      "tags": []
+    }
+  ]
+}

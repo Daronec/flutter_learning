@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "chapter-08",
+  "lessons": [
+    {
+      "id": "08-01-form-formkey",
+      "slug": "form-formkey",
+      "title": "Form и FormKey — основы работы с формами",
+      "order": 1,
+      "file": "content/08-01-form-formkey.md",
+      "summary": "Form — это виджет-контейнер, который управляет набором полей ввода (FormField). Он предоставляет методы для валидации, сохранения и сброса данных формы.",
+      "tags": []
+    },
+    {
+      "id": "08-02-textfieldtypes",
+      "slug": "textfieldtypes",
+      "title": "TextFormField и типы полей ввода",
+      "order": 2,
+      "file": "content/08-02-textfieldtypes.md",
+      "summary": "TextFormField — это виджет для ввода текста, интегрированный с Form. Он поддерживает различные типы клавиатур, автозаполнение и форматирование ввода.",
+      "tags": []
+    },
+    {
+      "id": "08-03-validators",
+      "slug": "validators",
+      "title": "Валидаторы: встроенные и кастомные",
+      "order": 3,
+      "file": "content/08-03-validators.md",
+      "summary": "Валидация — это проверка корректности данных, введённых пользователем. Flutter предоставляет встроенные и кастомные валидаторы для различных сценариев.",
+      "tags": []
+    },
+    {
+      "id": "08-04-autovalidate",
+      "slug": "autovalidate",
+      "title": "AutovalidateMode — когда валидировать",
+      "order": 4,
+      "file": "content/08-04-autovalidate.md",
+      "summary": "AutovalidateMode определяет, когда форма должна автоматически запускать валидацию полей. Правильный выбор режима влияет на UX и производительность.",
+      "tags": []
+    },
+    {
+      "id": "08-05-input-formatting",
+      "slug": "input-formatting",
+      "title": "Форматирование и маски ввода",
+      "order": 5,
+      "file": "content/08-05-input-formatting.md",
+      "summary": "TextInputFormatter позволяет форматировать вводимый текст в реальном времени: добавлять разделители, ограничивать длину, фильтровать символы и применять маски ввода.",
+      "tags": []
+    },
+    {
+      "id": "08-06-datepicker-timepicker",
+      "slug": "datepicker-timepicker",
+      "title": "Работа с DatePicker и TimePicker",
+      "order": 6,
+      "file": "content/08-06-datepicker-timepicker.md",
+      "summary": "Flutter предоставляет встроенные виджеты для выбора даты и времени: showDatePicker и showTimePicker. Они адаптируются под платформу и поддерживают кастомизацию.",
+      "tags": []
+    },
+    {
+      "id": "08-07-form-submit",
+      "slug": "form-submit",
+      "title": "Отправка формы и обработка данных",
+      "order": 7,
+      "file": "content/08-07-form-submit.md",
+      "summary": "После валидации формы данные нужно собрать, обработать и отправить на сервер. Flutter предоставляет методы для сохранения, сброса и обработки данных формы.",
+      "tags": []
+    }
+  ]
+}

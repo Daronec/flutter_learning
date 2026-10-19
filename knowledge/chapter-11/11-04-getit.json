@@ -1,0 +1,195 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "GetIt — Сервис-локация в Flutter"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "GetIt — это простой и эффективный пакет для реализации паттерна Service Locator в Dart/Flutter. Позволяет регистрировать и получать зависимости по типу без создания сложных DI-фреймворков.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Установка"},
+    {"content": "dependencies:
+get_it: ^7.6.7", "language": "yaml", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Базовое использование"},
+    {"level": 3, "type": "heading", "text": "Регистрация зависимостей"},
+    {"content": "import 'package:get_it/get_it.dart';
+
+final getIt = GetIt.instance;
+
+void setup() {
+// Singleton — один экземпляр на всё приложение
+getIt.registerSingleton<ApiService>(ApiService());
+
+// Lazy Singleton — создаётся при первом запросе
+getIt.registerLazySingleton<StorageService>(() => StorageService());
+
+// Factory — новый экземпляр при каждом запросе
+getIt.registerFactory<ProductViewModel>(() => ProductViewModel(
+api: getIt<ApiService>(),
+storage: getIt<StorageService>(),
+));
+
+// Factory с параметрами
+getIt.registerFactoryParam<ChatViewModel, String, void>(
+(chatId, _) => ChatViewModel(chatId: chatId),
+);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Получение зависимостей"},
+    {"content": "// Получение singleton
+final apiService = getIt<ApiService>();
+
+// Получение factory
+final viewModel = getIt<ProductViewModel>();
+
+// Получение с параметрами
+final chatViewModel = getIt<ChatViewModel>('chat-123');", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Типы регистрации"},
+    {"level": 3, "type": "heading", "text": "Singleton"},
+    {"content": "// Один экземпляр, создаётся сразу
+getIt.registerSingleton<MyService>(MyService());
+
+// Проверка
+assert(getIt.isRegistered<MyService>());
+assert(getIt.isSingleton<MyService>());", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Lazy Singleton"},
+    {"content": "// Создаётся при первом запросе
+getIt.registerLazySingleton<MyService>(() => MyService());
+
+// Первый вызов создаёт экземпляр
+final service1 = getIt<MyService>();
+final service2 = getIt<MyService>();
+assert(service1 == service2); // Один и тот же объект", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Factory"},
+    {"content": "// Новый экземпляр каждый раз
+getIt.registerFactory<MyService>(() => MyService());
+
+final service1 = getIt<MyService>();
+final service2 = getIt<MyService>();
+assert(service1 != service2); // Разные объекты", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Singleton с фабрикой"},
+    {"content": "// Singleton, но создаётся через фабрику
+getIt.registerSingleton<MyService>(
+MyService.new, // или () => MyService()
+);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Пример полной настройки"},
+    {"content": "// di/app_get_it.dart
+import 'package:get_it/get_it.dart';
+import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+final getIt = GetIt.instance;
+
+Future<void> setupGetIt() async {
+// SharedPreferences (нужна инициализация)
+final prefs = await SharedPreferences.getInstance();
+getIt.registerSingleton<SharedPreferences>(prefs);
+
+// HTTP клиент
+getIt.registerLazySingleton<Dio>(() => Dio(BaseOptions(
+baseUrl: 'https://api.example.com',
+connectTimeout: const Duration(seconds: 5),
+receiveTimeout: const Duration(seconds: 3),
+)));
+
+// Сервисы
+getIt.registerLazySingleton<AuthService>(() => AuthService(
+dio: getIt<Dio>(),
+prefs: getIt<SharedPreferences>(),
+));
+
+getIt.registerLazySingleton<UserService>(() => UserService(
+dio: getIt<Dio>(),
+auth: getIt<AuthService>(),
+));
+
+// View Models — factory
+getIt.registerFactory<HomeViewModel>(() => HomeViewModel(
+userService: getIt<UserService>(),
+authService: getIt<AuthService>(),
+));
+
+getIt.registerFactory<SettingsViewModel>(() => SettingsViewModel(
+prefs: getIt<SharedPreferences>(),
+));
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Использование с BLoC"},
+    {"content": "// view_models/home_view_model.dart
+class HomeViewModel extends ChangeNotifier {
+final UserService _userService;
+final AuthService _authService;
+
+HomeViewModel({
+required UserService userService,
+required AuthService authService,
+})  : _userService = userService,
+_authService = authService;
+
+// Или через GetIt
+factory HomeViewModel.fromGetIt() {
+return HomeViewModel(
+userService: getIt<UserService>(),
+authService: getIt<AuthService>(),
+);
+}
+
+List<User> _users = [];
+bool _isLoading = false;
+
+List<User> get users => _users;
+bool get isLoading => _isLoading;
+
+Future<void> loadUsers() async {
+_isLoading = true;
+notifyListeners();
+
+try {
+_users = await _userService.getAllUsers();
+} catch (e) {
+// Обработка ошибки
+} finally {
+_isLoading = false;
+notifyListeners();
+}
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Переопределение для тестов"},
+    {"content": "// tests/home_view_model_test.dart
+import 'package:get_it/get_it.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+
+class MockUserService extends Mock implements UserService {}
+
+void main() {
+late MockUserService mockUserService;
+
+setUp(() {
+mockUserService = MockUserService();
+when(mockUserService.getAllUsers()).thenAnswer((_) async => []);
+
+// Переопределяем регистрацию для тестов
+GetIt.instance.registerSingleton<UserService>(mockUserService);
+});
+
+tearDown(() {
+GetIt.instance.reset();
+});
+
+test('HomeViewModel loads users', () async {
+final viewModel = HomeViewModel(
+userService: mockUserService,
+authService: getIt<AuthService>(),
+);
+
+await viewModel.loadUsers();
+expect(viewModel.users, isEmpty);
+verify(mockUserService.getAllUsers()).called(1);
+});
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение типов регистрации"},
+    {"text": "| Тип | Поведение | Когда использовать |", "type": "paragraph"},
+    {"text": "|-----|----------|-------------------|", "type": "paragraph"},
+    {"text": "| <code>registerSingleton</code> | Один экземпляр, создаётся сразу | Сервисы, клиенты |", "type": "paragraph"},
+    {"text": "| <code>registerLazySingleton</code> | Один экземпляр, ленивая инициализация | Тяжёлые объекты |", "type": "paragraph"},
+    {"text": "| <code>registerFactory</code> | Новый экземпляр каждый раз | ViewModels, Use Cases |", "type": "paragraph"},
+    {"text": "| <code>registerLazyFactory</code> | Новый экземпляр, ленивая инициализация | Редко используемые объекты |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Лучшие практики"},
+    {"items": ["<strong>Регистрируйте все зависимости в одном месте</strong>", "<strong>Используйте <code>registerLazySingleton</code> для тяжёлых объектов</strong>", "<strong>Используйте <code>registerFactory</code> для ViewModels</strong>", "<strong>Переопределяйте зависимости в тестах через <code>registerSingleton</code></strong>", "<strong>Вызывайте <code>reset()</code> при завершении тестов</strong>", "<strong>Не храните состояние в сервисах</strong> — они синглтоны"], "type": "ol"}
+  ]
+}

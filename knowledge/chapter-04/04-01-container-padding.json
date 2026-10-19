@@ -1,0 +1,170 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Container, Padding, SizedBox — отступы и размеры"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "В Flutter существует несколько виджетов для управления отступами и размерами элементов интерфейса. Понимание различий между ними — ключ к созданию чистого и предсказуемого кода.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Container"},
+    {"text": "<code>Container</code> — это универсальный комбинированный виджет, который объединяет несколько функций: позиционирование, декорирование, выравнивание и ограничение размеров.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные свойства Container"},
+    {"text": "| Свойство | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>alignment</code> | <code>AlignmentGeometry</code> | Выравнивание дочернего виджета |", "type": "paragraph"},
+    {"text": "| <code>padding</code> | <code>EdgeInsetsGeometry</code> | Внутренние отступы |", "type": "paragraph"},
+    {"text": "| <code>margin</code> | <code>EdgeInsetsGeometry</code> | Внешние отступы |", "type": "paragraph"},
+    {"text": "| <code>decoration</code> | <code>BoxDecoration</code> | Декор (фон, граница, тень, скругление) |", "type": "paragraph"},
+    {"text": "| <code>width</code> | <code>double?</code> | Фиксированная ширина |", "type": "paragraph"},
+    {"text": "| <code>height</code> | <code>double?</code> | Фиксированная высота |", "type": "paragraph"},
+    {"text": "| <code>constraints</code> | <code>BoxConstraints?</code> | Дополнительные ограничения размеров |", "type": "paragraph"},
+    {"text": "| <code>transform</code> | <code>Matrix4?</code> | Матрица трансформации |", "type": "paragraph"},
+    {"text": "| <code>color</code> | <code>Color?</code> | Цвет фона (альтернатива decoration) |", "type": "paragraph"},
+    {"text": "| <code>child</code> | <code>Widget?</code> | Вложенный виджет |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Пример использования Container"},
+    {"content": "Container(
+width: 200,
+height: 100,
+padding: const EdgeInsets.all(16),
+margin: const EdgeInsets.symmetric(horizontal: 8),
+decoration: BoxDecoration(
+color: Colors.blue,
+borderRadius: BorderRadius.circular(12),
+boxShadow: [
+BoxShadow(
+color: Colors.black.withOpacity(0.2),
+blurRadius: 8,
+offset: const Offset(0, 4),
+),
+],
+),
+alignment: Alignment.center,
+child: const Text(
+'Привет, Flutter!',
+style: TextStyle(color: Colors.white, fontSize: 18),
+),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Padding в Container"},
+    {"text": "<code>padding</code> в Container использует <code>EdgeInsetsGeometry</code>, который поддерживает разные типы:", "type": "paragraph"},
+    {"content": "// Равномерные отступы со всех сторон
+padding: const EdgeInsets.all(16)
+
+// Только горизонтальные и вертикальные
+padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8)
+
+// Индивидуальные отступы
+padding: const EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 24)
+
+// Отступы для логических сторон (учитывает RTL)
+padding: const EdgeInsetsDirectional.only(start: 16, end: 8)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Margin vs Padding"},
+    {"text": "| Характеристика | Padding | Margin |", "type": "paragraph"},
+    {"text": "|----------------|---------|--------|", "type": "paragraph"},
+    {"text": "| Расположение | Внутренние отступы | Внешние отступы |", "type": "paragraph"},
+    {"text": "| Фон виджета | Включает padding | Не включает margin |", "type": "paragraph"},
+    {"text": "| Клик-зона | Включает padding | Не включает padding |", "type": "paragraph"},
+    {"text": "| Декор | Распространяется на padding | Не распространяется |", "type": "paragraph"},
+    {"content": "// Margin не входит в область клика и декор
+Container(
+margin: const EdgeInsets.all(16),
+color: Colors.blue,
+child: const Text('Клик сюда'),
+)
+
+// Padding входит в область клика и декор
+Container(
+padding: const EdgeInsets.all(16),
+color: Colors.blue,
+child: const Text('Клик сюда'),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Constraints в Container"},
+    {"text": "<code>constraints</code> позволяет задать минимальные и максимальные размеры:", "type": "paragraph"},
+    {"content": "Container(
+constraints: const BoxConstraints(
+minWidth: 100,
+maxWidth: 300,
+minHeight: 50,
+maxHeight: 200,
+),
+child: const Text('Ограниченный размер'),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Padding"},
+    {"text": "Виджет <code>Padding</code> — это лёгкая обёртка, которая добавляет только отступы вокруг дочернего виджета. Используйте его, когда не нужны другие функции Container.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Пример использования Padding"},
+    {"content": "const Padding(
+padding: EdgeInsets.all(16),
+child: Text(
+'Текст с отступами',
+style: TextStyle(fontSize: 16),
+),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Почему не всегда Container?"},
+    {"content": "// ❌ Тяжёлый Container для одной задачи
+Container(
+padding: const EdgeInsets.all(8),
+child: const Text('Текст'),
+)
+
+// ✅ Лёгкий Padding — только то, что нужно
+const Padding(
+padding: EdgeInsets.all(8),
+child: Text('Текст'),
+)", "language": "dart", "type": "code"},
+    {"text": "<code>Padding</code> легче для рендеринга, так как не создаёт дополнительные объекты <code>RenderDecoratedBox</code> и <code>RenderConstrainedBox</code>.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "SizedBox"},
+    {"text": "<code>SizedBox</code> — виджет для задания фиксированных размеров или пустого пространства (gap).", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Фиксированный размер"},
+    {"content": "const SizedBox(
+width: 100,
+height: 50,
+child: Text('Фиксированный размер'),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пустое пространство (Gap)"},
+    {"content": "// Вертикальный отступ
+const SizedBox(height: 16)
+
+// Горизонтальный отступ
+const SizedBox(width: 8)
+
+// Квадратный отступ
+const SizedBox.square(dimension: 12)
+
+// Альтернатива: SizedBox.shrink() — нулевой размер
+SizedBox.shrink(child: someWidget) // Если someWidget == null, размер 0", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример: разделение элементов"},
+    {"content": "const Column(
+children: [
+Text('Заголовок'),
+SizedBox(height: 8),
+Text('Подзаголовок'),
+SizedBox(height: 16),
+Text('Основной текст'),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение виджетов"},
+    {"text": "| Виджет | Когда использовать |", "type": "paragraph"},
+    {"text": "|--------|-------------------|", "type": "paragraph"},
+    {"text": "| <code>Container</code> | Когда нужны декор, выравнивание, ограничения + отступы |", "type": "paragraph"},
+    {"text": "| <code>Padding</code> | Только для добавления отступов |", "type": "paragraph"},
+    {"text": "| <code>SizedBox</code> | Фиксированный размер или пустое пространство |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"content": "// ❌
+Padding(
+padding: const EdgeInsets.all(8),
+child: Padding(
+padding: const EdgeInsets.all(8),
+child: Text('Текст'),
+),
+)
+
+// ✅
+Padding(
+padding: const EdgeInsets.all(16),
+child: Text('Текст'),
+)", "language": "dart", "type": "code"},
+    {"content": "// Вместо EdgeInsets.only(top: 8, bottom: 8)
+const EdgeInsets.symmetric(vertical: 8)", "language": "dart", "type": "code"},
+    {"content": "Container(
+constraints: const BoxConstraints(maxWidth: 400),
+child: child,
+)", "language": "dart", "type": "code"},
+    {"items": ["<strong>Используйте <code>Padding</code> вместо <code>Container</code></strong> для простых отступов — это легче для рендеринга.", "<strong>Используйте <code>SizedBox</code></strong> для создания отступов между элементами — это более читаемо, чем <code>Container</code> с <code>height</code>/<code>width</code>.", "<strong>Не вкладывайте <code>Padding</code> в <code>Padding</code></strong> — объединяйте отступы в один виджет:", "<strong>Используйте <code>EdgeInsets.symmetric</code></strong> для повторяющихся паттернов отступов:", "<strong>Избегайте <code>Container</code> только для цвета</strong> — используйте <code>ColoredBox</code> или <code>DecoratedBox</code> как более лёгкие альтернативы.", "<strong>Используйте <code>BoxConstraints</code></strong> вместо <code>width</code>/<code>height</code> в <code>Container</code>, когда нужны гибкие ограничения:"], "type": "ol"}
+  ]
+}

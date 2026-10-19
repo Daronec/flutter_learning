@@ -1,0 +1,343 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "setState() — основы обновления состояния"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "<code>setState()</code> — это основной механизм обновления состояния в Flutter. Он является частью <code>State</code>-класса и сообщает фреймворку, что внутреннее состояние виджета изменилось, и его необходимо перестроить.", "type": "paragraph"},
+    {"content": "**Ключевая идея:** `setState()` не обновляет UI напрямую — он лишь планирует перестройку виджета.", "type": "blockquote"},
+    {"level": 2, "type": "heading", "text": "Как работает setState()"},
+    {"level": 3, "type": "heading", "text": "Цикл перестройки"},
+    {"content": "setState() вызван
+↓
+Flutter отмечает виджет как «нуждающийся в перестройке» (dirty)
+↓
+В конце текущего кадра фреймворк вызывает build()
+↓
+Виджет перестраивается с новыми данными
+↓
+UI обновлён", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Базовый пример"},
+    {"content": "import 'package:flutter/material.dart';
+
+class CounterPage extends StatefulWidget {
+const CounterPage({super.key});
+
+@override
+State<CounterPage> createState() => _CounterPageState();
+}
+
+class _CounterPageState extends State<CounterPage> {
+int _counter = 0;
+
+void _increment() {
+setState(() {
+_counter++;
+});
+}
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Пример setState')),
+body: Center(
+child: Text(
+'Счётчик: $_counter',
+style: Theme.of(context).textTheme.headlineLarge,
+),
+),
+floatingActionButton: FloatingActionButton(
+onPressed: _increment,
+child: const Icon(Icons.add),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Что именно делает setState()"},
+    {"items": ["<strong>Отмечает виджет как dirty</strong> — фреймворк помечает виджет, который нужно перестроить", "<strong>Планирует перестройку</strong> — перестройка происходит в конце текущего кадра", "<strong>Вызывает build()</strong> — виджет перестраивается с новыми данными", "<strong>Сравнивает дерево</strong> — фреймворк использует <code>Element</code> для сравнения старого и нового дерева"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Что НЕ делает setState()"},
+    {"items": ["❌ Не обновляет UI мгновенно", "❌ Не перестраивает всё приложение", "❌ Не перестраивает дочерние виджеты, если они не зависят от состояния", "❌ Не вызывает <code>initState()</code> или <code>dispose()</code>"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Типы перестройки"},
+    {"level": 3, "type": "heading", "text": "Полная перестройка"},
+    {"content": "// Перестраивается весь виджет и его дочерние виджеты
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+Text('Счётчик: $_counter'),
+Text('Дата: ${DateTime.now()}'), // Эта строка будет перестроена
+const Divider(),
+Text('Постоянный текст'), // Этот виджет тоже перестроится
+],
+);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Оптимизированная перестройка"},
+    {"content": "// Используем const для статических виджетов
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+Text('Счётчик: $_counter'),
+const Divider(), // const — не будет перестраиваться
+const Text('Постоянный текст'), // const — не будет перестраиваться
+],
+);
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Performance: что учитывать"},
+    {"level": 3, "type": "heading", "text": "Стоимость перестройки"},
+    {"content": "setState() вызван
+↓
+build() вызывается для этого виджета
+↓
+build() вызывается для ВСЕХ дочерних виджетов
+↓
+Каждый дочерний виджет вызывает свой build()
+↓
+ElementTree сравнивает старое и новое дерево
+↓
+Только изменённые RenderObjects обновляются", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Оптимизация перестройки"},
+    {"level": 4, "type": "heading", "text": "1. Используйте <code>const</code> конструкторы"},
+    {"content": "// ❌ Плохо — каждый раз создаётся новый виджет
+ListView(
+children: List.generate(100, (i) => ListTile(title: Text('Item $i'))),
+)
+
+// ✅ Хорошо — статические виджеты помечены как const
+ListView(
+children: List.generate(100, (i) {
+return ListTile(
+title: Text('Item $i'), // Динамический
+subtitle: const Text('Подзаголовок'), // Статический — const
+);
+}),
+)", "language": "dart", "type": "code"},
+    {"level": 4, "type": "heading", "text": "2. Выносите виджеты в отдельные классы"},
+    {"content": "// ❌ Плохо — виджет создаётся внутри build()
+class BadExample extends StatefulWidget {
+@override
+State<BadExample> createState() => _BadExampleState();
+}
+
+class _BadExampleState extends State<BadExample> {
+int _count = 0;
+
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+// Каждый раз создаётся новый класс
+_DynamicWidget(count: _count),
+ElevatedButton(
+onPressed: () => setState(() => _count++),
+child: const Text('Update'),
+),
+],
+);
+}
+}
+
+// ✅ Хорошо — отдельный класс виджета
+class GoodExample extends StatefulWidget {
+@override
+State<GoodExample> createState() => _GoodExampleState();
+}
+
+class _GoodExampleState extends State<GoodExample> {
+int _count = 0;
+
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+// Экземпляр создаётся один раз
+DynamicWidget(count: _count),
+ElevatedButton(
+onPressed: () => setState(() => _count++),
+child: const Text('Update'),
+),
+],
+);
+}
+}
+
+class DynamicWidget extends StatelessWidget {
+final int count;
+const DynamicWidget({super.key, required this.count});
+
+@override
+Widget build(BuildContext context) {
+return Text('Count: $count');
+}
+}", "language": "dart", "type": "code"},
+    {"level": 4, "type": "heading", "text": "3. Используйте <code>AutomaticKeepAliveClientMixin</code>"},
+    {"content": "class KeepAliveWidget extends StatefulWidget {
+const KeepAliveWidget({super.key});
+
+@override
+State<KeepAliveWidget> createState() => _KeepAliveWidgetState();
+}
+
+class _KeepAliveWidgetState extends State<KeepAliveWidget>
+with AutomaticKeepAliveClientMixin {
+@override
+bool get wantKeepAlive => true;
+
+@override
+Widget build(BuildContext context) {
+super.build(context); // Обязательно для AutomaticKeepAliveClientMixin
+return const Text('Сохраняет состояние при скрытии');
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Common Mistakes (Распространённые ошибки)"},
+    {"level": 3, "type": "heading", "text": "Ошибка 1: Вызов setState() после первого build()"},
+    {"content": "class BadExample extends StatefulWidget {
+@override
+State<BadExample> createState() => _BadExampleState();
+}
+
+class _BadExampleState extends State<BadExample> {
+@override
+void initState() {
+super.initState();
+// ❌ ОШИБКА! setState() нельзя вызывать до build()
+setState(() {
+_data = fetchData();
+});
+}
+
+@override
+Widget build(BuildContext context) {
+return Text(_data);
+}
+}
+
+// ✅ Правильно
+class GoodExample extends StatefulWidget {
+@override
+State<GoodExample> createState() => _GoodExampleState();
+}
+
+class _GoodExampleState extends State<GoodExample> {
+String? _data;
+
+@override
+void initState() {
+super.initState();
+// Используем Future, чтобы вызвать setState после build()
+fetchData().then((value) {
+if (mounted) {
+setState(() {
+_data = value;
+});
+}
+});
+}
+
+@override
+Widget build(BuildContext context) {
+return Text(_data ?? 'Загрузка...');
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Ошибка 2: Забыть проверить <code>mounted</code>"},
+    {"content": "// ❌ Плохо — setState может быть вызван после dispose()
+void _fetchData() async {
+final data = await fetchData();
+setState(() {
+_data = data;
+});
+}
+
+// ✅ Хорошо — проверяем mounted
+void _fetchData() async {
+final data = await fetchData();
+if (mounted) {
+setState(() {
+_data = data;
+});
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Ошибка 3: Изменение состояния без setState()"},
+    {"content": "// ❌ Плохо — setState не вызван, UI не обновится
+void _increment() {
+_counter++; // Изменение без setState
+}
+
+// ✅ Хорошо
+void _increment() {
+setState(() {
+_counter++;
+});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Ошибка 4: Изменение объектов, которые не влияют на UI"},
+    {"content": "// ❌ Плохо — setState вызывается, хотя UI не меняется
+void _doSomething() {
+setState(() {
+_logger.add('Action performed'); // Логгер не влияет на UI
+});
+}
+
+// ✅ Хорошо — только изменяем то, что влияет на UI
+void _doSomething() {
+_logger.add('Action performed'); // Без setState
+setState(() {
+_result = _computeResult(); // Только UI-зависимые данные
+});
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Асинхронный код и setState"},
+    {"level": 3, "type": "heading", "text": "Работа с Future"},
+    {"content": "class AsyncExample extends StatefulWidget {
+const AsyncExample({super.key});
+
+@override
+State<AsyncExample> createState() => _AsyncExampleState();
+}
+
+class _AsyncExampleState extends State<AsyncExample> {
+String? _data;
+bool _loading = false;
+String? _error;
+
+Future<void> _fetchData() async {
+setState(() {
+_loading = true;
+_error = null;
+});
+
+try {
+final data = await fetchData();
+if (mounted) {
+setState(() {
+_data = data;
+_loading = false;
+});
+}
+} catch (e) {
+if (mounted) {
+setState(() {
+_error = e.toString();
+_loading = false;
+});
+}
+}
+}
+
+@override
+Widget build(BuildContext context) {
+if (_loading) return const CircularProgressIndicator();
+if (_error != null) return Text('Ошибка: $_error');
+if (_data != null) return Text('Данные: $_data');
+return ElevatedButton(
+onPressed: _fetchData,
+child: const Text('Загрузить'),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "✅ Делайте"},
+    {"items": ["Вызывайте <code>setState()</code> только при необходимости", "Используйте <code>mounted</code> для асинхронных операций", "Делайте <code>build()</code> как можно проще", "Используйте <code>const</code> для статических виджетов", "Выносите сложные виджеты в отдельные классы"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "❌ Не делайте"},
+    {"items": ["Не вызывайте <code>setState()</code> в <code>initState()</code> синхронно", "Не выполняйте тяжёлые вычисления внутри <code>setState()</code>", "Не вызывайте <code>setState()</code> слишком часто", "Не держите в состоянии то, что можно вычислить"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "<code>setState()</code> — простой и эффективный механизм для управления локальным состоянием. Для простых сценариев его более чем достаточно. Однако для сложных приложений с множеством виджетов, разделяющих состояние, потребуется более продвинутые решения, такие как Provider, Riverpod или BLoC.", "type": "paragraph"},
+    {"content": "**Правило:** Используйте `setState()` для локального состояния в одном виджете. Для глобального состояния — выбирайте подходящий паттерн управления состоянием.", "type": "blockquote"}
+  ]
+}

@@ -1,0 +1,50 @@
+﻿{
+    "files":  [
+                  {
+                      "name":  "03-01-what-is-widget.md",
+                      "path":  "chapter-03/03-01-what-is-widget.md",
+                      "size":  5812
+                  },
+                  {
+                      "name":  "03-02-element-tree.md",
+                      "path":  "chapter-03/03-02-element-tree.md",
+                      "size":  5657
+                  },
+                  {
+                      "name":  "03-03-stateless-vs-stateful.md",
+                      "path":  "chapter-03/03-03-stateless-vs-stateful.md",
+                      "size":  6755
+                  },
+                  {
+                      "name":  "03-04-lifecycle.md",
+                      "path":  "chapter-03/03-04-lifecycle.md",
+                      "size":  7227
+                  },
+                  {
+                      "name":  "03-05-buildcontext.md",
+                      "path":  "chapter-03/03-05-buildcontext.md",
+                      "size":  6951
+                  },
+                  {
+                      "name":  "03-06-composition-vs-inheritance.md",
+                      "path":  "chapter-03/03-06-composition-vs-inheritance.md",
+                      "size":  8999
+                  },
+                  {
+                      "name":  "03-07-custom-widgets.md",
+                      "path":  "chapter-03/03-07-custom-widgets.md",
+                      "size":  7957
+                  },
+                  {
+                      "name":  "03-08-keys.md",
+                      "path":  "chapter-03/03-08-keys.md",
+                      "size":  8116
+                  },
+                  {
+                      "name":  "03-09-renderobject.md",
+                      "path":  "chapter-03/03-09-renderobject.md",
+                      "size":  7319
+                  }
+              ],
+    "chapter":  "chapter-03"
+}

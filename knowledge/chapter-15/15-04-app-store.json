@@ -1,0 +1,248 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Публикация в Apple App Store"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Apple App Store — официальный магазин приложений для iOS. Публикация требует аккаунта разработчика Apple, соблюдения строгих правил审核 и использования инструментов Xcode.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Подготовка аккаунта"},
+    {"level": 3, "type": "heading", "text": "Apple Developer Program"},
+    {"items": ["<strong>Регистрация</strong> — $99/год на <a href=\"https://developer.apple.com/program/\" target=\"_blank\">developer.apple.com</a>", "<strong>Аккаунт организации</strong> — требуется DUNS номер для корпоративных аккаунтов", "<strong>Вход в App Store Connect</strong> — https://appstoreconnect.apple.com"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Создание App ID"},
+    {"content": "Bundle ID формат: com.companyname.appname
+Пример: com.mycompany.weatherapp", "language": "", "type": "code"},
+    {"items": ["Перейдите в <strong>Certificates, Identifiers & Profiles</strong>", "Выберите <strong>Identifiers</strong> → <strong>+</strong>", "Выберите тип <strong>App IDs</strong>", "Укажите описание и Bundle ID", "Включите необходимые сервисы (Push Notifications, In-App Purchase и т.д.)"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Настройка Flutter проекта для iOS"},
+    {"level": 3, "type": "heading", "text": "Файл: <code>ios/Runner/Info.plist</code>"},
+    {"content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\"
+\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+<key>CFBundleDevelopmentRegion</key>
+<string>$(DEVELOPMENT_LANGUAGE)</string>
+<key>CFBundleDisplayName</key>
+<string>YourApp</string>
+<key>CFBundleExecutable</key>
+<string>$(EXECUTABLE_NAME)</string>
+<key>CFBundleIdentifier</key>
+<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+<key>CFBundleInfoDictionaryVersion</key>
+<string>6.0</string>
+<key>CFBundleName</key>
+<string>your_app</string>
+<key>CFBundlePackageType</key>
+<string>APPL</string>
+<key>CFBundleShortVersionString</key>
+<string>$(FLUTTER_BUILD_NAME)</string>
+<key>CFBundleVersion</key>
+<string>$(FLUTTER_BUILD_NUMBER)</string>
+<key>LSRequiresIPhoneOS</key>
+<true/>
+<key>UILaunchStoryboardName</key>
+<string>LaunchScreen</string>
+<key>UIMainStoryboardFile</key>
+<string>Main</string>
+<key>UISupportedInterfaceOrientations</key>
+<array>
+<string>UIInterfaceOrientationPortrait</string>
+<string>UIInterfaceOrientationLandscapeLeft</string>
+<string>UIInterfaceOrientationLandscapeRight</string>
+</array>
+<key>NSCameraUsageDescription</key>
+<string>Нужно для сканирования QR-кодов</string>
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Нужно для определения местоположения</string>
+</dict>
+</plist>", "language": "xml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Файл: <code>ios/Runner.xcodeproj/project.pbxproj</code>"},
+    {"content": "// Bundle version
+PRODUCT_BUNDLE_IDENTIFIER = com.mycompany.weatherapp;
+
+// Deployment target
+IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+
+// Code signing
+CODE_SIGN_STYLE = Automatic;
+DEVELOPMENT_TEAM = YOUR_TEAM_ID;", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Архивирование через Xcode"},
+    {"level": 3, "type": "heading", "text": "Ручное архивирование"},
+    {"items": ["Откройте проект в Xcode: <code>ios/Runner.xcworkspace</code>", "Выберите устройство <strong>Any iOS Device (arm64)</strong>", "Меню: <strong>Product → Archive</strong>", "После завершения откроется Organizer", "Нажмите <strong>Distribute App</strong>"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Распределение (Distribute App)"},
+    {"text": "<strong>Этапы распределения:</strong>", "type": "paragraph"},
+    {"content": "1. Выбор метода:
+├── App Store Connect (для публикации)
+├── Ad Hoc (для тестирования)
+├── Development (для разработки)
+└── Enterprise (для корпоративного использования)
+
+2. Проверка экспорта:
+└── Xcode автоматически проверит проблемы
+
+3. Загрузка:
+└── Xcode загрузит архив в App Store Connect", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Архивирование через командную строку"},
+    {"content": "# Установка Flutter и настройка
+flutter build ios --release --no-codesign
+
+# Архивирование через xcodebuild
+xcodebuild archive \\\\
+-workspace ios/Runner.xcworkspace \\\\
+-scheme Runner \\\\
+-configuration Release \\\\
+-sdk iphoneos \\\\
+-archivePath build/Runner.xcarchive \\\\
+ONLY_ACTIVE_ARCH=NO
+
+# Экспорт для App Store
+xcodebuild -exportArchive \\\\
+-archivePath build/Runner.xcarchive \\\\
+-exportPath build/ipa \\\\
+-exportOptionsPlist ios/exportOptions.plist
+
+# Загрузка в App Store через altool
+xcrun altool --upload-app \\\\
+-f build/ipa/YourApp.ipa \\\\
+-t ios \\\\
+--apiKey YOUR_API_KEY \\\\
+--apiIssuer YOUR_ISSUER_ID", "language": "bash", "type": "code"},
+    {"text": "<strong>Файл: <code>ios/exportOptions.plist</code></strong>", "type": "paragraph"},
+    {"content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\"
+\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+<key>method</key>
+<string>app-store</string>
+<key>uploadBitcode</key>
+<false/>
+<key>uploadSymbols</key>
+<true/>
+<key>compileBitcode</key>
+<false/>
+<key>teamID</key>
+<string>YOUR_TEAM_ID</string>
+<key>provisioningProfiles</key>
+<dict>
+<key>com.mycompany.weatherapp</key>
+<string>com.mycompany.weatherapp</string>
+</dict>
+</dict>
+</plist>", "language": "xml", "type": "code"},
+    {"level": 2, "type": "heading", "text": "App Store Connect — настройка релиза"},
+    {"level": 3, "type": "heading", "text": "Создание версии релиза"},
+    {"items": ["Откройте приложение в App Store Connect", "Перейдите в <strong>App Store</strong> вкладку", "Выберите <strong>iOS App</strong>", "Нажмите <strong>+ Версия</strong> для создания новой версии"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Метаданные приложения"},
+    {"text": "| Поле | Описание |", "type": "paragraph"},
+    {"text": "|------|----------|", "type": "paragraph"},
+    {"text": "| Название | До 30 символов |", "type": "paragraph"},
+    {"text": "| Подзаголовок | До 30 символов |", "type": "paragraph"},
+    {"text": "| Описание | До 4000 символов |", "type": "paragraph"},
+    {"text": "| Ключевые слова | До 100 символов (без запятых) |", "type": "paragraph"},
+    {"text": "| Категория | Основная и дополнительная |", "type": "paragraph"},
+    {"text": "| Возрастной рейтинг | Определяется автоматически или вручную |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Скриншоты для App Store"},
+    {"text": "| Устройство | Размер | Минимум |", "type": "paragraph"},
+    {"text": "|------------|--------|---------|", "type": "paragraph"},
+    {"text": "| iPhone 6.7\" | 1290×2796 px | 1 |", "type": "paragraph"},
+    {"text": "| iPhone 6.5\" | 1242×2208 px | 1 |", "type": "paragraph"},
+    {"text": "| iPhone 5.5\" | 1242×2208 px | 1 |", "type": "paragraph"},
+    {"text": "| iPad 12.9\" | 2048×2732 px | 1 |", "type": "paragraph"},
+    {"text": "| iPad 10.9\" | 1640×2360 px | 1 |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Настройка прайсинга и доступности"},
+    {"content": "Доступность:
+├── Выберите страны/регионы
+├── Установите прайс-лист (бесплатно / платно)
+├── Укажите возрастную классификацию
+└── Настройте подписки (если есть)
+
+Субтитры:
+├── До 10 языков для описания
+└── До 45 символов на подзаголовок", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Процесс审核 (Review)"},
+    {"level": 3, "type": "heading", "text": "Типы审核"},
+    {"text": "| Тип | Время审核 | Описание |", "type": "paragraph"},
+    {"text": "|-----|-----------|----------|", "type": "paragraph"},
+    {"text": "| Standard | 24–48 часов | Стандартный审核 |", "type": "paragraph"},
+    {"text": "| Priority | Несколько часов | Для критических исправлений |", "type": "paragraph"},
+    {"text": "| App Preview | 24–48 часов | Включает видео и screenshots |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Частые причины отклонения"},
+    {"items": ["<strong>Баги и крэши</strong> — приложение должно быть стабильным", "<strong>Неполная информация</strong> — заполните все поля", "<strong>Нарушение гайдлайнов</strong> — изучите Human Interface Guidelines", "<strong>Проблемы с учётной записью</strong> — обновите информацию", "<strong>Внешние ссылки</strong> — не должны вести на другие магазины"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Ответ на审核"},
+    {"content": "Если审核 получил замечания:
+1. Исправьте указанные проблемы
+2. Обновите build в App Store Connect
+3. Ответьте на каждый пункт审核
+4. Отправьте на повторный审核", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Автоматизация с Fastlane"},
+    {"level": 3, "type": "heading", "text": "Файл: <code>Fastfile</code>"},
+    {"content": "default_platform(:ios)
+
+platform :ios do
+desc \"Submit a new build to App Store Connect\"
+lane :release do
+# Сборка проекта
+flutter_build(
+target: \"lib/main.dart\",
+release: true,
+build_name: \"1.0.0\",
+build_number: \"1\"
+)
+
+# Архивирование
+archive(
+workspace: \"ios/Runner.xcworkspace\",
+scheme: \"Runner\",
+configuration: \"Release\",
+export_options: {
+method: \"app-store\",
+uploadSymbols: true
+}
+)
+
+# Загрузка в App Store Connect
+upload_to_app_store(
+skip_metadata: false,
+skip_screenshots: true,
+force: true
+)
+
+# Отправка на审核
+submit_to_app_store(
+force: true
+)
+end
+
+desc \"Build and upload TestFlight build\"
+lane :beta do
+flutter_build(
+target: \"lib/main.dart\",
+release: true
+)
+
+build_app(
+workspace: \"ios/Runner.xcworkspace\",
+scheme: \"Runner\",
+configuration: \"Release\",
+export_options: {
+method: \"app-store\",
+uploadSymbols: true
+}
+)
+
+upload_to_testflight(
+skip_waiting_for_build_size: true
+)
+end
+end", "language": "ruby", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Запуск Fastlane"},
+    {"content": "# Установка
+bundle install
+
+# Релиз в App Store
+bundle exec fastlane release
+
+# Бета-версия в TestFlight
+bundle exec fastlane beta", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Используйте Xcode Archive</strong> — это надёжный способ подготовки", "<strong>Тестируйте в TestFlight</strong> перед отправкой на审核", "<strong>Подготавливайте метаданные заранее</strong> — это ускоря审核", "<strong>Следите за гайдлайнами</strong> — правила审核 регулярно обновляются", "<strong>Используйте Fastlane</strong> для автоматизации релизов", "<strong>Мониторьте отзывы и рейтинги</strong> после публикации"], "type": "ul"}
+  ]
+}

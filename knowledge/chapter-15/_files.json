@@ -1,0 +1,55 @@
+﻿{
+    "files":  [
+                  {
+                      "name":  "15-01-apk-aab.md",
+                      "path":  "chapter-15/15-01-apk-aab.md",
+                      "size":  8542
+                  },
+                  {
+                      "name":  "15-02-code-signing.md",
+                      "path":  "chapter-15/15-02-code-signing.md",
+                      "size":  8757
+                  },
+                  {
+                      "name":  "15-03-google-play.md",
+                      "path":  "chapter-15/15-03-google-play.md",
+                      "size":  6785
+                  },
+                  {
+                      "name":  "15-04-app-store.md",
+                      "path":  "chapter-15/15-04-app-store.md",
+                      "size":  10445
+                  },
+                  {
+                      "name":  "15-05-flutter-web.md",
+                      "path":  "chapter-15/15-05-flutter-web.md",
+                      "size":  8658
+                  },
+                  {
+                      "name":  "15-06-flutter-desktop.md",
+                      "path":  "chapter-15/15-06-flutter-desktop.md",
+                      "size":  8087
+                  },
+                  {
+                      "name":  "15-07-firebase-distribution.md",
+                      "path":  "chapter-15/15-07-firebase-distribution.md",
+                      "size":  9887
+                  },
+                  {
+                      "name":  "15-08-versioning.md",
+                      "path":  "chapter-15/15-08-versioning.md",
+                      "size":  10216
+                  },
+                  {
+                      "name":  "15-09-crash-reporting.md",
+                      "path":  "chapter-15/15-09-crash-reporting.md",
+                      "size":  10044
+                  },
+                  {
+                      "name":  "15-10-analytics.md",
+                      "path":  "chapter-15/15-10-analytics.md",
+                      "size":  11997
+                  }
+              ],
+    "chapter":  "chapter-15"
+}

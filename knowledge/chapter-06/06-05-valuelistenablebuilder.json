@@ -1,0 +1,336 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "ValueListenableBuilder и ListenableBuilder"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "<code>ValueListenableBuilder</code> и <code>ListenableBuilder</code> — это виджеты-построители, которые позволяют реактивно обновлять UI при изменении данных. Они являются частью фреймворка Flutter и не требуют дополнительных пакетов.", "type": "paragraph"},
+    {"content": "**Ключевая идея:** Эти виджеты автоматически подписываются на изменения и перестраиваются только при их возникновении.", "type": "blockquote"},
+    {"level": 2, "type": "heading", "text": "ValueListenableBuilder"},
+    {"level": 3, "type": "heading", "text": "Основы"},
+    {"text": "<code>ValueListenableBuilder</code> перестраивается, когда связанный <code>ValueListenable</code>发出 уведомление. Он идеален для одиночных значений.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Базовый синтаксис"},
+    {"content": "ValueListenableBuilder<T>(
+valueListenable: myNotifier,
+builder: (context, value, child) {
+return Text('Значение: $value');
+},
+child: child, // Опциональный дочерний виджет
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример: ValueNotifier"},
+    {"content": "import 'package:flutter/material.dart';
+
+class ValueNotifierExample extends StatefulWidget {
+const ValueNotifierExample({super.key});
+
+@override
+State<ValueNotifierExample> createState() => _ValueNotifierExampleState();
+}
+
+class _ValueNotifierExampleState extends State<ValueNotifierExample> {
+// ValueNotifier — простой способ хранения одного значения
+final ValueNotifier<int> _counter = ValueNotifier<int>(0);
+
+@override
+void dispose() {
+_counter.dispose(); // Обязательно освобождаем ресурсы
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('ValueNotifier Example')),
+body: Center(
+child: ValueListenableBuilder<int>(
+valueListenable: _counter,
+builder: (context, count, child) {
+return Column(
+mainAxisSize: MainAxisSize.min,
+children: [
+Text(
+'Счётчик: $count',
+style: Theme.of(context).textTheme.headlineLarge,
+),
+const SizedBox(height: 16),
+child!, // Статический дочерний виджет
+],
+);
+},
+child: const Divider(height: 32),
+),
+),
+floatingActionButton: FloatingActionButton(
+onPressed: () => _counter.value++,
+child: const Icon(Icons.add),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример: TextField с ValueNotifier"},
+    {"content": "class SearchExample extends StatefulWidget {
+const SearchExample({super.key});
+
+@override
+State<SearchExample> createState() => _SearchExampleState();
+}
+
+class _SearchExampleState extends State<SearchExample> {
+final TextEditingController _controller = TextEditingController();
+final ValueNotifier<String> _searchQuery = ValueNotifier<String>('');
+
+@override
+void dispose() {
+_controller.dispose();
+_searchQuery.dispose();
+super.dispose();
+}
+
+void _onSearchChanged(String value) {
+_searchQuery.value = value;
+}
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Поиск')),
+body: Column(
+children: [
+TextField(
+controller: _controller,
+onChanged: _onSearchChanged,
+decoration: const InputDecoration(
+hintText: 'Введите запрос...',
+prefixIcon: Icon(Icons.search),
+),
+),
+const Divider(height: 1),
+// Фильтрованный список
+Expanded(
+child: ValueListenableBuilder<String>(
+valueListenable: _searchQuery,
+builder: (context, query, child) {
+final filtered = allItems.where((item) {
+return item.toLowerCase().contains(query.toLowerCase());
+}).toList();
+
+if (filtered.isEmpty) {
+return const Center(child: Text('Ничего не найдено'));
+}
+
+return ListView.builder(
+itemCount: filtered.length,
+itemBuilder: (context, index) {
+return ListTile(title: Text(filtered[index]));
+},
+);
+},
+),
+),
+],
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример: ValueListenableBuilder с анимацией"},
+    {"content": "class AnimatedSliderExample extends StatefulWidget {
+const AnimatedSliderExample({super.key});
+
+@override
+State<AnimatedSliderExample> createState() => _AnimatedSliderExampleState();
+}
+
+class _AnimatedSliderExampleState extends State<AnimatedSliderExample> {
+final ValueNotifier<double> _opacity = ValueNotifier<double>(1.0);
+
+@override
+void dispose() {
+_opacity.dispose();
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Анимация')),
+body: Center(
+child: Column(
+mainAxisSize: MainAxisSize.min,
+children: [
+ValueListenableBuilder<double>(
+valueListenable: _opacity,
+builder: (context, opacity, child) {
+return AnimatedOpacity(
+opacity: opacity,
+duration: const Duration(milliseconds: 300),
+child: const Text(
+'Привет, мир!',
+style: TextStyle(fontSize: 48),
+),
+);
+},
+),
+const SizedBox(height: 24),
+Slider(
+value: _opacity.value,
+onChanged: (value) => _opacity.value = value,
+),
+],
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "ListenableBuilder"},
+    {"level": 3, "type": "heading", "text": "Основы"},
+    {"text": "<code>ListenableBuilder</code> работает с любым <code>Listenable</code> (включая <code>ChangeNotifier</code>, <code>ValueNotifier</code>, <code>Animation</code>, <code>Stream</code>). Он более универсален, чем <code>ValueListenableBuilder</code>.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Базовый синтаксис"},
+    {"content": "ListenableBuilder(
+listenable: myListenable,
+builder: (context, child) {
+return Text('Обновлено');
+},
+child: child,
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример: ListenableBuilder с ChangeNotifier"},
+    {"content": "class ListenableBuilderExample extends StatelessWidget {
+final CounterModel _model = CounterModel();
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('ListenableBuilder Example')),
+body: Center(
+child: ListenableBuilder(
+listenable: _model,
+builder: (context, child) {
+return Column(
+mainAxisSize: MainAxisSize.min,
+children: [
+Text(
+'Счётчик: ${_model.count}',
+style: Theme.of(context).textTheme.headlineLarge,
+),
+const SizedBox(height: 16),
+child!,
+],
+);
+},
+child: const Divider(height: 32),
+),
+),
+floatingActionButton: FloatingActionButton(
+onPressed: () => _model.increment(),
+child: const Icon(Icons.add),
+),
+);
+}
+}
+
+class CounterModel with ChangeNotifier {
+int _count = 0;
+int get count => _count;
+
+void increment() {
+_count++;
+notifyListeners();
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример: ListenableBuilder с Animation"},
+    {"content": "class AnimationBuilderExample extends StatefulWidget {
+const AnimationBuilderExample({super.key});
+
+@override
+State<AnimationBuilderExample> createState() =>
+_AnimationBuilderExampleState();
+}
+
+class _AnimationBuilderExampleState
+extends State<AnimationBuilderExample>
+with SingleTickerProviderStateMixin {
+late AnimationController _controller;
+late Animation<double> _animation;
+
+@override
+void initState() {
+super.initState();
+_controller = AnimationController(
+vsync: this,
+duration: const Duration(seconds: 2),
+);
+_animation = CurvedAnimation(
+parent: _controller,
+curve: Curves.easeInOut,
+);
+_controller.forward();
+}
+
+@override
+void dispose() {
+_controller.dispose();
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Animation Builder')),
+body: Center(
+child: ListenableBuilder(
+listenable: _animation,
+builder: (context, child) {
+return Transform.scale(
+scale: _animation.value,
+child: const Text(
+'Анимация!',
+style: TextStyle(fontSize: 48),
+),
+);
+},
+),
+),
+floatingActionButton: FloatingActionButton(
+onPressed: () => _controller.reverse(),
+child: const Icon(Icons.replay),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение ValueListenableBuilder и ListenableBuilder"},
+    {"text": "| Характеристика | ValueListenableBuilder | ListenableBuilder |", "type": "paragraph"},
+    {"text": "|---|---|---|", "type": "paragraph"},
+    {"text": "| <strong>Тип данных</strong> | Одно значение | Любой Listenable |", "type": "paragraph"},
+    {"text": "| <strong>Доступ к значению</strong> | <code>value</code> в builder | Только через listenable |", "type": "paragraph"},
+    {"text": "| <strong>Производительность</strong> | Оптимизирован для одного значения | Более общий |", "type": "paragraph"},
+    {"text": "| <strong>Синтаксис</strong> | <code>builder: (ctx, value, child)</code> | <code>builder: (ctx, child)</code> |", "type": "paragraph"},
+    {"text": "| <strong>Идеально для</strong> | ValueNotifier, TextEditingController | Animation, ChangeNotifier |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Когда использовать каждый"},
+    {"level": 3, "type": "heading", "text": "Используйте ValueListenableBuilder, когда:"},
+    {"content": "// Идеально для ValueNotifier
+ValueListenableBuilder<String>(
+valueListenable: _searchQuery,
+builder: (context, query, child) {
+return Text('Вы ищете: $query');
+},
+)", "language": "dart", "type": "code"},
+    {"items": ["Нужно отслеживать одно конкретное значение", "Значение меняется часто (например, ввод текста)", "Значение нужно передать в builder напрямую"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Используйте ListenableBuilder, когда:"},
+    {"content": "// Идеально для Animation
+ListenableBuilder(
+listenable: _animation,
+builder: (context, child) {
+return Transform.scale(
+scale: _animation.value,
+child: child,
+);
+},
+)", "language": "dart", "type": "code"},
+    {"items": ["Нужно отслеживать Animation", "Нужно отслеживать ChangeNotifier без доступа к значениям", "Нужно отслеживать несколько Listenable одновременно"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "✅ Делайте"},
+    {"items": ["Вызывайте <code>dispose()</code> для всех ValueNotifier и Listenable", "Используйте <code>child</code> параметр для статических виджетов", "Используйте <code>ValueListenableBuilder</code> для одиночных значений", "Используйте <code>ListenableBuilder</code> для анимаций и ChangeNotifier"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "❌ Не делайте"},
+    {"items": ["Не создавайте ValueNotifier внутри <code>build()</code>", "Не забывайте освобождать ресурсы через <code>dispose()</code>", "Не используйте <code>ListenableBuilder</code> там, где достаточно <code>ValueListenableBuilder</code>"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "<code>ValueListenableBuilder</code> и <code>ListenableBuilder</code> — это мощные встроенные виджеты Flutter для реактивного обновления UI. Они не требуют дополнительных пакетов и хорошо интегрируются с другими механизмами управления состоянием.", "type": "paragraph"},
+    {"content": "**Правило:** Используйте `ValueListenableBuilder` для одиночных значений и `ListenableBuilder` для анимаций и сложных Listenable.", "type": "blockquote"}
+  ]
+}

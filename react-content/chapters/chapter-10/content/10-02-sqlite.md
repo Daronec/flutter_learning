@@ -1,0 +1,330 @@
+# SQLite — реляционные базы данных с sqflite
+
+SQLite — это встроенная реляционная база данных, которая не требует отдельного сервера. Пакет `sqflite` предоставляет доступ к SQLite из Flutter-приложений.
+
+## Установка
+
+```yaml
+dependencies:
+  sqflite: ^2.3.0
+  path: ^1.8.3
+  path_provider: ^2.1.1
+```
+
+```bash
+flutter pub add sqflite path path_provider
+```
+
+## Инициализация базы данных
+
+### Получение пути к базе данных
+
+```dart
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+
+Future<Database> initDatabase() async {
+  final directory = await getApplicationDocumentsDirectory();
+  final path = join(directory.path, 'app.db');
+  return openDatabase(
+    path,
+    version: 1,
+    onCreate: _onCreate,
+    onUpgrade: _onUpgrade,
+  );
+}
+```
+
+### Создание таблиц
+
+```dart
+Future<void> _onCreate(Database db, int version) async {
+  // Таблица пользователей
+  await db.execute('''
+    CREATE TABLE users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL UNIQUE,
+      age INTEGER,
+      created_at TEXT NOT NULL
+    )
+  ''');
+
+  // Таблица задач
+  await db.execute('''
+    CREATE TABLE tasks (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      description TEXT,
+      isDone INTEGER NOT NULL DEFAULT 0,
+      userId INTEGER NOT NULL,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (userId) REFERENCES users(id)
+    )
+  ''');
+}
+
+Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+  if (oldVersion < 2) {
+    // Добавляем новую колонку
+    await db.execute('ALTER TABLE users ADD COLUMN phone TEXT');
+  }
+}
+```
+
+## CRUD-операции
+
+### Создание (Create)
+
+```dart
+Future<int> insertUser(Map<String, dynamic> user) async {
+  final db = await initDatabase();
+  final id = await db.insert(
+    'users',
+    user,
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
+  return id;
+}
+
+// Использование
+final userId = await insertUser({
+  'name': 'Иван Петров',
+  'email': 'ivan@example.com',
+  'age': 25,
+  'created_at': DateTime.now().toIso8601String(),
+});
+```
+
+### Чтение (Read)
+
+```dart
+// Получить все записи
+Future<List<Map<String, dynamic>>> getAllUsers() async {
+  final db = await initDatabase();
+  return await db.query('users', orderBy: 'name ASC');
+}
+
+// Получить одну запись по ID
+Future<Map<String, dynamic>?> getUserById(int id) async {
+  final db = await initDatabase();
+  final results = await db.query(
+    'users',
+    where: 'id = ?',
+    whereArgs: [id],
+  );
+  return results.isNotEmpty ? results.first : null;
+}
+
+// Запрос с условием
+Future<List<Map<String, dynamic>>> getUsersOverAge(int age) async {
+  final db = await initDatabase();
+  return await db.query(
+    'users',
+    where: 'age > ?',
+    whereArgs: [age],
+    orderBy: 'age DESC',
+  );
+}
+
+// Запрос с JOIN
+Future<List<Map<String, dynamic>>> getUsersWithTasks() async {
+  final db = await initDatabase();
+  return await db.rawQuery('''
+    SELECT users.*, tasks.title as task_title
+    FROM users
+    LEFT JOIN tasks ON users.id = tasks.userId
+    ORDER BY users.name
+  ''');
+}
+```
+
+### Обновление (Update)
+
+```dart
+// Обновить запись
+Future<int> updateUser(int id, Map<String, dynamic> user) async {
+  final db = await initDatabase();
+  return await db.update(
+    'users',
+    user,
+    where: 'id = ?',
+    whereArgs: [id],
+  );
+}
+
+// Частичное обновление
+Future<int> updateUserName(int id, String name) async {
+  final db = await initDatabase();
+  return await db.update(
+    'users',
+    {'name': name},
+    where: 'id = ?',
+    whereArgs: [id],
+  );
+}
+```
+
+### Удаление (Delete)
+
+```dart
+// Удалить по ID
+Future<int> deleteUser(int id) async {
+  final db = await initDatabase();
+  return await db.delete(
+    'users',
+    where: 'id = ?',
+    whereArgs: [id],
+  );
+}
+
+// Удалить все записи
+Future<int> deleteAllUsers() async {
+  final db = await initDatabase();
+  return await db.delete('users');
+}
+
+// Удалить с условием
+Future<int> deleteUsersOverAge(int age) async {
+  final db = await initDatabase();
+  return await db.delete(
+    'users',
+    where: 'age > ?',
+    whereArgs: [age],
+  );
+}
+```
+
+## Транзакции
+
+### Базовая транзакция
+
+```dart
+Future<void> transferUsers() async {
+  final db = await initDatabase();
+
+  try {
+    await db.transaction((txn) async {
+      // Операция 1
+      await txn.insert('users', {
+        'name': 'Алексей',
+        'email': 'alex@example.com',
+        'age': 30,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+
+      // Операция 2
+      await txn.insert('users', {
+        'name': 'Мария',
+        'email': 'maria@example.com',
+        'age': 28,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+
+      // Если любая операция упадёт — откатится всё
+    });
+    print('Транзакция выполнена успешно');
+  } catch (e) {
+    print('Транзакция откатана: $e');
+  }
+}
+```
+
+### Транзакция с вложенными операциями
+
+```dart
+Future<void> createUserWithTasks(String name, String email, List<String> taskTitles) async {
+  final db = await initDatabase();
+
+  await db.transaction((txn) async {
+    // Создаём пользователя
+    final userId = await txn.insert('users', {
+      'name': name,
+      'email': email,
+      'age': null,
+      'created_at': DateTime.now().toIso8601String(),
+    });
+
+    // Создаём задачи для пользователя
+    for (final title in taskTitles) {
+      await txn.insert('tasks', {
+        'title': title,
+        'description': null,
+        'isDone': 0,
+        'userId': userId,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+    }
+  });
+}
+```
+
+## Работа с моделями
+
+### Класс-обёртка для работы с БД
+
+```dart
+class UserRepository {
+  final Future<Database> Function() _databaseFactory;
+
+  UserRepository(this._databaseFactory);
+
+  Future<int> insert(Map<String, dynamic> user) async {
+    final db = await _databaseFactory();
+    return await db.insert('users', user);
+  }
+
+  Future<List<Map<String, dynamic>>> queryAll({
+    String? orderBy,
+    int? limit,
+    int? offset,
+  }) async {
+    final db = await _databaseFactory();
+    var query = db.query('users');
+    if (orderBy != null) query = query.orderBy(orderBy);
+    if (limit != null) query = query.limit(limit);
+    if (offset != null) query = query.offset(offset);
+    return await query;
+  }
+
+  Future<Map<String, dynamic>?> queryById(int id) async {
+    final db = await _databaseFactory();
+    final results = await db.query(
+      'users',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    return results.isNotEmpty ? results.first : null;
+  }
+
+  Future<int> update(int id, Map<String, dynamic> user) async {
+    final db = await _databaseFactory();
+    return await db.update(
+      'users',
+      user,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<int> delete(int id) async {
+    final db = await _databaseFactory();
+    return await db.delete(
+      'users',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+}
+```
+
+## Best Practices
+
+- **Используйте транзакции** для нескольких связанных операций
+- **Используйте `whereArgs`** для предотвращения SQL-инъекций
+- **Закрывайте базу данных** при уничтожении приложения
+- **Используйте индексы** для часто запрашиваемых колонок
+- **Версионируйте схему** — используйте параметр `version` и `onUpgrade`
+- **Изолируйте работу с БД** — создайте репозиторий для каждой сущности

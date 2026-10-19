@@ -1,0 +1,225 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Flutter Desktop — Windows, macOS, Linux"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Flutter поддерживает десктопные приложения для Windows, macOS и Linux. Деплой десктопных приложений имеет свои особенности по сравнению с мобильными платформами.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Включение поддержки Desktop"},
+    {"level": 3, "type": "heading", "text": "Инициализация проектов"},
+    {"content": "# Создание нового проекта с поддержкой desktop
+flutter create my_app --platforms=windows,macos,linux
+
+# Добавление desktop в существующий проект
+flutter create . --platforms=windows,macos,linux
+
+# Проверка поддерживаемых платформ
+flutter config --enable-windows-desktop
+flutter config --enable-macos-desktop
+flutter config --enable-linux-desktop", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Требования по платформам"},
+    {"text": "| Платформа | Требования |", "type": "paragraph"},
+    {"text": "|-----------|-----------|", "type": "paragraph"},
+    {"text": "| Windows | Windows 10+, Visual Studio 2019+ |", "type": "paragraph"},
+    {"text": "| macOS | macOS 10.15+, Xcode 12+, Flutter SDK |", "type": "paragraph"},
+    {"text": "| Linux | Ubuntu 20.04+, GTK3, CMake 3.10+ |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Сборка десктопных приложений"},
+    {"level": 3, "type": "heading", "text": "Windows"},
+    {"content": "# Сборка Windows приложения
+flutter build windows --release
+
+# Сборка с указанием конфигурации
+flutter build windows --release --dart-define=ENV=production
+
+# Результат:
+# build/windows/x64/runner/Release/
+# ├── MyApp.exe
+# ├── MyApp.pdb
+# ├── data/
+# │   ├── flutter_assets/
+# │   └── icudtl.dat
+# └── lib/", "language": "bash", "type": "code"},
+    {"text": "<strong>Создание установщика (Inno Setup):</strong>", "type": "paragraph"},
+    {"content": "; setup.iss — Inno Setup скрипт
+[Setup]
+AppName=MyApp
+AppVersion=1.0.0
+AppPublisher=MyCompany
+AppSupportURL=https://example.com
+DefaultDirName={autopf}\\\\MyApp
+OutputDir=build\\\\windows\\\\installer
+OutputBaseFilename=MyApp-Setup
+
+[Files]
+Source: \"build\\\\windows\\\\x64\\\\runner\\\\Release\\\\*\"; DestDir: \"{app}\"; Flags: recursesubdirs
+
+[Icons]
+Name: \"{userdesktop}\\\\MyApp\"; Filename: \"{app}\\\\MyApp.exe\"
+
+[Run]
+Filename: \"{app}\\\\MyApp.exe\"; Description: \"Launch MyApp\"; Flags: nowait postinstall skipifsilent", "language": "ini", "type": "code"},
+    {"text": "<strong>Сборка установщика:</strong>", "type": "paragraph"},
+    {"content": "# Установка Inno Setup: https://jrsoftware.org/isinfo.php
+# Компиляция скрипта
+iscc setup.iss
+
+# Результат: build/windows/installer/MyApp-Setup.exe", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "macOS"},
+    {"content": "# Сборка macOS приложения
+flutter build macos --release
+
+# Результат:
+# build/macos/Build/Products/Release/
+# ├── MyApp.app
+# │   ├── Contents/
+# │   │   ├── Info.plist
+# │   │   ├── MacOS/
+# │   │   │   └── MyApp
+# │   │   ├── Resources/
+# │   │   └── Flutter/
+# │   │       ├── App.framework
+# │   │       └── flutter_assets/
+# └── MyApp.app.zip", "language": "bash", "type": "code"},
+    {"text": "<strong>Подписание и notarization:</strong>", "type": "paragraph"},
+    {"content": "# Подписание приложения
+codesign --deep --force --sign \"Developer ID Application: Your Name\" \\\\
+build/macos/Build/Products/Release/MyApp.app
+
+# Проверка подписи
+codesign --verify --deep --strict --verbose=2 MyApp.app
+
+# Создание архива
+ditto -c -k --keepParent build/macos/Build/Products/Release/MyApp.app MyApp.zip
+
+# Notarization (отправка на проверку Apple)
+xcrun notarytool submit MyApp.zip \\\\
+--keychain-profile \"notary\" \\\\
+--wait
+
+# Stapling (прикрепление ticket к приложению)
+xcrun stapler staple MyApp.app", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Linux"},
+    {"content": "# Установка зависимостей для Linux
+sudo apt-get install -y \\\\
+cmake \\\\
+ninja-build \\\\
+libgtk-3-dev \\\\
+libwlroots-dev \\\\
+libwayland-dev \\\\
+libxkbcommon-dev \\\\
+libasound2-dev \\\\
+libdbus-1-dev
+
+# Сборка Linux приложения
+flutter build linux --release
+
+# Результат:
+# build/linux/x64/release/bundle/
+# ├── MyApp
+# ├── MyApp.desktop
+# ├── icons/
+# │   ├── 128x128.png
+# │   ├── 256x256.png
+# │   └── ...
+# └── data/
+#     └── flutter_assets/", "language": "bash", "type": "code"},
+    {"text": "<strong>Создание deb пакета:</strong>", "type": "paragraph"},
+    {"content": "# Создание структуры пакета
+mkdir -p build/linux/deb/myapp/DEBIAN
+mkdir -p build/linux/deb/myapp/usr/share/applications
+mkdir -p build/linux/deb/myapp/usr/share/icons/hicolor/256x256/apps
+mkdir -p build/linux/deb/myapp/usr/bin
+
+# Копирование файлов
+cp build/linux/x64/release/bundle/MyApp build/linux/deb/myapp/usr/bin/
+cp build/linux/x64/release/bundle/MyApp.desktop \\\\
+build/linux/deb/myapp/usr/share/applications/
+cp build/linux/x64/release/bundle/icons/256x256.png \\\\
+build/linux/deb/myapp/usr/share/icons/hicolor/256x256/apps/myapp.png
+
+# Создание control файла
+cat > build/linux/deb/myapp/DEBIAN/control << EOF
+Package: myapp
+Version: 1.0.0
+Section: utils
+Priority: optional
+Architecture: amd64
+Maintainer: Your Name <you@example.com>
+Description: Flutter Desktop Application
+Depends: libgtk-3-0, libwayland-client0, libxkbcommon0
+EOF
+
+# Сборка deb пакета
+dpkg-deb --build build/linux/deb/myapp/
+# Результат: myapp.deb", "language": "bash", "type": "code"},
+    {"text": "<strong>Создание AppImage:</strong>", "type": "paragraph"},
+    {"content": "# Установка linuxdeploy
+wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+chmod +x linuxdeploy-x86_64.AppImage
+
+# Создание AppImage
+./linuxdeploy-x86_64.AppImage \\\\
+--appdir AppDir \\\\
+--executable build/linux/x64/release/bundle/MyApp \\\\
+--desktop-file build/linux/x64/release/bundle/MyApp.desktop \\\\
+--icon-file build/linux/x64/release/bundle/icons/256x256.png \\\\
+--output appimage", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Дистрибуция"},
+    {"level": 3, "type": "heading", "text": "Способы распространения"},
+    {"text": "| Платформа | Формат | Описание |", "type": "paragraph"},
+    {"text": "|-----------|--------|----------|", "type": "paragraph"},
+    {"text": "| Windows | .exe (установщик) | Inno Setup, NSIS, WiX |", "type": "paragraph"},
+    {"text": "| Windows | .zip (portable) | Простая архивация |", "type": "paragraph"},
+    {"text": "| macOS | .dmg | Дисковый образ |", "type": "paragraph"},
+    {"text": "| macOS | .app | Приложение для drag-and-drop |", "type": "paragraph"},
+    {"text": "| Linux | .deb | Debian/Ubuntu пакеты |", "type": "paragraph"},
+    {"text": "| Linux | .rpm | Fedora/RHEL пакеты |", "type": "paragraph"},
+    {"text": "| Linux | .AppImage | Универсальный формат |", "type": "paragraph"},
+    {"text": "| Linux | .snap | Snap пакет |", "type": "paragraph"},
+    {"text": "| Linux | .flatpak | Flatpak пакет |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "GitHub Releases"},
+    {"content": "# .github/workflows/desktop-release.yml
+name: Desktop Release
+
+on:
+push:
+tags:
+- 'v*'
+
+jobs:
+windows:
+runs-on: windows-latest
+steps:
+- uses: actions/checkout@v4
+- uses: subosito/flutter-action@v2
+- name: Build Windows
+run: flutter build windows --release
+- name: Create Installer
+run: iscc setup.iss
+- uses: softprops/action-gh-release@v1
+with:
+files: build/windows/installer/*.exe
+
+macos:
+runs-on: macos-latest
+steps:
+- uses: actions/checkout@v4
+- uses: subosito/flutter-action@v2
+- name: Build macOS
+run: flutter build macos --release
+- uses: softprops/action-gh-release@v1
+with:
+files: build/macos/Build/Products/Release/*.app.zip
+
+linux:
+runs-on: ubuntu-latest
+steps:
+- uses: actions/checkout@v4
+- uses: subosito/flutter-action@v2
+- name: Build Linux
+run: flutter build linux --release
+- uses: softprops/action-gh-release@v1
+with:
+files: build/linux/x64/release/bundle/*.AppImage", "language": "yaml", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Тестируйте на каждой платформе</strong> отдельно", "<strong>Используйте нативные диалоги</strong> для каждой ОС", "<strong>Настройте автообновление</strong> для десктопных приложений", "<strong>Следите за размерами</strong> — десктопные приложения могут быть большими", "<strong>Используйте нативные иконки</strong> и заголовки окон", "<strong>Проверяйте права доступа</strong> (macOS sandbox, Windows UAC)"], "type": "ul"}
+  ]
+}

@@ -1,0 +1,298 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "3.6 Composition vs Inheritance — паттерн компоновки"},
+    {"level": 2, "type": "heading", "text": "Composition (компоновка) в Flutter"},
+    {"level": 3, "type": "heading", "text": "Основной паттерн Flutter"},
+    {"text": "Flutter построен на паттерне <strong>Composition over Inheritance</strong> — вместо наследования виджетов, мы комбинируем (compose) существующие виджеты.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Принцип"},
+    {"content": "// ❌ Наследование (не рекомендуется)
+class MyButton extends Button {
+@override
+Widget build() {
+return Container(
+padding: EdgeInsets.all(16),
+child: Text('Click me'),
+);
+}
+}
+
+// ✅ Компоновка (рекомендуется)
+Widget build(BuildContext context) {
+return Container(
+padding: EdgeInsets.all(16),
+child: ElevatedButton(
+onPressed: () {},
+child: Text('Click me'),
+),
+);
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Почему Composition лучше?"},
+    {"level": 3, "type": "heading", "text": "Преимущества Composition"},
+    {"text": "| Aspect | Inheritance | Composition |", "type": "paragraph"},
+    {"text": "|---|---|---|", "type": "paragraph"},
+    {"text": "| <strong>Гибкость</strong> | Ограничено одним родителем | Неограниченная комбинация |", "type": "paragraph"},
+    {"text": "| <strong>Переиспользование</strong> | Дублирование кода | Компоненты вкладываются |", "type": "paragraph"},
+    {"text": "| <strong>Тестирование</strong> | Сложно | Легко (модульные компоненты) |", "type": "paragraph"},
+    {"text": "| <strong>Изменение</strong> | Риск сломать наследников | Безопасно |", "type": "paragraph"},
+    {"text": "| <strong>Размер</strong> | Раздувание класса | Компактные виджеты |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Пример: кастомная кнопка"},
+    {"content": "// Composition — создаём из готовых блоков
+class CustomButton extends StatelessWidget {
+final String label;
+final VoidCallback onPressed;
+
+const CustomButton({
+required this.label,
+required this.onPressed,
+super.key,
+});
+
+@override
+Widget build(BuildContext context) {
+return Container(
+padding: EdgeInsets.all(16),
+decoration: BoxDecoration(
+color: Theme.of(context).primaryColor,
+borderRadius: BorderRadius.circular(8),
+),
+child: ElevatedButton(
+onPressed: onPressed,
+style: ButtonStyle(
+backgroundColor: MaterialStateProperty.all(Colors.transparent),
+shadowColor: MaterialStateProperty.all(Colors.transparent),
+),
+child: Text(label, style: TextStyle(color: Colors.white)),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Паттерн обёртки (Wrapper Pattern)"},
+    {"level": 3, "type": "heading", "text": "Обёртка виджетов"},
+    {"content": "// Обёртка для добавления отступа
+Widget build(BuildContext context) {
+return Padding(
+padding: EdgeInsets.all(16),
+child: Card(
+child: Column(
+children: [
+Text('Header'),
+Divider(),
+Text('Content'),
+],
+),
+),
+);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Обёртка для обработки ошибок"},
+    {"content": "class ErrorBoundary extends StatelessWidget {
+final Widget child;
+final Widget Function(Exception error) errorBuilder;
+
+const ErrorBoundary({
+required this.child,
+required this.errorBuilder,
+super.key,
+});
+
+@override
+Widget build(BuildContext context) {
+try {
+return child;
+} catch (error) {
+return errorBuilder(error);
+}
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Композиция с параметрами"},
+    {"level": 3, "type": "heading", "text": "Передача параметров через обёртку"},
+    {"content": "class SectionWidget extends StatelessWidget {
+final String title;
+final List<Widget> children;
+
+const SectionWidget({
+required this.title,
+required this.children,
+super.key,
+});
+
+@override
+Widget build(BuildContext context) {
+return Column(
+crossAxisAlignment: CrossAxisAlignment.start,
+children: [
+Text(title, style: Theme.of(context).textTheme.headlineSmall),
+SizedBox(height: 8),
+...children,
+],
+);
+}
+}
+
+// Использование
+SectionWidget(
+title: 'User Profile',
+children: [
+Text('Name: Alice'),
+Text('Email: alice@example.com'),
+],
+);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Builder Pattern"},
+    {"level": 3, "type": "heading", "text": "Builder для кастомизации"},
+    {"content": "class LoadingWidget extends StatelessWidget {
+final Widget Function(BuildContext context, double progress) builder;
+final double progress;
+
+const LoadingWidget({
+required this.builder,
+this.progress = 0.5,
+super.key,
+});
+
+@override
+Widget build(BuildContext context) {
+return builder(context, progress);
+}
+}
+
+// Использование
+LoadingWidget(
+progress: 0.75,
+builder: (context, progress) {
+return Column(
+children: [
+CircularProgressIndicator(value: progress),
+Text('${(progress * 100).toInt()}%'),
+],
+);
+},
+);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Composite Widget"},
+    {"level": 3, "type": "heading", "text": "Виджет-контейнер"},
+    {"content": "class ProfileCard extends StatelessWidget {
+final User user;
+
+const ProfileCard({required this.user, super.key});
+
+@override
+Widget build(BuildContext context) {
+// Композиция из нескольких виджетов
+return Card(
+child: Padding(
+padding: EdgeInsets.all(16),
+child: Row(
+children: [
+CircleAvatar(
+backgroundImage: NetworkImage(user.avatarUrl),
+),
+SizedBox(width: 16),
+Expanded(
+child: Column(
+crossAxisAlignment: CrossAxisAlignment.start,
+children: [
+Text(user.name, style: TextStyle(fontWeight: FontWeight.bold)),
+Text(user.email),
+],
+),
+),
+],
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Composition vs Inheritance — примеры"},
+    {"level": 3, "type": "heading", "text": "Сложный пример: карточка товара"},
+    {"content": "// ❌ Наследование (плохо)
+class ProductCardWithDiscount extends ProductCard {
+final double discount;
+
+@override
+Widget build() {
+return Container(
+decoration: BoxDecoration(border: Border.all(color: Colors.red)),
+child: super.build(),
+);
+}
+}
+
+// ✅ Composition (хорошо)
+class ProductCard extends StatelessWidget {
+final Product product;
+final double? discount;
+
+const ProductCard({required this.product, this.discount, super.key});
+
+@override
+Widget build(BuildContext context) {
+return Stack(
+children: [
+Card(
+child: Column(
+children: [
+Image.network(product.imageUrl),
+Text(product.name),
+Text('\\\\$${product.price}'),
+],
+),
+),
+if (discount != null)
+Positioned(
+top: 0,
+right: 0,
+child: Container(
+padding: EdgeInsets.all(4),
+decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(4)),
+child: Text('-${(discount! * 100).toInt()}%'),
+),
+),
+],
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Лучшие практики"},
+    {"level": 3, "type": "heading", "text": "1. Создавайте маленькие переиспользуемые виджеты"},
+    {"content": "// Маленький, сфокусированный виджет
+class UserAvatar extends StatelessWidget {
+final String imageUrl;
+final double size;
+
+const UserAvatar({required this.imageUrl, this.size = 40, super.key});
+
+@override
+Widget build(BuildContext context) {
+return CircleAvatar(
+backgroundImage: NetworkImage(imageUrl),
+radius: size / 2,
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "2. Используйте children для гибкости"},
+    {"content": "class CollapsibleSection extends StatelessWidget {
+final String title;
+final List<Widget> children;
+final bool initiallyExpanded;
+
+// children позволяет вставлять любые виджеты
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "3. Выносите логику в отдельные виджеты"},
+    {"content": "// Разделяйте на логические компоненты
+class OrderSummary extends StatelessWidget {
+final Order order;
+
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+OrderItems(items: order.items),
+OrderTotals(totals: order.totals),
+OrderActions(order: order),
+],
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Composition — основной паттерн в Flutter:", "type": "paragraph"},
+    {"items": ["<strong>Комбинируйте</strong> существующие виджеты вместо наследования", "<strong>Создавайте</strong> маленькие, переиспользуемые компоненты", "<strong>Используйте</strong> children и builder для гибкости", "<strong>Разделяйте</strong> сложную логику на отдельные виджеты"], "type": "ul"},
+    {"text": "Помните: в Flutter виджеты — это конфигурации, а не UI-объекты. Компоновка — естественный способ создания UI.", "type": "paragraph"}
+  ]
+}

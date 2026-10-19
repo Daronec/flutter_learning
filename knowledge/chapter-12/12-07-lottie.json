@@ -1,0 +1,305 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Lottie — анимации из After Effects"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Lottie — это библиотека для рендеринга анимаций, созданных в Adobe After Effects. Она экспортирует анимацию в JSON-формат, который можно воспроизводить на любой платформе.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Преимущества Lottie"},
+    {"items": ["<strong>Кроссплатформенность</strong> — одна анимация для всех платформ", "<strong>Малый размер</strong> — JSON-файл обычно меньше видео", "<strong>Масштабируемость</strong> — векторная графика без потери качества", "<strong>Интерактивность</strong> — можно управлять анимацией из кода", "<strong>Быстрая разработка</strong> — дизайнер создаёт в After Effects"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Установка"},
+    {"content": "dependencies:
+lottie: ^3.1.0", "language": "yaml", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Загрузка анимаций"},
+    {"level": 3, "type": "heading", "text": "Из assets"},
+    {"content": "# pubspec.yaml
+flutter:
+assets:
+- assets/animations/", "language": "yaml", "type": "code"},
+    {"content": "// Загрузка из локального файла
+Lottie.asset(
+'assets/animations/success.json',
+width: 200,
+height: 200,
+fit: BoxFit.contain,
+repeat: true,
+reverse: true,
+animate: true,
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Из network"},
+    {"content": "// Загрузка из URL
+Lottie.network(
+'https://assets2.lottiefiles.com/packages/lf20_wcavtq.json',
+width: 200,
+height: 200,
+fit: BoxFit.contain,
+repeat: true,
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Из bytes"},
+    {"content": "// Загрузка из ByteData
+final bytes = await rootBundle.load('assets/animations/success.json');
+final lottieComposition = LottieCompositionFactory.fromBytes(
+bytes.buffer.asUint8List(),
+);
+
+Lottie.asset(
+'data', // special path for fromBytes
+width: 200,
+height: 200,
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Widget Lottie"},
+    {"level": 3, "type": "heading", "text": "Базовое использование"},
+    {"content": "class LottieExample extends StatelessWidget {
+const LottieExample({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Lottie.asset(
+'assets/animations/rocket.json',
+width: 300,
+height: 300,
+fit: BoxFit.contain,
+// Анимация воспроизводится
+repeat: true,
+// Обратное воспроизведение
+reverse: false,
+// Включена ли анимация
+animate: true,
+// Пакет анимации
+package: null,
+// Callback по завершении
+onLoaded: (composition) {
+print('Длительность: ${composition.duration}');
+print('Кадров: ${composition.totalFrames}');
+print('FPS: ${composition.fps}');
+},
+// Builder для кастомизации
+builder: (composition) {
+return Column(
+children: [
+Lottie.asset(
+'assets/animations/rocket.json',
+width: 200,
+height: 200,
+),
+const SizedBox(height: 16),
+Text('Запуск ракеты!'),
+],
+);
+},
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Параметры Lottie Widget"},
+    {"text": "| Параметр | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>assetName</code> | <code>String</code> | Путь к JSON-файлу |", "type": "paragraph"},
+    {"text": "| <code>package</code> | <code>String?</code> | Пакет для package assets |", "type": "paragraph"},
+    {"text": "| <code>width</code> | <code>double?</code> | Ширина |", "type": "paragraph"},
+    {"text": "| <code>height</code> | <code>double?</code> | Высота |", "type": "paragraph"},
+    {"text": "| <code>fit</code> | <code>BoxFit?</code> | Метод заполнения |", "type": "paragraph"},
+    {"text": "| <code>repeat</code> | <code>bool</code> | Повторять анимацию |", "type": "paragraph"},
+    {"text": "| <code>reverse</code> | <code>bool</code> | Обратное воспроизведение |", "type": "paragraph"},
+    {"text": "| <code>animate</code> | <code>bool</code> | Включить анимацию |", "type": "paragraph"},
+    {"text": "| <code>frame</code> | <code>int?</code> | Начальный кадр |", "type": "paragraph"},
+    {"text": "| <code>onLoaded</code> | <code>CompositionCallback</code> | Callback при загрузке |", "type": "paragraph"},
+    {"text": "| <code>builder</code> | <code>LottieBuilder</code> | Кастомный builder |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "LottieController"},
+    {"level": 3, "type": "heading", "text": "Управление анимацией"},
+    {"content": "class LottieControllerExample extends StatefulWidget {
+const LottieControllerExample({super.key});
+
+@override
+State<LottieControllerExample> createState() =>
+_LottieControllerExampleState();
+}
+
+class _LottieControllerExampleState
+extends State<LottieControllerExample> {
+late LottieController _controller;
+
+@override
+void initState() {
+super.initState();
+_controller = LottieController();
+}
+
+@override
+void dispose() {
+_controller.dispose();
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+Lottie.asset(
+'assets/animations/rocket.json',
+controller: _controller,
+width: 300,
+height: 300,
+),
+const SizedBox(height: 20),
+Row(
+mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+children: [
+ElevatedButton(
+onPressed: () => _controller.forward(),
+child: const Text('▶ Вперёд'),
+),
+ElevatedButton(
+onPressed: () => _controller.reverse(),
+child: const Text('◀ Назад'),
+),
+ElevatedButton(
+onPressed: () => _controller.stop(),
+child: const Text('⏹ Стоп'),
+),
+ElevatedButton(
+onPressed: () => _controller.reset(),
+child: const Text('↺ Сброс'),
+),
+],
+),
+const SizedBox(height: 20),
+Slider(
+value: _controller.value,
+onChanged: (value) {
+_controller.jumpTo(value);
+},
+),
+],
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Методы LottieController"},
+    {"text": "| Метод | Описание |", "type": "paragraph"},
+    {"text": "|-------|----------|", "type": "paragraph"},
+    {"text": "| <code>forward()</code> | Воспроизведение вперёд |", "type": "paragraph"},
+    {"text": "| <code>reverse()</code> | Обратное воспроизведение |", "type": "paragraph"},
+    {"text": "| <code>stop()</code> | Остановка |", "type": "paragraph"},
+    {"text": "| <code>reset()</code> | Сброс к началу |", "type": "paragraph"},
+    {"text": "| <code>jumpTo(value)</code> | Переход к значению (0-1) |", "type": "paragraph"},
+    {"text": "| <code>jumpToFrame(frame)</code> | Переход к кадру |", "type": "paragraph"},
+    {"text": "| <code>play()</code> | Воспроизведение |", "type": "paragraph"},
+    {"text": "| <code>pause()</code> | Пауза |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Анимация по скроллу"},
+    {"content": "class ScrollLottieExample extends StatefulWidget {
+const ScrollLottieExample({super.key});
+
+@override
+State<ScrollLottieExample> createState() => _ScrollLottieExampleState();
+}
+
+class _ScrollLottieExampleState extends State<ScrollLottieExample> {
+late ScrollController _scrollController;
+late LottieController _lottieController;
+
+@override
+void initState() {
+super.initState();
+_scrollController = ScrollController();
+_lottieController = LottieController();
+
+_scrollController.addListener(() {
+// Вычисляем прогресс на основе скролла
+final maxScroll = _scrollController.position.maxScrollExtent;
+if (maxScroll > 0) {
+final progress = _scrollController.offset / maxScroll;
+_lottieController.jumpTo(progress.clamp(0.0, 1.0));
+}
+});
+}
+
+@override
+void dispose() {
+_scrollController.dispose();
+_lottieController.dispose();
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return ListView(
+controller: _scrollController,
+children: [
+SizedBox(
+height: 300,
+child: Center(
+child: Lottie.asset(
+'assets/animations/progress.json',
+controller: _lottieController,
+width: 200,
+height: 200,
+),
+),
+),
+const SizedBox(height: 20),
+const Text('Скролльте для управления анимацией'),
+const SizedBox(height: 1000), // Для скролла
+],
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Анимация по жесту"},
+    {"content": "class GestureLottieExample extends StatefulWidget {
+const GestureLottieExample({super.key});
+
+@override
+State<GestureLottieExample> createState() => _GestureLottieExampleState();
+}
+
+class _GestureLottieExampleState
+extends State<GestureLottieExample> {
+late LottieController _controller;
+double _dragProgress = 0.0;
+
+@override
+void initState() {
+super.initState();
+_controller = LottieController();
+}
+
+@override
+void dispose() {
+_controller.dispose();
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return GestureDetector(
+onHorizontalDragUpdate: (details) {
+setState(() {
+_dragProgress += details.primaryDelta! / 300;
+_dragProgress = _dragProgress.clamp(0.0, 1.0);
+_controller.jumpTo(_dragProgress);
+});
+},
+child: Column(
+children: [
+Lottie.asset(
+'assets/animations/progress.json',
+controller: _controller,
+width: 200,
+height: 200,
+),
+Slider(
+value: _dragProgress,
+onChanged: (value) {
+setState(() {
+_dragProgress = value;
+_controller.jumpTo(value);
+});
+},
+),
+],
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Поиск анимаций"},
+    {"items": ["<a href=\"https://lottiefiles.com/\" target=\"_blank\">LottieFiles</a> — крупнейшая библиотека", "<a href=\"https://github.com/LottieFiles/lottie-community\" target=\"_blank\">LottieCommunity</a> — сообщество", "After Effects + <a href=\"https://github.com/bodymovin/bodymovin\" target=\"_blank\">Bodymovin</a> — плагин для экспорта"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Лучшие практики"},
+    {"items": ["<strong>Оптимизируйте анимации</strong> — удаляйте неиспользуемые слои", "<strong>Используйте <code>repeat: false</code></strong> для одноразовых анимаций", "<strong>Кэшируйте анимации</strong> — Lottie делает это автоматически", "<strong>Проверяйте <code>onLoaded</code></strong> для получения метаданных", "<strong>Используйте <code>LottieController</code></strong> для интерактивности", "<strong>Тестируйте на слабых устройствах</strong> — сложные анимации могут тормозить"], "type": "ol"}
+  ]
+}

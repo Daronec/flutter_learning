@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "chapters": [
+    {
+      "id": "chapter-01",
+      "number": 1,
+      "title": "Введение в Flutter",
+      "description": "История, архитектура и первые шаги с Flutter",
+      "icon": "🚀",
+      "order": 1,
+      "lessonsFile": "chapters/chapter-01/lessons.json"
+    },
+    {
+      "id": "chapter-02",
+      "number": 2,
+      "title": "Основы Dart",
+      "description": "Синтаксис, ООП, асинхронность и коллекции",
+      "icon": "🎯",
+      "order": 2,
+      "lessonsFile": "chapters/chapter-02/lessons.json"
+    },
+    {
+      "id": "chapter-03",
+      "number": 3,
+      "title": "Виджеты",
+      "description": "Виджеты, дерево элементов и жизненный цикл",
+      "icon": "🧩",
+      "order": 3,
+      "lessonsFile": "chapters/chapter-03/lessons.json"
+    },
+    {
+      "id": "chapter-04",
+      "number": 4,
+      "title": "Основные виджеты",
+      "description": "Container, Text, Icon, Row, Column, Stack, ListView и другие",
+      "icon": "📦",
+      "order": 4,
+      "lessonsFile": "chapters/chapter-04/lessons.json"
+    },
+    {
+      "id": "chapter-05",
+      "number": 5,
+      "title": "Система layout",
+      "description": "Flex, constraints, кастомные layout и адаптивный дизайн",
+      "icon": "📐",
+      "order": 5,
+      "lessonsFile": "chapters/chapter-05/lessons.json"
+    },
+    {
+      "id": "chapter-06",
+      "number": 6,
+      "title": "Управление состоянием",
+      "description": "State, Provider, Riverpod, BLoC и другие подходы",
+      "icon": "⚡",
+      "order": 6,
+      "lessonsFile": "chapters/chapter-06/lessons.json"
+    },
+    {
+      "id": "chapter-07",
+      "number": 7,
+      "title": "Навигация",
+      "description": "Navigator, маршрутизация, переходы и deep links",
+      "icon": "🧭",
+      "order": 7,
+      "lessonsFile": "chapters/chapter-07/lessons.json"
+    },
+    {
+      "id": "chapter-08",
+      "number": 8,
+      "title": "Формы",
+      "description": "Валидация, типы полей, date picker и отправка форм",
+      "icon": "📝",
+      "order": 8,
+      "lessonsFile": "chapters/chapter-08/lessons.json"
+    },
+    {
+      "id": "chapter-09",
+      "number": 9,
+      "title": "Работа с API",
+      "description": "HTTP, Dio, JSON, REST и GraphQL",
+      "icon": "🌐",
+      "order": 9,
+      "lessonsFile": "chapters/chapter-09/lessons.json"
+    },
+    {
+      "id": "chapter-10",
+      "number": 10,
+      "title": "Локальное хранение данных",
+      "description": "SharedPreferences, SQLite, Hive, Isar и secure storage",
+      "icon": "💾",
+      "order": 10,
+      "lessonsFile": "chapters/chapter-10/lessons.json"
+    },
+    {
+      "id": "chapter-11",
+      "number": 11,
+      "title": "Чистая архитектура",
+      "description": "Clean Architecture, Repository и Dependency Injection",
+      "icon": "🏗️",
+      "order": 11,
+      "lessonsFile": "chapters/chapter-11/lessons.json"
+    },
+    {
+      "id": "chapter-12",
+      "number": 12,
+      "title": "Анимации",
+      "description": "Implicit/explicit-анимации, Lottie и Rive",
+      "icon": "🎬",
+      "order": 12,
+      "lessonsFile": "chapters/chapter-12/lessons.json"
+    },
+    {
+      "id": "chapter-13",
+      "number": 13,
+      "title": "Тестирование",
+      "description": "Unit, widget, integration и golden tests",
+      "icon": "🧪",
+      "order": 13,
+      "lessonsFile": "chapters/chapter-13/lessons.json"
+    },
+    {
+      "id": "chapter-14",
+      "number": 14,
+      "title": "Производительность",
+      "description": "DevTools, профилирование и оптимизация",
+      "icon": "⚡",
+      "order": 14,
+      "lessonsFile": "chapters/chapter-14/lessons.json"
+    },
+    {
+      "id": "chapter-15",
+      "number": 15,
+      "title": "Сборка приложения",
+      "description": "APK, AAB, подпись и CI/CD",
+      "icon": "📱",
+      "order": 15,
+      "lessonsFile": "chapters/chapter-15/lessons.json"
+    },
+    {
+      "id": "chapter-16",
+      "number": 16,
+      "title": "Platform Channels",
+      "description": "Взаимодействие с нативным кодом Android и iOS",
+      "icon": "🔌",
+      "order": 16,
+      "lessonsFile": "chapters/chapter-16/lessons.json"
+    }
+  ]
+}

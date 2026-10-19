@@ -1,0 +1,137 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "3.1 Что такое Widget? Философия «всё — виджет»"},
+    {"level": 2, "type": "heading", "text": "Что такое Widget?"},
+    {"text": "Widget — это неизменяемый описательный объект, который определяет часть UI и её поведение. В Flutter <strong>всё является виджетом</strong>: от текстовых надписей и кнопок до отступов, выравнивания и даже самого приложения.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Философия «всё — виджет»"},
+    {"level": 3, "type": "heading", "text": "Концепция"},
+    {"content": "Текстовая надпись  → Text widget
+Кнопка            → ElevatedButton widget
+Отступ            → Padding widget
+Выравнивание       → Center widget
+Скролл            → SingleChildScrollView widget
+Тема              → MaterialApp widget
+Приложение         → MyApp widget", "language": "", "type": "code"},
+    {"text": "Каждый элемент интерфейса — это виджет, который описывает <em>как должен выглядеть UI</em> при данном состоянии.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Неизменяемость (Immutability)"},
+    {"content": "// Widget — неизменяемый объект
+class MyWidget extends StatelessWidget {
+final String text;  // final — нельзя изменить
+
+const MyWidget({required this.text, super.key});
+
+@override
+Widget build(BuildContext context) {
+return Text(text);
+}
+}
+
+// При изменении состояния создаётся НОВЫЙ виджет
+// Старый виджет не изменяется", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Декларативный подход"},
+    {"content": "// Декларативный стиль (Flutter, React, SwiftUI)
+// Описываем ЧТО показать
+Widget build(BuildContext context) {
+return Column(
+children: [
+Text('Hello'),
+IconButton(icon: Icon(Icons.refresh), onPressed: () {}),
+],
+);
+}
+
+// Императивный стиль (старый Android, UIKit)
+// Описываем КАК показать
+// textView.setText('Hello');
+// button.setOnClickListener(...);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Типы виджетов"},
+    {"level": 3, "type": "heading", "text": "StatelessWidget — виджет без состояния"},
+    {"content": "class GreetingWidget extends StatelessWidget {
+final String name;
+
+const GreetingWidget({required this.name, super.key});
+
+@override
+Widget build(BuildContext context) {
+return Text('Hello, $name!');
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "StatefulWidget — виджет с изменяемым состоянием"},
+    {"content": "class CounterWidget extends StatefulWidget {
+const CounterWidget({super.key});
+
+@override
+State<CounterWidget> createState() => _CounterWidgetState();
+}
+
+class _CounterWidgetState extends State<CounterWidget> {
+int _count = 0;
+
+@override
+Widget build(BuildContext context) {
+return Text('Count: $_count');
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "ComponentWidget — виджет без собственного UI"},
+    {"content": "// ComponentWidget — виджет, который содержит другие виджеты
+// но сам не рисует ничего
+class MyComponent extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+Text('Header'),
+Divider(),
+Text('Content'),
+],
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Иерархия виджетов"},
+    {"content": "Object
+└── Diagnosticable
+└── DiagnosticableTree
+└── Widget
+├── StatelessWidget
+├── StatefulWidget
+├── ProxyWidget
+│   ├── Theme
+│   ├── MediaQuery
+│   └── InheritedWidget
+└── RenderObjectWidget
+├── Container
+├── Text
+├── Row
+└── Column", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Виджеты как конфигурации"},
+    {"content": "// Widget — это КОНФИГУРАЦИЯ для RenderObject
+// Сам виджет ничего не рисует!
+
+Text('Hello')
+// ↓ создаёт/конфигурирует
+TextElement
+// ↓ управляет
+TextRenderObject
+// ↓ рисует
+Canvas (Skia/Impeller)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Почему это важно?"},
+    {"items": ["<strong>Лёгкость создания</strong> — виджеты дешевы в создании", "<strong>Перестройка дерева</strong> — при изменении состояния создаётся новое дерево", "<strong>Diffing</strong> — Framework сравнивает старое и новое дерево", "<strong>Инкрементальное обновление</strong> — обновляются только изменившиеся части"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Composition — паттерн компоновки"},
+    {"content": "// Композиция вместо наследования
+// Вместо: class MyButton extends Button {...}
+// Используем: Container + ElevatedButton + Padding
+
+Widget build(BuildContext context) {
+return Padding(                    // Обёртка с отступом
+padding: EdgeInsets.all(16),
+child: ElevatedButton(           // Основная кнопка
+onPressed: () {},
+child: Text('Click me'),
+),
+);
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Философия «всё — виджет» означает, что каждый элемент UI описывается как виджет. Это делает Flutter:", "type": "paragraph"},
+    {"items": ["<strong>Предсказуемым</strong> — неизменяемые виджеты", "<strong>Композируемым</strong> — виджеты вкладываются друг в друга", "<strong>Эффективным</strong> — лёгкие виджеты, инкрементальные обновления", "<strong>Декларативным</strong> — описываем что, а не как"], "type": "ul"}
+  ]
+}

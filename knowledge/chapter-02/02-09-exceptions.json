@@ -1,0 +1,241 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "2.9 Исключения и обработка ошибок"},
+    {"level": 2, "type": "heading", "text": "Типы ошибок"},
+    {"level": 3, "type": "heading", "text": "Ошибки компиляции"},
+    {"content": "// Ошибки, обнаруживаемые на этапе компиляции
+int x = 'string'; // ❌ Error: A value of type 'String' cannot be assigned
+
+// Missing return
+int compute() {
+// ❌ Error: A function which returns data must return a value
+}
+
+// Unhandled exception in async
+Future<void> badAsync() async {
+throw Exception('Error');
+// Без try/catch в вызывающем коде
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Ошибки выполнения (Runtime Errors)"},
+    {"content": "// Null pointer
+String? name;
+print(name.length); // ❌ Null check operator used on a null value
+
+// Division by zero
+int result = 10 ~/ 0; // ❌ IntegerDivisionByZeroException
+
+// Index out of range
+var list = [1, 2, 3];
+print(list[10]); // ❌ RangeError
+
+// Type cast error
+dynamic value = 'text';
+int num = value as int; // ❌ TypeError", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Try/Catch"},
+    {"level": 3, "type": "heading", "text": "Базовая обработка"},
+    {"content": "try {
+// Код, который может вызвать исключение
+int result = int.parse('not-a-number');
+} catch (e) {
+// Обработка исключения
+print('Ошибка: $e');
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Catch с двумя параметрами"},
+    {"content": "try {
+int result = int.parse('not-a-number');
+} catch (e, stackTrace) {
+print('Ошибка: $e');
+print('Стек: $stackTrace');
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Catch с типом"},
+    {"content": "try {
+int result = int.parse('not-a-number');
+} on FormatException {
+// Только FormatException
+print('Неверный формат числа');
+} on ArgumentError {
+// Только ArgumentError
+print('Неверный аргумент');
+} catch (e) {
+// Все остальные исключения
+print('Неизвестная ошибка: $e');
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Finally"},
+    {"content": "try {
+var data = await fetchData();
+print(data);
+} catch (e) {
+print('Ошибка: $e');
+} finally {
+// Выполняется всегда, даже при исключении
+print('Завершено');
+cleanup();
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Throw"},
+    {"level": 3, "type": "heading", "text": "Бросание исключений"},
+    {"content": "// Бросок Exception
+void validateAge(int age) {
+if (age < 0) {
+throw ArgumentError('Age cannot be negative');
+}
+if (age > 150) {
+throw ArgumentError('Age is too high');
+}
+}
+
+// Бросок Error (фатальные ошибки)
+void checkNotNull(dynamic value) {
+if (value == null) {
+throw Error();
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Custom Exceptions"},
+    {"content": "// Собственное исключение
+class DatabaseException implements Exception {
+final String message;
+final int? code;
+
+DatabaseException(this.message, [this.code]);
+
+@override
+String toString() => 'DatabaseException: $message (code: $code)';
+}
+
+class NetworkException implements Exception {
+final String message;
+final int? statusCode;
+
+NetworkException(this.message, [this.statusCode]);
+
+@override
+String toString() => 'NetworkException: $message (status: $statusCode)';
+}
+
+// Использование
+Future<void> fetchData() async {
+try {
+// ...
+throw DatabaseException('Connection timeout', 504);
+} catch (e) {
+rethrow; // Перебросить то же исключение
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Rethrow"},
+    {"content": "Future<void> loadData() async {
+try {
+await fetchData();
+} catch (e) {
+// Логирование
+print('Load failed: $e');
+// Переброс
+rethrow;
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Result Pattern"},
+    {"level": 3, "type": "heading", "text": "Result monad"},
+    {"content": "/// Result — паттерн для обработки ошибок без исключений
+class Result<T> {
+final T? data;
+final String? error;
+
+Result._(this.data, this.error);
+
+factory Result.success(T data) => Result._(data, null);
+factory Result.failure(String error) => Result._(null, error);
+
+bool get isSuccess => error == null;
+bool get isError => error != null;
+
+R map<R>(R Function(T data) success, R Function(String error) failure) {
+return isSuccess ? success(data!) : failure(error!);
+}
+
+Result<R> then<R>(Result<R> Function(T data) transformer) {
+return isSuccess ? transformer(data!) : Result.failure(error!);
+}
+}
+
+// Использование
+Result<User> result = await fetchUser();
+
+result.map(
+(user) => print('User: ${user.name}'),
+(error) => print('Error: $error'),
+);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Async Error Handling"},
+    {"level": 3, "type": "heading", "text": "Future error handling"},
+    {"content": "// try/catch с async/await
+Future<void> loadData() async {
+try {
+String data = await fetchData();
+print(data);
+} catch (e) {
+print('Ошибка загрузки: $e');
+}
+}
+
+// .catchError
+fetchData().catchError((e) {
+print('Ошибка: $e');
+});
+
+// .whenComplete (аналог finally)
+fetchData().whenComplete(() {
+print('Завершено, независимо от результата');
+});", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Stream error handling"},
+    {"content": "stream.listen(
+(data) => print('Data: $data'),
+onError: (error) => print('Error: $error'),
+onDone: () => print('Stream closed'),
+cancelOnError: true, // остановить при первой ошибке
+);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "Правила обработки ошибок"},
+    {"content": "// ❌ Не рекомендуется
+try {
+doSomething();
+} catch (e) {
+// Пустой catch — скрывает ошибки
+}
+
+// ✅ Рекомендуется
+try {
+int num = int.parse(text);
+} on FormatException {
+print('Неверный формат числа');
+}", "language": "dart", "type": "code"},
+    {"content": "try {
+// ...
+} catch (e, stack) {
+logError(e, stack);
+rethrow; // Сохраняет оригинальный стек
+}", "language": "dart", "type": "code"},
+    {"content": "class BusinessException implements Exception {
+final String message;
+BusinessException(this.message);
+}", "language": "dart", "type": "code"},
+    {"content": "Result<User> result = await registerUser(data);
+if (result.isSuccess) {
+navigateToHome(result.data!);
+} else {
+showError(result.error!);
+}", "language": "dart", "type": "code"},
+    {"items": ["<strong>Ловите только то, что можете обработать</strong>", "<strong>Используйте rethrow вместо throw</strong>", "<strong>Создавайте кастомные исключения</strong>", "<strong>Используйте Result pattern для бизнес-логики</strong>"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Иерархия исключений"},
+    {"content": "Object
+├── Exception
+│   ├── ArgumentError
+│   ├── FormatException
+│   ├── IOException
+│   ├── StateError
+│   └── [Custom Exceptions]
+├── Error
+│   ├── ArgumentError
+│   ├── AssertionError
+│   └── [System Errors]
+└── TypeError", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Правильная обработка ошибок — критически важная часть написания надёжного кода. Используйте try/catch для непредсказуемых операций, кастомные исключения для бизнес-логики и Result pattern для явной обработки ошибок.", "type": "paragraph"}
+  ]
+}

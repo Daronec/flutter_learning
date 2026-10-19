@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flutter Learning — Учебный курс</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="data.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Main view -->
+        <div id="mainView">
+            <header>
+                <h1>📚 Flutter Learning</h1>
+                <p>Учебный курс по Flutter и Dart</p>
+            </header>
+
+            <div class="chapter-grid" id="chapterGrid">
+                <!-- Chapters will be loaded dynamically -->
+                <div class="loading" style="grid-column: 1/-1; text-align: center; color: white; font-size: 1.1rem; padding: 40px;">
+                    Загрузка глав...
+                </div>
+            </div>
+        </div>
+
+        <!-- Chapter view -->
+        <div id="chapterView" class="chapter-view">
+            <div class="chapter-view-header">
+                <a href="#" class="back-btn" onclick="showMainView(); return false;">← Все главы</a>
+                <h1 id="chapterTitle"></h1>
+                <p id="chapterDescription"></p>
+            </div>
+
+            <div class="subchapter-list" id="subchapterList">
+                <!-- Subchapters will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chapter metadata
+        const chaptersData = {
+            'chapter-01': {
+                name: 'Введение в Flutter',
+                description: 'История, архитектура и первые шаги с Flutter',
+                icon: '🚀'
+            },
+            'chapter-02': {
+                name: 'Основы Dart',
+                description: 'Синтаксис, ООП, асинхронность и коллекции',
+                icon: '🎯'
+            },
+            'chapter-03': {
+                name: 'Виджеты',
+                description: 'Что такое виджеты, дерево элементов и жизненный цикл',
+                icon: '🧩'
+            },
+            'chapter-04': {
+                name: 'Основные виджеты',
+                description: 'Container, Text, Icon, Row, Column, Stack, ListView и другие',
+                icon: '📦'
+            },
+            'chapter-05': {
+                name: 'Система лейаутов',
+                description: 'Flex, constraints, кастомные лейауты и адаптивный дизайн',
+                icon: '📐'
+            },
+            'chapter-06': {
+                name: 'Управление состоянием',
+                description: 'State, Provider, Riverpod, BLoC и другие паттерны',
+                icon: '⚡'
+            },
+            'chapter-07': {
+                name: 'Навигация',
+                description: 'Navigator 1.0 и 2.0, анимации переходов, глубокие ссылки',
+                icon: '🧭'
+            },
+            'chapter-08': {
+                name: 'Формы',
+                description: 'Валидация, типы полей, дата-пикеры и отправка форм',
+                icon: '📝'
+            },
+            'chapter-09': {
+                name: 'Работа с API',
+                description: 'HTTP, Dio, JSON-сериализация, REST и GraphQL',
+                icon: '🌐'
+            },
+            'chapter-10': {
+                name: 'Локальное хранение данных',
+                description: 'SharedPreferences, SQLite, Hive, Isar и безопасное хранение',
+                icon: '💾'
+            },
+            'chapter-11': {
+                name: 'Чистая архитектура',
+                description: 'Clean Architecture, Repository, Dependency Injection',
+                icon: '🏗️'
+            },
+            'chapter-12': {
+                name: 'Анимации',
+                description: 'Анимационная система, Implicit/Explicit анимации, Lottie, Rive',
+                icon: '🎬'
+            },
+            'chapter-13': {
+                name: 'Тестирование',
+                description: 'Unit, widget, integration тесты, golden tests',
+                icon: '🧪'
+            },
+            'chapter-14': {
+                name: 'Производительность',
+                description: 'Flutter Performance Toolkit, DevTools, оптимизация',
+                icon: '⚡'
+            },
+            'chapter-15': {
+                name: 'Сборка приложения',
+                description: 'APK, AAB, подписывание, настройка CI/CD',
+                icon: '📱'
+            },
+            'chapter-16': {
+                name: 'Platform Channels',
+                description: 'Взаимодействие с нативным кодом Android/iOS',
+                icon: '🔌'
+            }
+        };
+
+        // File parsing cache
+        const fileCache = {};
+
+        // Parse filename to extract number and title
+        function parseFilename(filename) {
+            const match = filename.match(/(\d+)-(\d+)-(.+)\.md$/);
+            if (!match) return null;
+            
+            const [, chapterNum, fileNum, titlePart] = match;
+            const title = titlePart
+                .replace(/-/g, ' ')
+                .replace(/^\w/, c => c.toUpperCase());
+            
+            return {
+                chapterNum: chapterNum,
+                fileNum: fileNum,
+                title: title,
+                key: `${chapterNum}.${fileNum}`,
+                filename: filename.replace('.md', '')
+            };
+        }
+
+        // Load files for a chapter
+        async function loadChapterFiles(chapter) {
+            if (fileCache[chapter]) {
+                return fileCache[chapter];
+            }
+
+            // Read from embedded data.js (works with file:// protocol)
+            if (typeof CHAPTER_FILES !== 'undefined' && CHAPTER_FILES[chapter]) {
+                fileCache[chapter] = CHAPTER_FILES[chapter];
+                return fileCache[chapter];
+            }
+
+            // Fallback: try fetch (works only over HTTP)
+            try {
+                const response = await fetch(`${chapter}/_files.json`);
+                if (response.ok) {
+                    const data = await response.json();
+                    fileCache[chapter] = data.files || [];
+                    return fileCache[chapter];
+                }
+            } catch (e) {
+                console.log(`No _files.json for ${chapter}, will scan on demand`);
+            }
+            return [];
+        }
+
+        // Show main view
+        function showMainView() {
+            document.getElementById('mainView').style.display = 'block';
+            document.getElementById('chapterView').classList.remove('active');
+            window.history.pushState({}, '', 'index.html');
+        }
+
+        // Show chapter view
+        async function showChapterView(chapter) {
+            const chapterInfo = chaptersData[chapter];
+            if (!chapterInfo) return;
+
+            document.getElementById('mainView').style.display = 'none';
+            document.getElementById('chapterView').classList.add('active');
+            
+            document.getElementById('chapterTitle').textContent = `${chapterInfo.icon} ${chapterInfo.name}`;
+            document.getElementById('chapterDescription').textContent = chapterInfo.description;
+
+            // Load subchapters
+            const files = await loadChapterFiles(chapter);
+            const listContainer = document.getElementById('subchapterList');
+            
+            if (files.length === 0) {
+                listContainer.innerHTML = `
+                    <div style="padding: 40px; text-align: center; color: #a0aec0;">
+                        <p>Список подглав будет доступен после генерации _files.json</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort files by name
+            files.sort((a, b) => a.name.localeCompare(b.name));
+
+            listContainer.innerHTML = files.map(file => {
+                const parsed = parseFilename(file.name);
+                if (!parsed) return '';
+                
+                return `
+                    <a href="chapter.html?chapter=${chapter}&file=${parsed.filename}" class="subchapter-item">
+                        <div class="subchapter-num">${parsed.key}</div>
+                        <div class="subchapter-info">
+                            <h3>${parsed.title}</h3>
+                            <span>${file.name}</span>
+                        </div>
+                        <div class="subchapter-arrow">→</div>
+                    </a>
+                `;
+            }).join('');
+
+            window.history.pushState({}, '', `?chapter=${chapter}`);
+        }
+
+        // Load chapters
+        async function loadChapters() {
+            const grid = document.getElementById('chapterGrid');
+            
+            // Get all chapter directories
+            const chapterKeys = Object.keys(chaptersData).sort();
+            
+            grid.innerHTML = chapterKeys.map(key => {
+                const info = chaptersData[key];
+                const num = key.replace('chapter-', '');
+                
+                return `
+                    <a href="?chapter=${key}" class="chapter-card" onclick="event.preventDefault(); showChapterView('${key}');">
+                        <div class="chapter-number">${num.replace('-', '.')}</div>
+                        <h2>${info.icon} ${info.name}</h2>
+                        <p>${info.description}</p>
+                        <div class="chapter-meta">
+                            <span>📄 <span class="file-count" data-chapter="${key}">...</span> подглав</span>
+                        </div>
+                        <div class="chapter-view-btn">Открыть главу →</div>
+                    </a>
+                `;
+            }).join('');
+
+            // Load file counts
+            for (const key of chapterKeys) {
+                const files = await loadChapterFiles(key);
+                const countEl = document.querySelector(`.file-count[data-chapter="${key}"]`);
+                if (countEl) {
+                    countEl.textContent = files.length;
+                }
+            }
+        }
+
+        // Handle browser back/forward
+        window.addEventListener('popstate', () => {
+            const params = new URLSearchParams(window.location.search);
+            const chapter = params.get('chapter');
+            
+            if (chapter && chaptersData[chapter]) {
+                showChapterView(chapter);
+            } else {
+                showMainView();
+            }
+        });
+
+        // Initialize
+        loadChapters();
+
+        // Check URL for chapter parameter
+        const params = new URLSearchParams(window.location.search);
+        const chapter = params.get('chapter');
+        if (chapter && chaptersData[chapter]) {
+            showChapterView(chapter);
+        }
+    </script>
+</body>
+</html>

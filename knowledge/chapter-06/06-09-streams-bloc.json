@@ -1,0 +1,284 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Streams и StreamController в BLoC"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "<strong>Streams</strong> — это основа реактивного программирования в Dart. Они представляют собой последовательность асинхронных событий во времени. В BLoC паттерне Streams используются для передачи данных между слоями приложения.", "type": "paragraph"},
+    {"content": "**Ключевая идея:** Stream — это поток данных, который можно слушать и обрабатывать асинхронно.", "type": "blockquote"},
+    {"level": 2, "type": "heading", "text": "Основы Stream"},
+    {"level": 3, "type": "heading", "text": "Что такое Stream"},
+    {"content": "Stream — это последовательность событий:
+↓
+Event 1 → Event 2 → Event 3 → ... → Event N
+↓
+↓ (ошибки тоже могут быть)
+↓
+Error
+↓
+↓ (завершение)
+↓
+Done", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Базовый пример Stream"},
+    {"content": "void main() async {
+// Создаём Stream
+final stream = Stream<int>.periodic(
+const Duration(seconds: 1),
+(count) => count,
+).take(5);
+
+// Слушаем Stream
+await for (final value in stream) {
+print('Получено: $value');
+}
+
+// Вывод:
+// Получено: 0
+// Получено: 1
+// Получено: 2
+// Получено: 3
+// Получено: 4
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "StreamController"},
+    {"level": 3, "type": "heading", "text": "Основы"},
+    {"text": "<code>StreamController</code> — это класс для создания и управления Streams.", "type": "paragraph"},
+    {"content": "void main() async {
+// Создаём контроллер
+final controller = StreamController<String>();
+
+// Слушаем Stream
+controller.stream.listen((event) {
+print('Получено: $event');
+});
+
+// Добавляем события
+controller.add('Привет');
+controller.add('Мир');
+
+// Закрываем контроллер
+await controller.close();
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Типы StreamController"},
+    {"content": "// 1. Broadcast — несколько слушателей
+final broadcastController = StreamController<String>.broadcast();
+
+// 2. Single subscription — один слушатель
+final singleController = StreamController<String>();
+
+// 3. С буфером
+final bufferedController = StreamController<String>(
+onListen: () => print('Started listening'),
+onPause: () => print('Paused'),
+onResume: () => print('Resumed'),
+onCancel: () => print('Cancelled'),
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример: StreamController в BLoC"},
+    {"content": "import 'dart:async';
+
+class CounterBloc {
+// StreamController для событий
+final _eventController = StreamController<CounterEvent>();
+Stream<CounterEvent> get events => _eventController.stream;
+
+// StreamController для состояний
+final _stateController = StreamController<CounterState>();
+Stream<CounterState> get states => _stateController.stream;
+
+// Текущее состояние
+int _count = 0;
+
+// Обработка событий
+void processEvents() {
+events.listen((event) {
+if (event is IncrementEvent) {
+_count++;
+_stateController.add(CountState(_count));
+} else if (event is DecrementEvent) {
+_count--;
+_stateController.add(CountState(_count));
+}
+});
+}
+
+// Методы для добавления событий
+void addEvent(CounterEvent event) {
+_eventController.add(event);
+}
+
+// Очистка ресурсов
+void dispose() {
+_eventController.close();
+_stateController.close();
+}
+}
+
+// События
+abstract class CounterEvent {}
+class IncrementEvent extends CounterEvent {}
+class DecrementEvent extends CounterEvent {}
+
+// Состояния
+class CountState {
+final int count;
+CountState(this.count);
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Streams в BLoC"},
+    {"level": 3, "type": "heading", "text": "Базовая архитектура"},
+    {"content": "import 'package:bloc/bloc.dart';
+
+// События
+abstract class TodoEvent {}
+class TodoAdded extends TodoEvent {
+final String title;
+TodoAdded(this.title);
+}
+
+// Состояния
+abstract class TodoState {}
+class TodoInitial extends TodoState {}
+class TodoHasItems extends TodoState {
+final List<String> items;
+TodoHasItems(this.items);
+}
+
+// BLoC на основе Stream
+class TodoBloc extends Bloc<TodoEvent, TodoState> {
+TodoBloc() : super(TodoInitial()) {
+on<TodoAdded>(_onTodoAdded);
+}
+
+void _onTodoAdded(TodoAdded event, Emitter<TodoState> emit) {
+// Логика обработки
+emit(TodoHasItems(['Новая задача']));
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Transforming Streams"},
+    {"level": 4, "type": "heading", "text": "map — преобразование значений"},
+    {"content": "void main() {
+final controller = StreamController<int>();
+
+controller.stream
+.map((value) => value * 2)
+.listen((result) => print('Удвоено: $result'));
+
+controller.add(5);   // Удвоено: 10
+controller.add(10);  // Удвоено: 20
+}", "language": "dart", "type": "code"},
+    {"level": 4, "type": "heading", "text": "where — фильтрация"},
+    {"content": "void main() {
+final controller = StreamController<int>();
+
+controller.stream
+.where((value) => value.isEven)
+.listen((result) => print('Чётное: $result'));
+
+controller.add(1);   // Не выводится
+controller.add(2);   // Чётное: 2
+controller.add(3);   // Не выводится
+controller.add(4);   // Чётное: 4
+}", "language": "dart", "type": "code"},
+    {"level": 4, "type": "heading", "text": "switchMap — переключение потоков"},
+    {"content": "void main() {
+final controller = StreamController<String>();
+
+controller.stream
+.switchMap((query) {
+return Stream.fromFuture(
+fetchResults(query),
+);
+})
+.listen((results) => print('Результаты: $results'));
+
+controller.add('Flutter');
+controller.add('Dart');
+}
+
+Future<List<String>> fetchResults(String query) async {
+await Future.delayed(const Duration(seconds: 1));
+return ['Результат 1 для $query', 'Результат 2 для $query'];
+}", "language": "dart", "type": "code"},
+    {"level": 4, "type": "heading", "text": "combineLatest — объединение потоков"},
+    {"content": "import 'package:rxdart/rxdart.dart';
+
+void main() {
+final stream1 = StreamController<int>();
+final stream2 = StreamController<String>();
+
+Rx.combineLatest2<int, String, String>(
+stream1.stream,
+stream2.stream,
+(number, text) => '$text: $number',
+).listen((result) => print(result));
+
+stream1.add(1);
+stream2.add('Привет'); // Вывод: Привет: 1
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Пример: Поиск с debounce"},
+    {"content": "import 'dart:async';
+import 'package:flutter/material.dart';
+
+class SearchBloc {
+final _searchController = StreamController<String>();
+Timer? _debounceTimer;
+
+Stream<String> get _searchStream => _searchController.stream;
+
+// Debounce — задержка перед выполнением
+Stream<String> get searchResults async* {
+await for (final query in _searchStream) {
+_debounceTimer?.cancel();
+_debounceTimer = Timer(const Duration(milliseconds: 300), () {
+if (query.isNotEmpty) {
+// Выполняем поиск
+_performSearch(query);
+}
+});
+}
+}
+
+void _performSearch(String query) {
+// Логика поиска
+print('Поиск: $query');
+}
+
+void onSearchChanged(String query) {
+_searchController.add(query);
+}
+
+void dispose() {
+_searchController.close();
+_debounceTimer?.cancel();
+}
+}
+
+// Использование в UI
+class SearchPage extends StatelessWidget {
+final SearchBloc _searchBloc = SearchBloc();
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Поиск')),
+body: Column(
+children: [
+TextField(
+onChanged: _searchBloc.onSearchChanged,
+decoration: const InputDecoration(
+hintText: 'Введите запрос...',
+prefixIcon: Icon(Icons.search),
+),
+),
+const Expanded(child: SearchResults()),
+],
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "✅ Делайте"},
+    {"items": ["Используйте <code>async*</code> и <code>yield</code> для генерации потоков", "Используйте <code>switchMap</code> для отмены предыдущих запросов", "Используйте <code>debounce</code> для поиска", "Закрывайте StreamController при dispose", "Используйте <code>rxdart</code> для сложных операций"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "❌ Не делайте"},
+    {"items": ["Не создавайте StreamController внутри <code>build()</code>", "Не забывайте закрывать контроллеры", "Не добавляйте события после закрытия контроллера", "Не используйте <code>StreamController</code> там, где достаточно <code>ValueNotifier</code>"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Streams — это мощный инструмент для реактивного программирования в Dart. В BLoC паттерне они используются для передачи событий и состояний между слоями приложения.", "type": "paragraph"},
+    {"content": "**Правило:** Используйте Streams для асинхронных данных и событий. Используйте BLoC для сложной бизнес-логики.", "type": "blockquote"}
+  ]
+}

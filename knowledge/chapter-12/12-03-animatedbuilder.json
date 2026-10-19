@@ -1,0 +1,366 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "AnimatedBuilder и AnimatedCrossFade"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "<code>AnimatedBuilder</code> — это универсальный виджет для создания кастомных анимаций. Он позволяет переопределять метод <code>build</code> и анимировать любые свойства.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "AnimatedBuilder"},
+    {"level": 3, "type": "heading", "text": "Базовое использование"},
+    {"content": "class CustomAnimatedBuilder extends StatefulWidget {
+const CustomAnimatedBuilder({super.key});
+
+@override
+State<CustomAnimatedBuilder> createState() =>
+_CustomAnimatedBuilderState();
+}
+
+class _CustomAnimatedBuilderState
+extends State<CustomAnimatedBuilder>
+with SingleTickerProviderStateMixin {
+late AnimationController _controller;
+late Animation<double> _animation;
+
+@override
+void initState() {
+super.initState();
+_controller = AnimationController(
+duration: const Duration(milliseconds: 1000),
+vsync: this,
+);
+_animation = CurvedAnimation(
+parent: _controller,
+curve: Curves.easeInOut,
+);
+_controller.forward();
+}
+
+@override
+void dispose() {
+_controller.dispose();
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return AnimatedBuilder(
+animation: _animation,
+builder: (context, child) {
+return Transform.translate(
+offset: Offset(_animation.value * 100, 0),
+child: Transform.rotate(
+angle: _animation.value * 3.14,
+child: child,
+),
+);
+},
+child: Container(
+width: 100,
+height: 100,
+color: Colors.blue,
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "AnimatedBuilder с Tween"},
+    {"content": "class TweenAnimatedBuilderExample extends StatefulWidget {
+const TweenAnimatedBuilderExample({super.key});
+
+@override
+State<TweenAnimatedBuilderExample> createState() =>
+_TweenAnimatedBuilderExampleState();
+}
+
+class _TweenAnimatedBuilderExampleState
+extends State<TweenAnimatedBuilderExample>
+with SingleTickerProviderStateMixin {
+late AnimationController _controller;
+late Animation<double> _sizeAnimation;
+late Animation<Color?> _colorAnimation;
+late Animation<Offset> _offsetAnimation;
+
+@override
+void initState() {
+super.initState();
+_controller = AnimationController(
+duration: const Duration(seconds: 2),
+vsync: this,
+reverseDuration: const Duration(seconds: 2),
+);
+
+_sizeAnimation = Tween<double>(begin: 50, end: 200).animate(
+CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+);
+
+_colorAnimation = ColorTween(
+begin: Colors.blue,
+end: Colors.purple,
+).animate(_controller);
+
+_offsetAnimation = Tween<Offset>(
+begin: Offset.zero,
+end: const Offset(0, -50),
+).animate(
+CurvedAnimation(parent: _controller, curve: Curves.bounceOut),
+);
+
+_controller.forward().then((_) => _controller.reverse());
+}
+
+@override
+void dispose() {
+_controller.dispose();
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return AnimatedBuilder(
+animation: Listenable.merge([
+_sizeAnimation,
+_colorAnimation,
+_offsetAnimation,
+]),
+builder: (context, child) {
+return Transform.translate(
+offset: _offsetAnimation.value,
+child: ScaleTransition(
+scale: _sizeAnimation.value / 50,
+child: Container(
+width: 100,
+height: 100,
+decoration: BoxDecoration(
+color: _colorAnimation.value,
+borderRadius: BorderRadius.circular(
+_sizeAnimation.value / 5,
+),
+),
+child: child,
+),
+),
+);
+},
+child: const Center(
+child: Text('Hello', style: TextStyle(color: Colors.white)),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "AnimatedBuilder с Notifier"},
+    {"content": "class ValueNotifierBuilderExample extends StatefulWidget {
+const ValueNotifierBuilderExample({super.key});
+
+@override
+State<ValueNotifierBuilderExample> createState() =>
+_ValueNotifierBuilderExampleState();
+}
+
+class _ValueNotifierBuilderExampleState
+extends State<ValueNotifierBuilderExample> {
+final ValueNotifier<double> _opacity = ValueNotifier(0.0);
+final ValueNotifier<double> _scale = ValueNotifier(0.0);
+
+@override
+void initState() {
+super.initState();
+// Анимация через Tween + AnimationController
+final controller = AnimationController(
+duration: const Duration(milliseconds: 500),
+vsync: this,
+);
+
+Tween<double>(begin: 0, end: 1).animate(controller).addListener(() {
+_opacity.value = controller.value;
+_scale.value = controller.value;
+});
+
+controller.forward();
+}
+
+@override
+void dispose() {
+_opacity.dispose();
+_scale.dispose();
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return AnimatedBuilder(
+animation: Listenable.merge([_opacity, _scale]),
+builder: (context, child) {
+return Opacity(
+opacity: _opacity.value,
+child: Transform.scale(
+scale: _scale.value,
+child: child,
+),
+);
+},
+child: Container(
+width: 200,
+height: 200,
+color: Colors.blue,
+child: const Center(
+child: Text(
+'Animated!',
+style: TextStyle(color: Colors.white, fontSize: 20),
+),
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "AnimatedCrossFade"},
+    {"level": 3, "type": "heading", "text": "Базовое использование"},
+    {"content": "class AnimatedCrossFadeDetailed extends StatefulWidget {
+const AnimatedCrossFadeDetailed({super.key});
+
+@override
+State<AnimatedCrossFadeDetailed> createState() =>
+_AnimatedCrossFadeDetailedState();
+}
+
+class _AnimatedCrossFadeDetailedState
+extends State<AnimatedCrossFadeDetailed> {
+CrossFadeState _crossFadeState = CrossFadeState.showFirst;
+
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+AnimatedCrossFade(
+firstChild: _buildFirstView(),
+secondChild: _buildSecondView(),
+crossFadeState: _crossFadeState,
+duration: const Duration(milliseconds: 300),
+firstCurve: Curves.easeIn,
+secondCurve: Curves.easeOut,
+),
+const SizedBox(height: 20),
+ElevatedButton(
+onPressed: () {
+setState(() {
+_crossFadeState = _crossFadeState == CrossFadeState.showFirst
+? CrossFadeState.showSecond
+: CrossFadeState.showFirst;
+});
+},
+child: Text(_crossFadeState == CrossFadeState.showFirst
+? 'Показать второй'
+: 'Показать первый'),
+),
+],
+);
+}
+
+Widget _buildFirstView() {
+return Container(
+width: 200,
+height: 200,
+color: Colors.blue,
+child: const Center(
+child: Text('Первый экран', style: TextStyle(color: Colors.white)),
+),
+);
+}
+
+Widget _buildSecondView() {
+return Container(
+width: 200,
+height: 200,
+color: Colors.red,
+child: const Center(
+child: Text('Второй экран', style: TextStyle(color: Colors.white)),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "AnimatedCrossFade с анимированными виджетами"},
+    {"content": "class AnimatedCrossFadeWithWidgets extends StatefulWidget {
+const AnimatedCrossFadeWithWidgets({super.key});
+
+@override
+State<AnimatedCrossFadeWithWidgets> createState() =>
+_AnimatedCrossFadeWithWidgetsState();
+}
+
+class _AnimatedCrossFadeWithWidgetsState
+extends State<AnimatedCrossFadeWithWidgets> {
+CrossFadeState _state = CrossFadeState.showFirst;
+
+@override
+Widget build(BuildContext context) {
+return AnimatedCrossFade(
+firstChild: _AnimatedView(
+title: 'Данные A',
+color: Colors.blue,
+itemCount: 10,
+),
+secondChild: _AnimatedView(
+title: 'Данные B',
+color: Colors.green,
+itemCount: 5,
+),
+crossFadeState: _state,
+duration: const Duration(milliseconds: 400),
+);
+}
+}
+
+class _AnimatedView extends StatelessWidget {
+final String title;
+final Color color;
+final int itemCount;
+
+const _AnimatedView({
+required this.title,
+required this.color,
+required this.itemCount,
+});
+
+@override
+Widget build(BuildContext context) {
+return Container(
+width: 200,
+height: 300,
+color: color.withOpacity(0.2),
+child: Column(
+crossAxisAlignment: CrossAxisAlignment.start,
+children: [
+Padding(
+padding: const EdgeInsets.all(12),
+child: Text(title,
+style: TextStyle(color: color, fontSize: 18)),
+),
+Expanded(
+child: ListView.builder(
+itemCount: itemCount,
+itemBuilder: (context, index) => ListTile(
+title: Text('Элемент $index'),
+),
+),
+),
+],
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Параметры AnimatedCrossFade"},
+    {"text": "| Параметр | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>firstChild</code> | <code>Widget</code> | Первый виджет |", "type": "paragraph"},
+    {"text": "| <code>secondChild</code> | <code>Widget</code> | Второй виджет |", "type": "paragraph"},
+    {"text": "| <code>crossFadeState</code> | <code>CrossFadeState</code> | Текущее состояние |", "type": "paragraph"},
+    {"text": "| <code>duration</code> | <code>Duration</code> | Длительность |", "type": "paragraph"},
+    {"text": "| <code>firstCurve</code> | <code>Curve</code> | Кривая первого виджета |", "type": "paragraph"},
+    {"text": "| <code>secondCurve</code> | <code>Curve</code> | Кривая второго виджета |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Когда использовать что"},
+    {"text": "| Сценарий | Решение |", "type": "paragraph"},
+    {"text": "|----------|---------|", "type": "paragraph"},
+    {"text": "| Анимация одного свойства | <code>AnimatedContainer</code>, <code>AnimatedOpacity</code> |", "type": "paragraph"},
+    {"text": "| Кастомная анимация | <code>AnimatedBuilder</code> |", "type": "paragraph"},
+    {"text": "| Переключение двух виджетов | <code>AnimatedCrossFade</code> |", "type": "paragraph"},
+    {"text": "| Несколько анимаций | <code>AnimatedBuilder</code> с <code>Listenable.merge</code> |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Лучшие практики"},
+    {"items": ["<strong>Используйте <code>AnimatedBuilder</code></strong> для сложных кастомных анимаций", "<strong>Мержите анимации</strong> через <code>Listenable.merge</code>", "<strong>Используйте <code>AnimatedCrossFade</code></strong> для переключения экранов", "<strong>Устанавливайте кривые</strong> для каждого виджета отдельно", "<strong>Избегайте вложенных AnimatedBuilder</strong> — это может быть дорого", "<strong>Используйте <code>child</code> параметр</strong> для статического контента"], "type": "ol"}
+  ]
+}

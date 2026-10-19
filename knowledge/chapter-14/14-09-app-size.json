@@ -1,0 +1,302 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "14-09. App Size Optimization — Уменьшение размера бандла"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Размер приложения — важный фактор, влияющий на конверсию и пользовательский опыт. Пользователи не хотят скачивать большие приложения, а магазины приложений имеют ограничения на размер. Оптимизация размера бандла позволяет уменьшить размер приложения и улучшить время загрузки.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Tree Shaking"},
+    {"level": 3, "type": "heading", "text": "Что такое Tree Shaking"},
+    {"text": "Tree Shaking — это процесс удаления неиспользуемого кода из финального бандла. Dart-компилятор автоматически анализирует код и удаляет всё, что не используется.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Как работает Tree Shaking"},
+    {"content": "Исходный код:
+├── module_a.dart
+│   ├── function_a1()    ← используется
+│   └── function_a2()    ← НЕ используется
+├── module_b.dart
+│   ├── function_b1()    ← используется
+│   └── function_b2()    ← НЕ используется
+└── main.dart
+
+Результат Tree Shaking:
+├── module_a.dart
+│   └── function_a1()    ← ✓
+├── module_b.dart
+│   └── function_b1()    ← ✓
+└── main.dart", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример: Tree Shaking в действии"},
+    {"content": "// main.dart
+import 'package:flutter/material.dart';
+import 'utils/math_utils.dart';
+import 'utils/string_utils.dart';
+
+void main() {
+runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+// Используется только MathUtils, StringUtils будет удалён
+final result = MathUtils.add(1, 2);
+return MaterialApp(home: Text('Result: $result'));
+}
+}
+
+// utils/math_utils.dart
+class MathUtils {
+static int add(int a, int b) => a + b;
+static int subtract(int a, int b) => a - b;
+static int multiply(int a, int b) => a * b;
+}
+
+// utils/string_utils.dart
+class StringUtils {
+static String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
+static String reverse(String s) => s.split('').reversed.join();
+}
+// StringUtils будет удалён — не используется", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Tree Shaking для Flutter виджетов"},
+    {"content": "// Tree Shaking работает и для виджетов
+import 'package:flutter/material.dart';
+
+void main() {
+runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return MaterialApp(
+home: const HomePage(),
+// Эти маршруты будут удалены, если не используются
+routes: {
+'/settings': (context) => const SettingsPage(),
+'/profile': (context) => const ProfilePage(),
+},
+);
+}
+}
+
+class HomePage extends StatelessWidget {
+const HomePage({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Home')),
+body: const Center(child: Text('Hello')),
+);
+}
+}
+
+class SettingsPage extends StatelessWidget {
+const SettingsPage({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Settings')),
+body: const Center(child: Text('Settings')),
+);
+}
+}
+
+// SettingsPage и ProfilePage будут удалены из бандла,
+// если они не используются в runtime", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Release Mode"},
+    {"level": 3, "type": "heading", "text": "Разница между Debug и Release"},
+    {"text": "| Характеристика | Debug | Release |", "type": "paragraph"},
+    {"text": "|---------------|-------|---------|", "type": "paragraph"},
+    {"text": "| Tree Shaking | Нет | Да |", "type": "paragraph"},
+    {"text": "| AOT компиляция | Нет (JIT) | Да (AOT) |", "type": "paragraph"},
+    {"text": "| Размер бандла | Большой | Маленький |", "type": "paragraph"},
+    {"text": "| Производительность | Низкая | Высокая |", "type": "paragraph"},
+    {"text": "| Hot Reload | Да | Нет |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Команды сборки"},
+    {"content": "# Сборка APK для Android
+flutter build apk --release
+
+# Сборка APK с анализом размера
+flutter build apk --release --analyze-size
+
+# Сборка App Bundle для Google Play
+flutter build appbundle --release
+
+# Сборка IPA для iOS
+flutter build ios --release
+
+# Сборка для Web
+flutter build web --release", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "ProGuard / R8"},
+    {"level": 3, "type": "heading", "text": "Что такое ProGuard/R8"},
+    {"text": "ProGuard и R8 — это инструменты для оптимизации Java/Kotlin-кода в Android:", "type": "paragraph"},
+    {"items": ["<strong>ProGuard</strong> — удаляет неиспользуемый код и переименовывает классы", "<strong>R8</strong> — более современный инструмент, включает функциональность ProGuard"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Настройка R8"},
+    {"content": "# android/app/proguard-rules.pro
+
+# Сохраняем модели данных
+-keep class com.example.model.** { *; }
+
+# Сохраняем JSON-сериализуемые классы
+-keep class * implements java.io.Serializable { *; }
+
+# Сохраняем Flutter-методы
+-keep class io.flutter.plugin.** { *; }
+-keep class io.flutter.embedding.** { *; }
+
+# Сохраняем нативные методы
+-keepclassmembers class * {
+@android.webkit.JavascriptInterface <methods>;
+}
+
+# Сохраняем Reflection-классы
+-keep class com.example.util.** { *; }", "language": "proguard", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Настройка в build.gradle"},
+    {"content": "// android/app/build.gradle
+android {
+buildTypes {
+release {
+signingConfig signingConfigs.release
+minifyEnabled true      // Включаем минификацию
+shrinkResources true    // Включаем удаление ресурсов
+proguardFiles getDefaultProguardFile(
+'proguard-android-optimize.txt'),
+'proguard-rules.pro'
+}
+}
+}", "language": "groovy", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Shrink Resources"},
+    {"content": "// android/app/build.gradle
+android {
+buildTypes {
+release {
+minifyEnabled true
+shrinkResources true  // Удаляет неиспользуемые ресурсы
+proguardFiles getDefaultProguardFile(
+'proguard-android-optimize.txt'),
+'proguard-rules.pro'
+}
+}
+}", "language": "groovy", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Оптимизация ресурсов"},
+    {"level": 3, "type": "heading", "text": "Оптимизация изображений"},
+    {"content": "# pubspec.yaml
+flutter:
+assets:
+# Указываем конкретные пути, а не директории
+- assets/images/logo.png
+- assets/images/banner.webp
+- assets/icons/home.svg", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Удаление неиспользуемых ресурсов"},
+    {"content": "# Проверка размера assets
+find assets -type f -exec du -ch {} + | tail -n 1
+
+# Оптимизация изображений
+# Используйте инструменты сжатия для всех изображений
+# PNG: pngquant, optipng
+# JPEG: jpegoptim, mozjpeg
+# WebP: cwebp", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Asset-файлы"},
+    {"content": "# pubspec.yaml
+flutter:
+assets:
+- assets/images/
+- assets/icons/
+- assets/fonts/
+- assets/data/
+
+fonts:
+- family: CustomFont
+fonts:
+- asset: assets/fonts/CustomFont-Regular.ttf
+- asset: assets/fonts/CustomFont-Bold.ttf
+weight: 700", "language": "yaml", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Оптимизация зависимостей"},
+    {"level": 3, "type": "heading", "text": "Анализ зависимостей"},
+    {"content": "# Просмотр всех зависимостей
+flutter pub deps
+
+# Поиск неиспользуемых зависимостей
+# Удалите зависимости, которые не используются
+flutter pub remove unused_package", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Минимизация зависимостей"},
+    {"text": "| Критерий | Действие |", "type": "paragraph"},
+    {"text": "|----------|----------|", "type": "paragraph"},
+    {"text": "| Зависимость не используется | Удалить |", "type": "paragraph"},
+    {"text": "| Большая зависимость для простой задачи | Найти лёгкую альтернативу |", "type": "paragraph"},
+    {"text": "| Дублирующиеся функции | Объединить |", "type": "paragraph"},
+    {"text": "| Тяжёлый пакет | Рассмотреть нативную реализацию |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Пример: замена тяжёлых зависимостей"},
+    {"content": "# Плохо — heavy dependency для простой задачи
+dependencies:
+intl: ^0.19.0      # ~1 MB — для форматирования даты
+json_serializable: ^6.8.0  # ~500 KB — для простой сериализации
+
+# Хорошо — используем встроенные средства
+dependencies:
+# Форматирование даты без intl
+# json_serializable без кодогенерации
+# Используем встроенные DateTime и manual JSON", "language": "yaml", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Оптимизация для разных платформ"},
+    {"level": 3, "type": "heading", "text": "Android оптимизации"},
+    {"content": "// android/app/build.gradle
+android {
+// Разделение APK по архитектурам
+splits {
+abi {
+reset()
+enable true
+include \"armeabi-v7a\", \"arm64-v8a\", \"x86_64\"
+universalApk true
+}
+}
+
+// Минификация
+buildTypes {
+release {
+minifyEnabled true
+shrinkResources true
+proguardFiles getDefaultProguardFile(
+'proguard-android-optimize.txt'),
+'proguard-rules.pro'
+}
+}
+}", "language": "groovy", "type": "code"},
+    {"level": 3, "type": "heading", "text": "iOS оптимизации"},
+    {"content": "# Сжатие биткода для iOS
+# Xcode -> Build Settings -> Enable Bitcode = YES
+
+# Сжатие изображений
+# Используйте .jpg вместо .png для фотографий
+# Используйте .webp через плагин
+
+# Оптимизация размера фреймворка
+# flutter build ios --release --no-codesign", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Анализ размера приложения"},
+    {"level": 3, "type": "heading", "text": "Анализ размера APK"},
+    {"content": "# Генерация отчёта о размере
+flutter build apk --release --analyze-size
+
+# Создание APK с анализом
+flutter build apk --release", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Анализ размера IPA"},
+    {"content": "# Сборка iOS с анализом
+flutter build ios --release
+
+# Анализ размера через Xcode
+# Xcode -> Product -> Archive -> Analytics", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Онлайн-анализаторы"},
+    {"text": "| Инструмент | Платформа | Описание |", "type": "paragraph"},
+    {"text": "|------------|-----------|----------|", "type": "paragraph"},
+    {"text": "| APK Analyzer | Android | Встроенный в Android Studio |", "type": "paragraph"},
+    {"text": "| iMazing | iOS | Анализ IPA-файлов |", "type": "paragraph"},
+    {"text": "| size-apk | Android | CLI-инструмент |", "type": "paragraph"},
+    {"text": "| Flutter Size | Flutter | Пакет для анализа размера виджетов |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "Рекомендации по уменьшению размера"},
+    {"items": ["<strong>Всегда собирайте в Release mode</strong> — Tree Shaking и минификация", "<strong>Используйте WebP вместо PNG/JPEG</strong> — на 25-35% меньше размер", "<strong>Удалите неиспользуемые зависимости</strong> — уменьшает бандл", "<strong>Включите ProGuard/R8 для Android</strong> — удаляет неиспользуемый код", "<strong>Указывайте конкретные assets</strong> — не включайте целые директории", "<strong>Используйте <code>shrinkResources true</code></strong> — удаляет неиспользуемые ресурсы"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Чек-лист оптимизации размера"},
+    {"items": ["[ ] Сборка в Release mode", "[ ] ProGuard/R8 включён для Android", "[ ] Shrink resources включён", "[ ] Изображения в формате WebP", "[ ] Неиспользуемые зависимости удалены", "[ ] Конкретные пути к assets", "[ ] Размер APK < 50 MB (для Google Play)", "[ ] Размер IPA оптимизирован"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Оптимизация размера приложения — это комплексная задача, включающая Tree Shaking, минификацию кода, сжатие ресурсов и удаление неиспользуемых зависимостей. Правильная настройка этих процессов позволяет значительно уменьшить размер бандла без потери функциональности.", "type": "paragraph"}
+  ]
+}

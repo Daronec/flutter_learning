@@ -1,0 +1,283 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Dio — продвинутый HTTP-клиент для Flutter"},
+    {"text": "Dio — это мощный HTTP-клиент для Dart/Flutter, который поддерживает интерсепторы, глобальную конфигурацию, FormData, отмену запросов, таймауты и многое другое.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Установка"},
+    {"content": "dependencies:
+dio: ^5.4.0", "language": "yaml", "type": "code"},
+    {"content": "flutter pub add dio", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Базовая настройка"},
+    {"level": 3, "type": "heading", "text": "Создание экземпляра Dio"},
+    {"content": "import 'package:dio/dio.dart';
+
+// Базовая настройка
+final dio = Dio(BaseOptions(
+baseUrl: 'https://api.example.com',
+connectTimeout: const Duration(seconds: 5),
+receiveTimeout: const Duration(seconds: 3),
+headers: {
+'Content-Type': 'application/json',
+'Accept': 'application/json',
+},
+));", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Расширенная настройка"},
+    {"content": "final dio = Dio(BaseOptions(
+baseUrl: 'https://api.example.com',
+connectTimeout: const Duration(seconds: 5),
+receiveTimeout: const Duration(seconds: 3),
+sendTimeout: const Duration(seconds: 3),
+headers: {
+'Content-Type': 'application/json',
+'Accept': 'application/json',
+},
+responseType: ResponseType.json,
+contentType: 'application/json',
+validateStatus: (status) => status! < 500, // Принимать статусы до 499
+followRedirects: true,
+maxRedirects: 5,
+persistentConnection: true,
+));", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Выполнение запросов"},
+    {"level": 3, "type": "heading", "text": "GET-запрос"},
+    {"content": "// Простой GET
+Future<void> getUsers() async {
+try {
+Response response = await dio.get('/users');
+print(response.data); // Данные автоматически распарсены
+} on DioException catch (e) {
+print('Ошибка: ${e.message}');
+}
+}
+
+// GET с параметрами
+Future<void> searchUsers(String query) async {
+final response = await dio.get(
+'/users/search',
+queryParameters: {
+'q': query,
+'page': 1,
+'limit': 20,
+},
+);
+print(response.data);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "POST-запрос"},
+    {"content": "Future<void> createUser(Map<String, dynamic> user) async {
+try {
+final response = await dio.post(
+'/users',
+data: user, // Данные автоматически сериализуются в JSON
+);
+print('Создан пользователь: ${response.data}');
+} on DioException catch (e) {
+if (e.response?.statusCode == 422) {
+print('Ошибки валидации: ${e.response?.data}');
+}
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "PUT, PATCH, DELETE"},
+    {"content": "// PUT — полное обновление
+Future<void> updateUser(int id, Map<String, dynamic> user) async {
+await dio.put('/users/$id', data: user);
+}
+
+// PATCH — частичное обновление
+Future<void> patchUser(int id, Map<String, dynamic> updates) async {
+await dio.patch('/users/$id', data: updates);
+}
+
+// DELETE — удаление
+Future<void> deleteUser(int id) async {
+await dio.delete('/users/$id');
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Загрузка и скачивание файлов"},
+    {"content": "// Загрузка файла на сервер
+Future<void> uploadImage(String filePath) async {
+var formData = FormData.fromMap({
+'file': await MultipartFile.fromFile(filePath),
+'caption': 'Моя фотография',
+});
+
+final response = await dio.post(
+'/upload',
+data: formData,
+onSendProgress: (sent, total) {
+print('Загрузка: ${(sent / total * 100).toStringAsFixed(0)}%');
+},
+);
+}
+
+// Скачивание файла
+Future<void> downloadFile(String url, String savePath) async {
+await dio.download(
+url,
+savePath,
+onReceiveProgress: (received, total) {
+print('Скачивание: ${(received / total * 100).toStringAsFixed(0)}%');
+},
+);
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Interceptors (Интерсепторы)"},
+    {"text": "Интерсепторы позволяют перехватывать и модифицировать запросы и ответы на глобальном уровне.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Базовый интерсептор"},
+    {"content": "dio.interceptors.add(InterceptorsWrapper(
+onRequest: (options, handler) {
+print('Запрос: ${options.method} ${options.uri}');
+return handler.next(options);
+},
+onResponse: (response, handler) {
+print('Ответ: ${response.statusCode}');
+return handler.next(response);
+},
+onError: (DioException error, handler) {
+print('Ошибка: ${error.message}');
+return handler.next(error);
+},
+));", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Интерсептор авторизации"},
+    {"content": "class AuthInterceptor extends Interceptor {
+final String Function() getToken;
+
+AuthInterceptor(this.getToken);
+
+@override
+void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+final token = getToken();
+if (token != null && token.isNotEmpty) {
+options.headers['Authorization'] = 'Bearer $token';
+}
+return handler.next(options);
+}
+
+@override
+void onError(DioException err, ErrorInterceptorHandler handler) {
+// Если токен истёк (401), пробуем обновить
+if (err.response?.statusCode == 401) {
+// Логика обновления токена
+// ...
+}
+return handler.next(err);
+}
+}
+
+// Использование
+dio.interceptors.add(AuthInterceptor(() => storage.read('token')));", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Интерсептор логирования"},
+    {"content": "class LoggingInterceptor extends Interceptor {
+@override
+void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+print('>>> ${options.method} ${options.uri}');
+print('Headers: ${options.headers}');
+print('Body: ${options.data}');
+return handler.next(options);
+}
+
+@override
+void onResponse(Response response, ResponseInterceptorHandler handler) {
+print('<<< ${response.statusCode}');
+print('Data: ${response.data}');
+return handler.next(response);
+}
+
+@override
+void onError(DioException error, ErrorInterceptorHandler handler) {
+print('!!! ERROR: ${error.type}');
+print('Message: ${error.message}');
+if (error.response != null) {
+print('Response: ${error.response?.data}');
+}
+return handler.next(error);
+}
+}
+
+dio.interceptors.add(LoggingInterceptor());", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "CancelToken (Отмена запросов)"},
+    {"content": "class ApiService {
+final Dio _dio = Dio();
+CancelToken? _cancelToken;
+
+// Запрос с возможностью отмены
+Future<void> fetchUsers() async {
+// Отменяем предыдущий запрос, если он ещё идёт
+_cancelToken?.cancel();
+_cancelToken = CancelToken();
+
+try {
+final response = await _dio.get(
+'/users',
+cancelToken: _cancelToken,
+);
+print(response.data);
+} on DioException catch (e) {
+if (CancelToken.isCancel(e)) {
+print('Запрос отменён');
+}
+}
+}
+
+// Отмена всех запросов
+void cancelAll() {
+_cancelToken?.cancel('Отмена по запросу');
+_cancelToken = CancelToken();
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "FormData"},
+    {"content": "// Создание FormData вручную
+FormData formData = FormData();
+formData.fields.add(MapEntry('name', 'Иван'));
+formData.fields.add(MapEntry('age', '25'));
+formData.files.add(
+MapEntry('avatar', await MultipartFile.fromPath('avatar', 'path/to/photo.jpg')),
+);
+
+// Создание из Map
+FormData formData = FormData.fromMap({
+'name': 'Иван',
+'age': 25,
+'avatar': await MultipartFile.fromFile('path/to/photo.jpg'),
+'tags': ['flutter', 'dart'], // Массив
+});
+
+// FormData с несколькими файлами
+FormData formData = FormData.fromMap({
+'files': [
+await MultipartFile.fromFile('file1.jpg'),
+await MultipartFile.fromFile('file2.jpg'),
+],
+});", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Обработка ошибок"},
+    {"content": "Future<void> makeRequest() async {
+try {
+final response = await dio.get('/users');
+print(response.data);
+} on DioException catch (e) {
+switch (e.type) {
+case DioExceptionType.connectionTimeout:
+print('Превышено время подключения');
+break;
+case DioExceptionType.sendTimeout:
+print('Превышено время отправки');
+break;
+case DioExceptionType.receiveTimeout:
+print('Превышено время получения ответа');
+break;
+case DioExceptionType.cancel:
+print('Запрос отменён');
+break;
+case DioExceptionType.connectionError:
+print('Ошибка соединения');
+break;
+case DioExceptionType.badResponse:
+print('Неверный ответ: ${e.response?.statusCode}');
+print(e.response?.data);
+break;
+case DioExceptionType.unknown:
+print('Неизвестная ошибка: ${e.message}');
+break;
+}
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Используйте интерсепторы</strong> для авторизации, логирования и обработки ошибок", "<strong>Настраивайте таймауты</strong> — <code>connectTimeout</code> и <code>receiveTimeout</code>", "<strong>Используйте CancelToken</strong> для отмены запросов при навигации", "<strong>Обрабатывайте все типы DioException</strong> — не используйте общий catch", "<strong>Кэшируйте экземпляры Dio</strong> — создавайте один экземпляр на весь приложение", "<strong>Используйте <code>onSendProgress</code> и <code>onReceiveProgress</code></strong> для отображения прогресса"], "type": "ul"}
+  ]
+}

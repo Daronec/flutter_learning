@@ -1,0 +1,257 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Firebase App Distribution — тестовый деплой"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Firebase App Distribution — бесплатный сервис от Google для распространения предварительных сборок приложения среди тестировщиков. Идеально подходит для этапа тестирования перед публикацией в магазинах.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Настройка Firebase"},
+    {"level": 3, "type": "heading", "text": "Создание проекта"},
+    {"items": ["Перейдите на <a href=\"https://console.firebase.google.com/\" target=\"_blank\">Firebase Console</a>", "Нажмите <strong>Добавить проект</strong>", "Укажите название проекта", "Подключите Google Analytics (рекомендуется)", "Создайте проект"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Добавление приложения"},
+    {"text": "<strong>Для Android:</strong>", "type": "paragraph"},
+    {"content": "# Установка Firebase CLI
+npm install -g firebase-tools
+
+# Вход в Firebase
+firebase login
+
+# Инициализация Firebase в проекте
+flutterfire configure
+
+# Следуйте инструкциям:
+# 1. Выберите Firebase проект
+# 2. Добавьте Android приложение (package name)
+# 3. Добавьте iOS приложение (bundle ID)", "language": "bash", "type": "code"},
+    {"text": "<strong>Файл: <code>firebase_options.dart</code></strong> (генерируется автоматически)", "type": "paragraph"},
+    {"content": "import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
+
+class DefaultFirebaseOptions {
+static FirebaseOptions get android {
+return const FirebaseOptions(
+apiKey: 'AIzaSy...',
+appId: '1:123456789:android:abcdef',
+messagingSenderId: '123456789',
+projectId: 'your-project-id',
+);
+}
+
+static FirebaseOptions get ios {
+return const FirebaseOptions(
+apiKey: 'AIzaSy...',
+appId: '1:123456789:ios:abcdef',
+messagingSenderId: '123456789',
+projectId: 'your-project-id',
+iosBundleId: 'com.mycompany.myapp',
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Подключение Firebase в приложении"},
+    {"text": "<strong>Файл: <code>pubspec.yaml</code></strong>", "type": "paragraph"},
+    {"content": "dependencies:
+firebase_core: ^2.24.0
+firebase_app_installations: ^0.2.4+8", "language": "yaml", "type": "code"},
+    {"text": "<strong>Файл: <code>lib/main.dart</code></strong>", "type": "paragraph"},
+    {"content": "import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+void main() async {
+WidgetsFlutterBinding.ensureInitialized();
+
+await Firebase.initializeApp(
+options: DefaultFirebaseOptions.currentPlatform,
+);
+
+runApp(const MyApp());
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Настройка App Distribution"},
+    {"level": 3, "type": "heading", "text": "Добавление тестировщиков"},
+    {"text": "<strong>Через Firebase Console:</strong>", "type": "paragraph"},
+    {"items": ["Откройте <strong>App Distribution</strong> в консоли", "Перейдите на вкладку <strong>Testers</strong>", "Добавьте тестировщиков:"], "type": "ol"},
+    {"items": ["По email (до 200 на проект)", "Как группы тестировщиков"], "type": "ul"},
+    {"text": "<strong>Через Firebase CLI:</strong>", "type": "paragraph"},
+    {"content": "# Добавление тестировщика
+firebase appdistribution:testers:add \\\\
+--project=your-project-id \\\\
+--testers=tester@example.com
+
+# Добавление группы тестировщиков
+firebase appdistribution:testers:add \\\\
+--project=your-project-id \\\\
+--testers=@my-team
+
+# Удаление тестировщика
+firebase appdistribution:testers:remove \\\\
+--project=your-project-id \\\\
+--testers=tester@example.com
+
+# Список всех тестировщиков
+firebase appdistribution:testers:list \\\\
+--project=your-project-id", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Создание групп тестировщиков"},
+    {"content": "# Создание группы
+firebase appdistribution:testers:add \\\\
+--project=your-project-id \\\\
+--testers=@qa-team,@dev-team,@internal
+
+# QA команда
+firebase appdistribution:testers:add \\\\
+--project=your-project-id \\\\
+--testers=@qa-team \\\\
+--emails=qa1@example.com,qa2@example.com
+
+# Внутренняя команда
+firebase appdistribution:testers:add \\\\
+--project=your-project-id \\\\
+--testers=@internal \\\\
+--emails=dev1@example.com,dev2@example.com", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Распространение сборок"},
+    {"level": 3, "type": "heading", "text": "Через Firebase CLI"},
+    {"content": "# Сборка и загрузка APK/AAB
+flutter build apk --release
+flutter build appbundle --release
+
+# Загрузка APK
+firebase appdistribution:distribute \\\\
+build/app/outputs/apk/release/app-release.apk \\\\
+--app=1:123456789:android:abcdef \\\\
+--testers=@qa-team,@dev-team \\\\
+--release-notes=\"Исправления багов и новые функции\"
+
+# Загрузка AAB
+firebase appdistribution:distribute \\\\
+build/app/outputs/bundle/release/app-release.aab \\\\
+--app=1:123456789:android:abcdef \\\\
+--testers=@qa-team \\\\
+--release-notes-path=./release-notes.txt
+
+# Загрузка для iOS
+firebase appdistribution:distribute \\\\
+build/ios/ipa/MyApp.ipa \\\\
+--app=1:123456789:ios:abcdef \\\\
+--testers=@qa-team \\\\
+--release-notes=\"Beta release with new features\"", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "С параметрами"},
+    {"content": "# Установка срока действия ссылки
+firebase appdistribution:distribute \\\\
+app-release.aab \\\\
+--app=YOUR_APP_ID \\\\
+--testers=@qa-team \\\\
+--expirations-days=7 \\\\
+--release-notes=\"Release notes here\"
+
+# Загрузка с группами
+firebase appdistribution:distribute \\\\
+app-release.aab \\\\
+--app=YOUR_APP_ID \\\\
+--groups=qa-team,internal \\\\
+--release-notes=\"New build available\"
+
+# Проверка перед загрузкой
+firebase appdistribution:distribute \\\\
+app-release.aab \\\\
+--app=YOUR_APP_ID \\\\
+--testers=@qa-team \\\\
+--dry-run", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Файл с примечаниями к релизу"},
+    {"text": "<strong>Файл: <code>release-notes.txt</code></strong>", "type": "paragraph"},
+    {"content": "Версия 1.1.0:
+
+Новые функции:
+• Добавлен тёмный режим
+• Новый экран настроек
+• Оптимизация загрузки изображений
+
+Исправления:
+• Исправлен крэш при авторизации
+• Исправлено отображение на маленьких экранах", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Интеграция с CI/CD"},
+    {"level": 3, "type": "heading", "text": "GitHub Actions"},
+    {"content": "# .github/workflows/firebase-distribution.yml
+name: Firebase App Distribution
+
+on:
+push:
+tags:
+- 'v*'
+
+jobs:
+distribute:
+runs-on: ubuntu-latest
+steps:
+- uses: actions/checkout@v4
+
+- name: Setup Flutter
+uses: subosito/flutter-action@v2
+with:
+flutter-version: '3.x.x'
+
+- name: Setup Firebase
+uses: w9jds/firebase-action@v12
+with:
+args: appdistribution:distribute
+env:
+FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+APP_ID: ${{ secrets.APP_ID }}
+APK_PATH: build/app/outputs/apk/release/app-release.aab
+TESTERS: \"@qa-team,@dev-team\"
+RELEASE_NOTES: \"New release from CI/CD\"
+
+- name: Build and Distribute
+run: |
+flutter pub get
+flutter build appbundle --release
+
+firebase appdistribution:distribute \\\\
+build/app/outputs/bundle/release/app-release.aab \\\\
+--app=$APP_ID \\\\
+--testers=$TESTERS \\\\
+--release-notes=\"$RELEASE_NOTES\"
+env:
+FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+APP_ID: ${{ secrets.APP_ID }}
+TESTERS: \"@qa-team,@dev-team\"
+RELEASE_NOTES: \"Версия ${{ github.ref_name }}\"", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Fastlane"},
+    {"content": "# Fastfile
+platform :android do
+desc \"Distribute to Firebase App Distribution\"
+lane :distribute_firebase do
+flutter_build(
+target: \"lib/main.dart\",
+release: true,
+build_type: \"appbundle\"
+)
+
+firebase_app_distribution(
+app: \"1:123456789:android:abcdef\",
+testers: \"qa@example.com,dev@example.com\",
+release_notes: \"New release from Fastlane\",
+android_artifact_type: \"APP_BUNDLE\",
+firebase_cli_token: ENV['FIREBASE_TOKEN']
+)
+end
+end", "language": "ruby", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Получение уведомлений тестировщиками"},
+    {"level": 3, "type": "heading", "text": "Процесс для тестировщика"},
+    {"content": "1. Тестировщик получает email-уведомление
+└── \"Вы приглашены тестировать MyApp v1.1.0\"
+
+2. Переходит по ссылке или открывает Firebase App Distribution app
+└── На Android: установка через Google Play
+└── На iOS: установка через TestFlight или IPA
+
+3. Устанавливает приложение
+└── Первый раз: регистрация через Firebase
+
+4. Тестирует приложение
+└── Отправляет feedback через приложение
+
+5. Получает уведомления о новых версиях
+└── Email или push-уведомление", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Firebase App Distribution App"},
+    {"text": "Тестировщики могут использовать официальное приложение для управления бета-тестированием:", "type": "paragraph"},
+    {"items": ["<strong>Android</strong>: доступен в Google Play", "<strong>iOS</strong>: доступен в App Store", "<strong>Функции</strong>:", "Просмотр доступных сборок", "Установка/удаление сборок", "Отправка feedback разработчикам", "Получение уведомлений"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Используйте группы тестировщиков</strong> для организации", "<strong>Добавляйте release notes</strong> к каждому релизу", "<strong>Устанавливайте срок действия</strong> ссылок (7–30 дней)", "<strong>Тестируйте процесс установки</strong> перед массовым распространением", "<strong>Собирайте feedback</strong> от тестировщиков", "<strong>Используйте CI/CD</strong> для автоматизации релизов"], "type": "ul"}
+  ]
+}

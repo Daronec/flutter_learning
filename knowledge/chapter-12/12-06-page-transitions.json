@@ -1,0 +1,308 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "PageTransitions — анимации навигации"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "PageTransitions определяют, как экраны появляются и исчезают при навигации. Flutter предоставляет стандартные переходы, но также позволяет создавать полностью кастомные.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Стандартные PageTransitions"},
+    {"level": 3, "type": "heading", "text": "Material PageTransitions"},
+    {"text": "Material Design предоставляет несколько стандартных переходов:", "type": "paragraph"},
+    {"text": "| Переход | Описание |", "type": "paragraph"},
+    {"text": "|---------|----------|", "type": "paragraph"},
+    {"text": "| <code>FadeUpwardsPageTransition</code> | Появление снизу с затуханием |", "type": "paragraph"},
+    {"text": "| <code>PlatformDefaultPageTransition</code> | Зависит от платформы |", "type": "paragraph"},
+    {"text": "| <code>SharedAxisPageTransition</code> | Общая ось (Material 3) |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Cupertino PageTransitions"},
+    {"text": "iOS-стиль переходов:", "type": "paragraph"},
+    {"content": "// Cupertino-стиль (по умолчанию на iOS)
+Navigator.push(
+context,
+CupertinoPageRoute(
+builder: (context) => const NextScreen(),
+),
+);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Custom Page Route"},
+    {"level": 3, "type": "heading", "text": "Базовый кастомный переход"},
+    {"content": "class CustomPageRoute<T> extends PageRoute<T> {
+final Widget child;
+final Duration duration;
+
+CustomPageRoute({
+required this.child,
+this.duration = const Duration(milliseconds: 300),
+});
+
+@override
+bool get maintainState => true;
+
+@override
+bool get opaque => true;
+
+@override
+Color? get barrierColor => null;
+
+@override
+String? get barrierLabel => null;
+
+@override
+Widget buildTransitions(
+BuildContext context,
+Animation<double> animation,
+Animation<double> secondaryAnimation,
+Widget child,
+) {
+// Анимация появления слева
+return SlideTransition(
+position: Tween<Offset>(
+begin: const Offset(-1, 0),
+end: Offset.zero,
+).animate(CurvedAnimation(
+parent: animation,
+curve: Curves.easeOutCubic,
+)),
+child: child,
+);
+}
+
+@override
+Widget buildContent(BuildContext context) => child;
+
+@override
+Widget buildPage(
+BuildContext context,
+Animation<double> animation,
+Animation<double> secondaryAnimation,
+) =>
+child;
+}
+
+// Использование
+Navigator.push(
+context,
+CustomPageRoute(child: const NextScreen()),
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "PageRouteBuilder"},
+    {"text": "Более простой способ создания кастомных переходов:", "type": "paragraph"},
+    {"content": "class RouteBuilderExample extends StatelessWidget {
+const RouteBuilderExample({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Route Builder')),
+body: Center(
+child: ElevatedButton(
+onPressed: () {
+Navigator.push(
+context,
+PageRouteBuilder(
+pageBuilder: (context, animation, secondaryAnimation) {
+return const NextScreen();
+},
+transitionsBuilder: (context, animation, secondaryAnimation, child) {
+// Комбинированные анимации
+return SlideTransition(
+position: Tween<Offset>(
+begin: const Offset(0, 1),
+end: Offset.zero,
+).animate(CurvedAnimation(
+parent: animation,
+curve: Curves.easeOutCubic,
+)),
+child: FadeTransition(
+opacity: animation,
+child: child,
+),
+);
+},
+transitionDuration: const Duration(milliseconds: 400),
+reverseTransitionDuration: const Duration(milliseconds: 300),
+),
+);
+},
+child: const Text('Перейти'),
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Популярные типы переходов"},
+    {"level": 3, "type": "heading", "text": "Slide Transitions"},
+    {"content": "// Справа налево (Material стандарт)
+SlideTransition(
+position: Tween<Offset>(
+begin: const Offset(1, 0),
+end: Offset.zero,
+).animate(CurvedAnimation(
+parent: animation,
+curve: Curves.easeOutCubic,
+)),
+child: child,
+)
+
+// Снизу вверх
+SlideTransition(
+position: Tween<Offset>(
+begin: const Offset(0, 1),
+end: Offset.zero,
+).animate(CurvedAnimation(
+parent: animation,
+curve: Curves.easeOutCubic,
+)),
+child: child,
+)
+
+// Сверху вниз
+SlideTransition(
+position: Tween<Offset>(
+begin: const Offset(0, -1),
+end: Offset.zero,
+).animate(CurvedAnimation(
+parent: animation,
+curve: Curves.easeOutCubic,
+)),
+child: child,
+)
+
+// Сверху вниз (pop)
+SlideTransition(
+position: Tween<Offset>(
+begin: Offset.zero,
+end: const Offset(0, -1),
+).animate(CurvedAnimation(
+parent: animation,
+curve: Curves.easeOutCubic,
+)),
+child: child,
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Scale Transition"},
+    {"content": "ScaleTransition(
+scale: Tween<double>(
+begin: 0.8,
+end: 1.0,
+).animate(CurvedAnimation(
+parent: animation,
+curve: Curves.easeOutBack,
+)),
+child: child,
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Rotate Transition"},
+    {"content": "RotateTransition(
+turns: Tween<double>(
+begin: 0.0,
+end: 1.0,
+).animate(CurvedAnimation(
+parent: animation,
+curve: Curves.easeInOut,
+)),
+child: child,
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Combined Transitions"},
+    {"content": "// Комбинация нескольких анимаций
+SlideTransition(
+position: Tween<Offset>(
+begin: const Offset(0, 0.1),
+end: Offset.zero,
+).animate(CurvedAnimation(
+parent: animation,
+curve: Curves.easeOutCubic,
+)),
+child: FadeTransition(
+opacity: Tween<double>(
+begin: 0.0,
+end: 1.0,
+).animate(CurvedAnimation(
+parent: animation,
+curve: Curves.easeIn,
+)),
+child: ScaleTransition(
+scale: Tween<double>(
+begin: 0.95,
+end: 1.0,
+).animate(CurvedAnimation(
+parent: animation,
+curve: Curves.easeOutCubic,
+)),
+child: child,
+),
+),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Shared Axis Transitions (Material 3)"},
+    {"level": 3, "type": "heading", "text": "Horizontal Shared Axis"},
+    {"content": "class SharedAxisTransition extends PageTransitionsTheme {
+@override
+Widget build(
+BuildContext context,
+double animation,
+double secondaryAnimation,
+Directionality textDirection,
+Widget child,
+) {
+final offsetTween = Tween<Offset>(
+begin: const Offset(1, 0),
+end: Offset.zero,
+);
+
+return SlideTransition(
+position: offsetTween.animate(
+CurvedAnimation(
+parent: animation,
+curve: Curves.easeOutCubic,
+),
+),
+child: child,
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Vertical Shared Axis"},
+    {"content": "class VerticalSharedAxisTransition extends PageTransitionsTheme {
+@override
+Widget build(
+BuildContext context,
+double animation,
+double secondaryAnimation,
+Directionality textDirection,
+Widget child,
+) {
+final offsetTween = Tween<Offset>(
+begin: const Offset(0, 1),
+end: Offset.zero,
+);
+
+return SlideTransition(
+position: offsetTween.animate(
+CurvedAnimation(
+parent: animation,
+curve: Curves.easeOutCubic,
+),
+),
+child: child,
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Применение к MaterialApp"},
+    {"content": "void main() {
+runApp(
+MaterialApp(
+theme: ThemeData(
+pageTransitionsTheme: PageTransitionsTheme(
+builders: {
+TargetPlatform.android: SharedAxisTransition(),
+TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+},
+),
+),
+home: const HomeScreen(),
+),
+);
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение подходов"},
+    {"text": "| Подход | Сложность | Гибкость | Когда использовать |", "type": "paragraph"},
+    {"text": "|--------|----------|----------|-------------------|", "type": "paragraph"},
+    {"text": "| <code>PageRouteBuilder</code> | Низкая | Средняя | Быстрые кастомные переходы |", "type": "paragraph"},
+    {"text": "| <code>PageRoute</code> | Высокая | Полная | Сложные переходы |", "type": "paragraph"},
+    {"text": "| <code>SharedAxis</code> | Средняя | Средняя | Material 3 стиль |", "type": "paragraph"},
+    {"text": "| Стандартные | Низкая | Низкая | Стандартный Material/iOS |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Лучшие практики"},
+    {"items": ["<strong>Используйте <code>PageRouteBuilder</code></strong> для простых кастомных переходов", "<strong>Применяйте <code>CurvedAnimation</code></strong> для естественных движений", "<strong>Сохраняйте консистентность</strong> — используйте одинаковые переходы в приложении", "<strong>Учитывайте платформу</strong> — Android и iOS имеют разные стандарты", "<strong>Добавляйте <code>reverseTransitionDuration</code></strong> для плавного возврата", "<strong>Тестируйте на реальных устройствах</strong> — эмуляторы могут не показывать полную картину"], "type": "ol"}
+  ]
+}

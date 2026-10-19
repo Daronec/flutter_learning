@@ -1,0 +1,269 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Push-уведомления с Firebase Cloud Messaging"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Firebase Cloud Messaging (FCM) — это кроссплатформенный сервис от Google, позволяющий отправлять push-уведомления на мобильные устройства. В Flutter для работы с FCM используется пакет <code>firebase_messaging</code>.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Установка и настройка"},
+    {"level": 3, "type": "heading", "text": "1. Создание проекта Firebase"},
+    {"items": ["Перейдите на <a href=\"https://console.firebase.google.com/\" target=\"_blank\">Firebase Console</a>", "Создайте новый проект", "Добавьте приложение (Android/iOS)", "Скачайте конфигурационные файлы:"], "type": "ol"},
+    {"items": ["Android: <code>google-services.json</code>", "iOS: <code>GoogleService-Info.plist</code>"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "2. Установка пакета"},
+    {"content": "dependencies:
+firebase_core: ^2.24.0
+firebase_messaging: ^14.7.0", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "3. Инициализация"},
+    {"content": "import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+Future<void> main() async {
+WidgetsFlutterBinding.ensureInitialized();
+
+await Firebase.initializeApp(
+options: DefaultFirebaseOptions.currentPlatform,
+);
+
+// Запрос разрешений
+await FirebaseMessaging.instance.requestPermission(
+alert: true,
+badge: true,
+sound: true,
+provisional: false,
+);
+
+runApp(const MyApp());
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Получение токена устройства"},
+    {"content": "class FcmService {
+final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+
+/// Получение токена устройства
+Future<String?> getToken() async {
+final token = await _messaging.getToken();
+print('FCM Token: $token');
+return token;
+}
+
+/// Подписка на тему
+Future<void> subscribeToTopic(String topic) async {
+await _messaging.subscribeToTopic(topic);
+}
+
+/// Отписка от темы
+Future<void> unsubscribeFromTopic(String topic) async {
+await _messaging.unsubscribeFromTopic(topic);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Обработка входящих сообщений"},
+    {"level": 3, "type": "heading", "text": "Foreground handler"},
+    {"content": "/// Обработчик сообщений в foreground
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+await Firebase.initializeApp();
+print('Processing background message: ${message.messageId}');
+print('Notification: ${message.notification?.title}');
+print('Data: ${message.data}');
+}
+
+void setupMessageHandlers() {
+// Foreground handler
+FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+print('Got a message whilst in the foreground!');
+print('Message data: ${message.data}');
+
+if (message.notification != null) {
+print('Notification: ${message.notification?.title}');
+print('Body: ${message.notification?.body}');
+print('Sound: ${message.notification?.sound}');
+}
+
+// Показываем локальное уведомление
+_showLocalNotification(message);
+});
+}
+
+void _showLocalNotification(RemoteMessage message) {
+// Интеграция с flutter_local_notifications
+const notification = AndroidNotification(
+channelId: 'high_importance_channel',
+title: 'Новое уведомление',
+body: 'Текст уведомления',
+icon: '@mipmap/ic_launcher',
+);
+
+const android = AndroidNotificationDetails(
+'high_importance_channel',
+'Важные уведомления',
+channelDescription: 'Канал для важных уведомлений',
+importance: Importance.max,
+priority: Priority.high,
+);
+
+const platform = NotificationDetails(android: android);
+
+FlutterLocalNotificationsPlugin().show(
+message.notification.hashCode,
+message.notification?.title,
+message.notification?.body,
+platform,
+);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Background handler"},
+    {"content": "/// Обработчик фоновых сообщений
+@pragma('vm:entry-point')
+Future<void> _backgroundMessageHandler(RemoteMessage message) async {
+await Firebase.initializeApp();
+
+// Обработка фонового сообщения
+final data = message.data;
+final type = data['type'];
+
+switch (type) {
+case 'order_update':
+await _handleOrderUpdate(data);
+break;
+case 'chat_message':
+await _handleChatMessage(data);
+break;
+default:
+print('Unhandled message type: $type');
+}
+}
+
+Future<void> _handleOrderUpdate(Map<String, dynamic> data) async {
+// Обновление статуса заказа
+final orderId = data['orderId'];
+final status = data['status'];
+print('Order $orderId updated to $status');
+}
+
+Future<void> _handleChatMessage(Map<String, dynamic> data) async {
+// Добавление сообщения в очередь
+final chatId = data['chatId'];
+final sender = data['sender'];
+final text = data['text'];
+print('New chat message from $sender in $chatId');
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Handler для нажатия на уведомление"},
+    {"content": "/// Обработка нажатия на уведомление
+void setupNotificationTapHandler() {
+// Приложение в фоне/закрыто
+FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+final data = message.data;
+final type = data['type'];
+final screen = data['screen'];
+
+switch (type) {
+case 'product':
+Navigator.pushNamed(context, '/product', arguments: data['productId']);
+break;
+case 'order':
+Navigator.pushNamed(context, '/order', arguments: data['orderId']);
+break;
+case 'chat':
+Navigator.pushNamed(context, '/chat', arguments: data['chatId']);
+break;
+}
+});
+
+// Приложение было закрыто
+FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+if (message != null) {
+final data = message.data;
+// Навигация на нужный экран
+_navigateFromNotification(data);
+}
+});
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Типы уведомлений FCM"},
+    {"text": "| Тип | Описание | Когда доставляется |", "type": "paragraph"},
+    {"text": "|-----|----------|-------------------|", "type": "paragraph"},
+    {"text": "| Notification | С визуальным оформлением | Foreground: callback; Background: системный трей |", "type": "paragraph"},
+    {"text": "| Data | Только данные | Всегда в <code>message.data</code> |", "type": "paragraph"},
+    {"text": "| Background | Обработка в фоне | При закрытом приложении |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Отправка Data-сообщения"},
+    {"content": "// Серверная часть (Node.js пример)
+const admin = require('firebase-admin');
+
+admin.messaging().send({
+token: deviceToken,
+data: {
+type: 'order_update',
+orderId: '12345',
+status: 'shipped',
+screen: 'order_detail',
+},
+notification: {
+title: 'Ваш заказ отправлен',
+body: 'Заказ #12345 передан в службу доставки',
+},
+});", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Локальные уведомления"},
+    {"content": "import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+class LocalNotificationService {
+final FlutterLocalNotificationsPlugin _plugin =
+FlutterLocalNotificationsPlugin();
+
+Future<void> initialize() async {
+const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+const iOS = DarwinInitializationSettings(
+requestAlertPermission: true,
+requestBadgePermission: true,
+requestSoundPermission: true,
+);
+const settings = InitializationSettings(android: android, iOS: iOS);
+
+await _plugin.initialize(
+const InitializationSettings(android: android, iOS: iOS),
+onDidReceiveNotificationResponse: _onNotificationSelected,
+);
+
+// Создание канала для Android
+const androidChannel = AndroidNotificationChannel(
+'high_importance_channel',
+'Важные уведомления',
+description: 'Канал для важных уведомлений',
+importance: Importance.max,
+);
+await _plugin.resolvePlatformSpecificImplementation<
+AndroidFlutterLocalNotificationsPlugin>()
+?.createNotificationChannel(androidChannel);
+}
+
+Future<void> scheduleNotification({
+required int id,
+required String title,
+required String body,
+required DateTime scheduledDate,
+Map<String, dynamic>? payload,
+}) async {
+const details = AndroidNotificationDetails(
+'high_importance_channel',
+'Важные уведомления',
+importance: Importance.max,
+priority: Priority.high,
+);
+const platform = NotificationDetails(android: details);
+
+await _plugin.zonedSchedule(
+id,
+title,
+body,
+scheduledDate,
+platform,
+payload: JsonEncoder.convert(payload),
+uiLocalNotificationDateInterpretation:
+UILocalNotificationDateInterpretation.absoluteTime,
+matchDateTimeComponents: DateTimeComponents.dateAndTime,
+);
+}
+
+void _onNotificationSelected(NotificationResponse response) {
+final payload = response.payload;
+// Обработка нажатия
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Лучшие практики"},
+    {"items": ["<strong>Запрашивайте разрешения явно</strong> — с объяснением зачем нужны уведомления", "<strong>Используйте Data-сообщения</strong> для гибкой обработки", "<strong>Обрабатывайте все три состояния</strong> — foreground, background, terminated", "<strong>Кэшируйте токен</strong> на сервере", "<strong>Подписывайте на темы</strong> для сегментации пользователей", "<strong>Тестируйте на реальных устройствах</strong> — эмуляторы могут не поддерживать FCM"], "type": "ol"}
+  ]
+}

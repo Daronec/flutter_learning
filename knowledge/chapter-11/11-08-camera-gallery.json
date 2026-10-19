@@ -1,0 +1,380 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Работа с камерой и галереей в Flutter"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Работа с медиафайлами (камера, галерея) — частая задача в мобильных приложениях. В Flutter для этого используются пакеты <code>camera</code> и <code>image_picker</code>.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Image Picker — выбор из галереи"},
+    {"level": 3, "type": "heading", "text": "Установка"},
+    {"content": "dependencies:
+image_picker: ^1.0.5", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Настройка разрешений"},
+    {"text": "<strong>Android</strong> (<code>android/app/src/main/AndroidManifest.xml</code>):", "type": "paragraph"},
+    {"content": "<uses-permission android:name=\"android.permission.READ_MEDIA_IMAGES\" />
+<uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />", "language": "xml", "type": "code"},
+    {"text": "<strong>iOS</strong> (<code>ios/Runner/Info.plist</code>):", "type": "paragraph"},
+    {"content": "<key>NSPhotoLibraryUsageDescription</key>
+<string>Приложению нужен доступ к галерее для выбора фото</string>
+<key>NSCameraUsageDescription</key>
+<string>Приложению нужен доступ к камере для съёмки фото</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Приложению нужен доступ к микрофону для записи видео</string>", "language": "xml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Выбор изображения"},
+    {"content": "import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+
+class MediaPickerService {
+final ImagePicker _picker = ImagePicker();
+
+/// Выбор изображения из галереи
+Future<XFile?> pickImageFromGallery({
+ImageSource source = ImageSource.gallery,
+double? maxWidth,
+double? maxHeight,
+int imageQuality = 85,
+}) async {
+final XFile? image = await _picker.pickImage(
+source: source,
+maxWidth: maxWidth,
+maxHeight: maxHeight,
+imageQuality: imageQuality,
+);
+return image;
+}
+
+/// Выбор видео из галереи
+Future<XFile?> pickVideoFromGallery({
+double? maxWidth,
+double? maxHeight,
+int imageQuality = 85,
+Duration? maxDuration,
+}) async {
+final XFile? video = await _picker.pickVideoSource(
+maxDuration: maxDuration ?? const Duration(minutes: 10),
+);
+return video;
+}
+
+/// Запись фото через камеру
+Future<XFile?> captureImage({
+double? maxWidth,
+double? maxHeight,
+int imageQuality = 85,
+CameraLensDirection lensDirection = CameraLensDirection.back,
+}) async {
+final XFile? image = await _picker.pickImage(
+source: ImageSource.camera,
+maxWidth: maxWidth,
+maxHeight: maxHeight,
+imageQuality: imageQuality,
+preferredCameraDevice: lensDirection,
+);
+return image;
+}
+
+/// Запись видео через камеру
+Future<XFile?> recordVideo({
+Duration maxDuration = const Duration(minutes: 10),
+CameraLensDirection lensDirection = CameraLensDirection.back,
+}) async {
+final XFile? video = await _picker.pickVideoSource(
+maxDuration: maxDuration,
+);
+return video;
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Использование в виджете"},
+    {"content": "class MediaPickerScreen extends StatefulWidget {
+const MediaPickerScreen({super.key});
+
+@override
+State<MediaPickerScreen> createState() => _MediaPickerScreenState();
+}
+
+class _MediaPickerScreenState extends State<MediaPickerScreen> {
+File? _imageFile;
+File? _videoFile;
+bool _isLoading = false;
+
+Future<void> _pickImage() async {
+setState(() => _isLoading = true);
+try {
+final file = await MediaPickerService().pickImageFromGallery();
+if (file != null) {
+setState(() => _imageFile = File(file.path));
+}
+} catch (e) {
+print('Error picking image: $e');
+} finally {
+setState(() => _isLoading = false);
+}
+}
+
+Future<void> _captureImage() async {
+setState(() => _isLoading = true);
+try {
+final file = await MediaPickerService().captureImage();
+if (file != null) {
+setState(() => _imageFile = File(file.path));
+}
+} catch (e) {
+print('Error capturing image: $e');
+} finally {
+setState(() => _isLoading = false);
+}
+}
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+body: Column(
+children: [
+// Превью изображения
+_imageFile != null
+? ClipRRect(
+borderRadius: BorderRadius.circular(12),
+child: Image.file(
+_imageFile!,
+height: 300,
+width: double.infinity,
+fit: BoxFit.cover,
+),
+)
+: const Center(
+child: Text('Изображение не выбрано'),
+),
+
+const SizedBox(height: 20),
+
+// Кнопки
+Row(
+mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+children: [
+ElevatedButton.icon(
+onPressed: _isLoading ? null : _pickImage,
+icon: const Icon(Icons.photo_library),
+label: const Text('Галерея'),
+),
+ElevatedButton.icon(
+onPressed: _isLoading ? null : _captureImage,
+icon: const Icon(Icons.camera_alt),
+label: const Text('Камера'),
+),
+],
+),
+],
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Camera — полноценная камера"},
+    {"level": 3, "type": "heading", "text": "Установка"},
+    {"content": "dependencies:
+camera: ^0.10.5", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Настройка камеры"},
+    {"content": "import 'package:camera/camera.dart';
+
+class CameraService {
+late CameraController _controller;
+late List<CameraDescription> _cameras;
+
+Future<void> initialize() async {
+_cameras = await availableCameras();
+if (_cameras.isEmpty) return;
+
+// Выбираем заднюю камеру
+_controller = CameraController(
+_cameras.firstWhere(
+(camera) => camera.lensDirection == CameraLensDirection.back,
+orElse: () => _cameras.first,
+),
+ResolutionPreset.medium,
+enableAudio: false,
+);
+await _controller.initialize();
+}
+
+CameraController get controller => _controller;
+bool get isInitialized => _controller.isInitialized;
+List<CameraDescription> get cameras => _cameras;
+
+Future<void> dispose() async {
+await _controller.dispose();
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Виджет камеры"},
+    {"content": "class CameraView extends StatefulWidget {
+const CameraView({super.key});
+
+@override
+State<CameraView> createState() => _CameraViewState();
+}
+
+class _CameraViewState extends State<CameraView> {
+late CameraController _controller;
+late Future<void> _initializeControllerFuture;
+CameraLensDirection _direction = CameraLensDirection.back;
+
+@override
+void initState() {
+super.initState();
+_controller = CameraController(
+cameras.firstWhere(
+(c) => c.lensDirection == _direction,
+orElse: () => cameras.first,
+),
+ResolutionPreset.high,
+);
+_initializeControllerFuture = _controller.initialize();
+}
+
+@override
+void dispose() {
+_controller.dispose();
+super.dispose();
+}
+
+void _switchCamera() {
+setState(() {
+_direction = _direction == CameraLensDirection.back
+? CameraLensDirection.front
+: CameraLensDirection.back;
+});
+_controller = CameraController(
+cameras.firstWhere(
+(c) => c.lensDirection == _direction,
+orElse: () => cameras.first,
+),
+ResolutionPreset.high,
+);
+_initializeControllerFuture = _controller.initialize();
+}
+
+Future<void> _takePicture() async {
+if (!_controller.value.isInitialized) {
+return;
+}
+if (_controller.value.isTakingPicture) {
+return;
+}
+try {
+await _initializeControllerFuture;
+final XFile file = await _controller.takePicture();
+// Обработка сохранённого файла
+Navigator.pop(context, file.path);
+} on CameraException catch (e) {
+print('Error taking picture: $e');
+}
+}
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+body: FutureBuilder<void>(
+future: _initializeControllerFuture,
+builder: (context, snapshot) {
+if (snapshot.connectionState == ConnectionState.done) {
+return CameraPreview(_controller);
+}
+return const Center(child: CircularProgressIndicator());
+},
+),
+floatingActionButton: FloatingActionButton(
+onPressed: _takePicture,
+child: const Icon(Icons.camera_alt),
+),
+floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+bottomNavigationBar: Row(
+mainAxisAlignment: MainAxisAlignment.center,
+children: [
+IconButton(
+icon: const Icon(Icons.flip_camera_android),
+onPressed: _switchCamera,
+),
+],
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Запись видео"},
+    {"content": "Future<void> _startRecording() async {
+if (!_controller.value.isInitialized) return;
+try {
+await _controller.startVideoRecording();
+} on CameraException catch (e) {
+print('Error starting recording: $e');
+}
+}
+
+Future<void> _stopRecording() async {
+if (!_controller.value.isRecordingVideo) return;
+try {
+final XFile videoFile = await _controller.stopVideoRecording();
+// Обработка сохранённого видео
+print('Video saved: ${videoFile.path}');
+} on CameraException catch (e) {
+print('Error stopping recording: $e');
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Обработка и оптимизация изображений"},
+    {"level": 3, "type": "heading", "text": "Сжатие изображений"},
+    {"content": "import 'package:image/image.dart' as img;
+
+class ImageProcessor {
+/// Сжатие изображения
+Future<File> compressImage(File file, {int quality = 80}) async {
+final bytes = await file.readAsBytes();
+final image = img.decodeImage(bytes);
+if (image == null) return file;
+
+final compressed = img.encodeJpg(image, quality: quality);
+return File(file.path).writeAsBytes(compressed);
+}
+
+/// Изменение размера изображения
+Future<File> resizeImage(File file, {int width = 1920, int height = 1080}) async {
+final bytes = await file.readAsBytes();
+final image = img.decodeImage(bytes);
+if (image == null) return file;
+
+final resized = img.copyResize(image, width: width, height: height);
+final compressed = img.encodeJpg(resized);
+return File(file.path).writeAsBytes(compressed);
+}
+
+/// Получение метаданных
+Future<ImageMetadata> getImageMetadata(File file) async {
+final bytes = await file.readAsBytes();
+final image = img.decodeImage(bytes);
+
+return ImageMetadata(
+width: image?.width ?? 0,
+height: image?.height ?? 0,
+size: bytes.length,
+);
+}
+}
+
+class ImageMetadata {
+final int width;
+final int height;
+final int size;
+
+double get aspectRatio => width / height;
+String get formattedSize => _formatBytes(size);
+
+static String _formatBytes(int bytes) {
+if (bytes < 1024) return '$bytes B';
+if (bytes < 1048576) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+return '${(bytes / 1048576).toStringAsFixed(1)} MB';
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение подходов"},
+    {"text": "| Подход | Пакет | Возможности | Сложность |", "type": "paragraph"},
+    {"text": "|--------|-------|------------|----------|", "type": "paragraph"},
+    {"text": "| Image Picker | <code>image_picker</code> | Выбор из галереи, простая камера | Низкая |", "type": "paragraph"},
+    {"text": "| Camera | <code>camera</code> | Полная камера, видео, настройки | Высокая |", "type": "paragraph"},
+    {"text": "| Custom | <code>camera</code> + обработка | Полный контроль | Очень высокая |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Лучшие практики"},
+    {"items": ["<strong>Сжимайте изображения</strong> перед загрузкой на сервер", "<strong>Обрабатывайте ошибки</strong> (отказ в разрешении, нет памяти)", "<strong>Используйте <code>image_picker</code></strong> для простых задач", "<strong>Используйте <code>camera</code></strong> для сложных сценариев", "<strong>Показывайте превью</strong> перед отправкой", "<strong>Ограничивайте размер файлов</strong> для экономии трафика"], "type": "ol"}
+  ]
+}

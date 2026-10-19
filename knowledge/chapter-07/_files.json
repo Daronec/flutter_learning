@@ -1,0 +1,40 @@
+﻿{
+    "files":  [
+                  {
+                      "name":  "07-01-navigator-1.md",
+                      "path":  "chapter-07/07-01-navigator-1.md",
+                      "size":  10418
+                  },
+                  {
+                      "name":  "07-02-navigation-args.md",
+                      "path":  "chapter-07/07-02-navigation-args.md",
+                      "size":  10532
+                  },
+                  {
+                      "name":  "07-03-navigator-2.md",
+                      "path":  "chapter-07/07-03-navigator-2.md",
+                      "size":  8968
+                  },
+                  {
+                      "name":  "07-04-autoroute-gorouter.md",
+                      "path":  "chapter-07/07-04-autoroute-gorouter.md",
+                      "size":  11408
+                  },
+                  {
+                      "name":  "07-05-bottomnav-drawer.md",
+                      "path":  "chapter-07/07-05-bottomnav-drawer.md",
+                      "size":  13691
+                  },
+                  {
+                      "name":  "07-06-transition-animations.md",
+                      "path":  "chapter-07/07-06-transition-animations.md",
+                      "size":  12518
+                  },
+                  {
+                      "name":  "07-07-deep-links.md",
+                      "path":  "chapter-07/07-07-deep-links.md",
+                      "size":  12930
+                  }
+              ],
+    "chapter":  "chapter-07"
+}

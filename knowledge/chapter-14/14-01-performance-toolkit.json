@@ -1,0 +1,170 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "14-01. Flutter Performance Toolkit и DevTools"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Инструменты производительности Flutter — это набор встроенных утилит, которые помогают разработчикам анализировать, профилировать и оптимизировать приложения. Правильное использование этих инструментов позволяет выявлять узкие места, находить утечки памяти и обеспечивать плавный пользовательский опыт.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Flutter DevTools"},
+    {"level": 3, "type": "heading", "text": "Что такое DevTools"},
+    {"text": "Flutter DevTools — это набор инструментов для отладки и профилирования приложений Flutter. Он предоставляет визуальный интерфейс для анализа различных аспектов приложения: производительности, памяти, сети, логов и структуры виджетов.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Установка DevTools"},
+    {"text": "Установка DevTools выполняется через пакетный менеджер Dart:", "type": "paragraph"},
+    {"content": "dart pub global activate devtools", "language": "bash", "type": "code"},
+    {"text": "После установки DevTools можно запустить несколькими способами:", "type": "paragraph"},
+    {"content": "# Запуск через командную строку
+devtools
+
+# Запуск с указанием порта
+devtools --port 9100
+
+# Запуск с привязкой к конкретному хосту
+devtools --host-address 127.0.0.1 --port 9100", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Запуск DevTools из VS Code"},
+    {"text": "В VS Code DevTools интегрируется через расширение Flutter:", "type": "paragraph"},
+    {"items": ["Откройте проект Flutter в VS Code", "Нажмите <code>Ctrl+Shift+P</code> (или <code>Cmd+Shift+P</code> на macOS)", "Введите <code>Flutter: Open DevTools</code>", "DevTools откроется в браузере"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Запуск DevTools из Android Studio / IntelliJ"},
+    {"items": ["Убедитесь, что установлен плагин Flutter", "Запустите приложение в режиме отладки", "В панели вывода найдите ссылку на DevTools", "Нажмите на ссылку для открытия DevTools в браузере"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Запуск DevTools из терминала"},
+    {"text": "При запуске приложения через <code>flutter run</code> DevTools автоматически запускается:", "type": "paragraph"},
+    {"content": "Launching lib/main.dart on Chrome in debug mode...
+
+Waiting for connection from debug service on Chrome...
+Flutter run key commands.
+r Hot reload.
+R Hot restart.
+h List all available interactive commands.
+d Detach (terminate \"flutter run\" but leave application running).
+c Clear the screen
+q Quit (terminate the application on the device).
+
+A Dart VM Service on Chrome is available at:
+http://127.0.0.1:54321/abcdef1234567890
+The Flutter DevTools debugger and profiler on http://127.0.0.1:9100/
+is available at: http://127.0.0.1:9100/?uri=http://127.0.0.1:54321/abcdef1234567890", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Основные разделы DevTools"},
+    {"text": "| Раздел | Назначение |", "type": "paragraph"},
+    {"text": "|--------|-----------|", "type": "paragraph"},
+    {"text": "| Widgets | Иерархия виджетов и их свойства |", "type": "paragraph"},
+    {"text": "| Layout Explorer | Визуализация ограничений и размеров виджетов |", "type": "paragraph"},
+    {"text": "| Performance | Временная шкала рендеринга и событий |", "type": "paragraph"},
+    {"text": "| Memory | Анализ использования памяти |", "type": "paragraph"},
+    {"text": "| Network | Мониторинг сетевых запросов |", "type": "paragraph"},
+    {"text": "| Logging | Вывод логов приложения |", "type": "paragraph"},
+    {"text": "| Pub Dev | Информация о зависимостях |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Performance Overlay"},
+    {"level": 3, "type": "heading", "text": "Включение Performance Overlay"},
+    {"text": "Performance Overlay — это оверлей, отображающий информацию о производительности прямо на экране приложения. Он включается через параметр <code>showPerformanceOverlay</code>:", "type": "paragraph"},
+    {"content": "void main() {
+runApp(
+MaterialApp(
+// Включение оверлея производительности
+showPerformanceOverlay: true,
+home: MyHomePage(),
+),
+);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Что показывает Performance Overlay"},
+    {"text": "В левом верхнем углу экрана отображается несколько индикаторов:", "type": "paragraph"},
+    {"text": "| Индикатор | Описание |", "type": "paragraph"},
+    {"text": "|-----------|----------|", "type": "paragraph"},
+    {"text": "| FPS (Frame) | Количество кадров в секунду |", "type": "paragraph"},
+    {"text": "| Jank | Количество кадров, пропущенных из-за задержек |", "type": "paragraph"},
+    {"text": "| Build | Время сборки виджетов |", "type": "paragraph"},
+    {"text": "| Layout | Время выполнения layout |", "type": "paragraph"},
+    {"text": "| Paint | Время рендеринга |", "type": "paragraph"},
+    {"text": "| Raster | Время обработки GPU (в галее) |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Цветовая кодировка FPS"},
+    {"text": "| Цвет | FPS | Оценка |", "type": "paragraph"},
+    {"text": "|------|-----|--------|", "type": "paragraph"},
+    {"text": "| Зелёный | 55-60 | Отлично |", "type": "paragraph"},
+    {"text": "| Жёлтый | 45-54 | Хорошо |", "type": "paragraph"},
+    {"text": "| Оранжевый | 30-44 | Удовлетворительно |", "type": "paragraph"},
+    {"text": "| Красный | < 30 | Плохо |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Включение через код во время выполнения"},
+    {"text": "Performance Overlay можно включить программно:", "type": "paragraph"},
+    {"content": "import 'package:flutter/foundation.dart';
+
+void togglePerformanceOverlay() {
+// Переключение оверлея
+debugPaintSizeEnabled = !debugPaintSizeEnabled;
+debugPaintLayerBordersEnabled = !debugPaintLayerBordersEnabled;
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Timeline View"},
+    {"level": 3, "type": "heading", "text": "Что такое Timeline"},
+    {"text": "Timeline — это временная шкала, которая отображает все события, происходящие во время выполнения приложения. Она позволяет детально проанализировать каждый кадр и выявить причины задержек.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Доступ к Timeline"},
+    {"text": "Timeline доступен в разделе Performance DevTools. Для записи таймлайна:", "type": "paragraph"},
+    {"items": ["Откройте DevTools", "Перейдите во вкладку Performance", "Нажмите кнопку записи (красный кружок)", "Выполните действия в приложении", "Остановите запись"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Типы событий на Timeline"},
+    {"text": "| Тип события | Описание |", "type": "paragraph"},
+    {"text": "|-------------|----------|", "type": "paragraph"},
+    {"text": "| Dart | События Dart-кода (функции, async-операции) |", "type": "paragraph"},
+    {"text": "| Platform | События нативной платформы (Android/iOS) |", "type": "paragraph"},
+    {"text": "| GPU | События графического процессора |", "type": "paragraph"},
+    {"text": "| Rendering | События рендеринга |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Анализ фреймов на Timeline"},
+    {"text": "Каждый кадр (frame) на Timeline состоит из нескольких фаз:", "type": "paragraph"},
+    {"content": "┌─────────────────────────────────────────────────────┐
+│  Frame 100                                           │
+│  ┌──────┬───────┬───────┬───────┬───────┬───────┐  │
+│  │ Build│ Layout│ Paint │ Composite │ GPU │ VSync │  │
+│  │ 1.2ms│ 0.3ms │ 0.8ms │   0.5ms   │ 8ms │ 16.7ms│  │
+│  └──────┴───────┴───────┴───────┴───────┴───────┘  │
+│  Всего: 10.8ms из 16.7ms (60 FPS)                    │
+└─────────────────────────────────────────────────────┘", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Цветовая маркировка событий"},
+    {"text": "| Цвет | Значение |", "type": "paragraph"},
+    {"text": "|------|----------|", "type": "paragraph"},
+    {"text": "| Зелёный | Укладывается в 16.7ms (60 FPS) |", "type": "paragraph"},
+    {"text": "| Жёлтый | Почти укладывается, но с запасом |", "type": "paragraph"},
+    {"text": "| Красный | Пропущенный кадр (jank) |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Горячие клавиши для записи"},
+    {"content": "// Включение записи таймлайна
+import 'package:flutter/foundation.dart';
+
+void startTimeline() {
+// Включает трассировку Dart-событий
+debugProfileBuildsEnabled = true;
+}
+
+void stopTimeline() {
+debugProfileBuildsEnabled = false;
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Profiler и его возможности"},
+    {"level": 3, "type": "heading", "text": "Раздел Profiler в DevTools"},
+    {"text": "Profiler позволяет профилировать выполнение Dart-кода:", "type": "paragraph"},
+    {"items": ["Откройте DevTools", "Перейдите во вкладку Performance", "Нажмите \"Start Profiling\"", "Выполните действие в приложении", "Остановите профилирование"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Анализ CPU-профиля"},
+    {"text": "Profiler показывает:", "type": "paragraph"},
+    {"items": ["Сколько времени заняла каждая функция", "Сколько раз была вызвана каждая функция", "Какие функции являются наиболее затратными"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Flame Chart"},
+    {"text": "Flame Chart — это визуализация CPU-профиля в виде горизонтальных полосок:", "type": "paragraph"},
+    {"content": "main()
+├── runApp()
+│   ├── BuildPhase
+│   │   ├── MyWidget.build()
+│   │   │   ├── Text widget
+│   │   │   └── Container widget
+│   │   └── ListView.builder
+│   │       └── _ListViewItem.build()
+│   └── LayoutPhase
+│       └── RenderObject.layout()", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "Рекомендации по использованию инструментов"},
+    {"items": ["<strong>Регулярно используйте Performance Overlay</strong> — отслеживайте FPS во время разработки", "<strong>Анализируйте Timeline при проблемах с производительностью</strong> — выявляйте узкие места", "<strong>Используйте Memory DevTools для поиска утечек</strong> — проверяйте память при изменении состояний", "<strong>Профилируйте на реальном устройстве</strong> — эмуляторы могут показывать другие результаты", "<strong>Сравнивайте до и после оптимизации</strong> — документируйте улучшения"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Полезные команды"},
+    {"content": "# Проверка размера приложения
+flutter build apk --analyze-size
+
+# Проверка зависимостей
+flutter pub deps
+
+# Анализ дерева виджетов
+flutter debug dump-widget-tree
+
+# Анализ графа рендеринга
+flutter debug dump-render-tree", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Flutter Performance Toolkit и DevTools предоставляют мощный набор инструментов для анализа и оптимизации производительности. Понимание того, как использовать каждый инструмент, позволяет быстро выявлять и устранять проблемы производительности.", "type": "paragraph"},
+    {"text": "В следующих разделах мы рассмотрим конкретные техники оптимизации: оптимизацию виджетов, избегание лишних rebuild'ов, ленивую загрузку и другие техники.", "type": "paragraph"}
+  ]
+}

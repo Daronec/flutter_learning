@@ -1,0 +1,261 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Flex-система: Row и Column в деталях"},
+    {"text": "Flex-система Flutter — это основа всех макетов. Виджеты <code>Row</code> и <code>Column</code> используют механизм <code>Flex</code>, который распределяет пространство между дочерними элементами по главной оси (main axis) и выравнивает их по поперечной (cross axis).", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Что такое Flex-система"},
+    {"text": "Flex-система — это алгоритм распределения пространства, который:", "type": "paragraph"},
+    {"items": ["Определяет <strong>главную ось</strong> (main axis) — направление, вдоль которого располагаются дети", "Определяет <strong>поперечную ось</strong> (cross axis) — перпендикулярное направление", "Распределяет свободное пространство между детьми", "Выравнивает детей вдоль обеих осей"], "type": "ol"},
+    {"text": "| Виджет | Главная ось | Поперечная ось |", "type": "paragraph"},
+    {"text": "|--------|-------------|----------------|", "type": "paragraph"},
+    {"text": "| <code>Row</code> | Горизонтальная (← →) | Вертикальная (↑ ↓) |", "type": "paragraph"},
+    {"text": "| <code>Column</code> | Вертикальная (↑ ↓) | Горизонтальная (← →) |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "MainAxisAlignment — выравнивание по главной оси"},
+    {"text": "<code>MainAxisAlignment</code> определяет, как свободное пространство распределяется между дочерними элементами <strong>вдоль главной оси</strong>.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Доступные значения"},
+    {"text": "| Значение | Описание | Поведение |", "type": "paragraph"},
+    {"text": "|----------|----------|-----------|", "type": "paragraph"},
+    {"text": "| <code>start</code> | Прижать к началу | Все дети в начале, свободное пространство — в конце |", "type": "paragraph"},
+    {"text": "| <code>end</code> | Прижать к концу | Все дети в конце, свободное пространство — в начале |", "type": "paragraph"},
+    {"text": "| <code>center</code> | По центру | Равное свободное пространство с обеих сторон |", "type": "paragraph"},
+    {"text": "| <code>spaceBetween</code> | Без отступов по краям | Равные промежутки между детьми, нет отступов по краям |", "type": "paragraph"},
+    {"text": "| <code>spaceAround</code> | Равные отступы вокруг | Каждый ребёнок имеет равные отступы слева и справа; отступы по краям — половина внутреннего |", "type": "paragraph"},
+    {"text": "| <code>spaceEvenly</code> | Равные отступы везде | Все промежутки (включая краевые) абсолютно равны |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Примеры использования"},
+    {"content": "// MainAxisAlignment.start — по умолчанию
+Row(
+mainAxisAlignment: MainAxisAlignment.start,
+children: const [
+Text('A'),
+Text('B'),
+Text('C'),
+],
+)
+// Результат: [A][B][C]        (свободное место справа)
+
+// MainAxisAlignment.end
+Row(
+mainAxisAlignment: MainAxisAlignment.end,
+children: const [
+Text('A'),
+Text('B'),
+Text('C'),
+],
+)
+// Результат:        [A][B][C] (свободное место слева)
+
+// MainAxisAlignment.center
+Row(
+mainAxisAlignment: MainAxisAlignment.center,
+children: const [
+Text('A'),
+Text('B'),
+Text('C'),
+],
+)
+// Результат:     [A][B][C]    (свободное место слева и справа поровну)
+
+// MainAxisAlignment.spaceBetween
+Row(
+mainAxisAlignment: MainAxisAlignment.spaceBetween,
+children: const [
+Text('A'),
+Text('B'),
+Text('C'),
+],
+)
+// Результат: [A]    [B]    [C] (нет отступов по краям)
+
+// MainAxisAlignment.spaceAround
+Row(
+mainAxisAlignment: MainAxisAlignment.spaceAround,
+children: const [
+Text('A'),
+Text('B'),
+Text('C'),
+],
+)
+// Результат:  [A]   [B]   [C]  (краевые отступы = половина внутренних)
+
+// MainAxisAlignment.spaceEvenly
+Row(
+mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+children: const [
+Text('A'),
+Text('B'),
+Text('C'),
+],
+)
+// Результат:  [A]   [B]   [C]  (все отступы абсолютно равны)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "CrossAxisAlignment — выравнивание по поперечной оси"},
+    {"text": "<code>CrossAxisAlignment</code> определяет, как дети выравниваются <strong>поперёк</strong> главной оси.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Доступные значения"},
+    {"text": "| Значение | Описание | Поведение |", "type": "paragraph"},
+    {"text": "|----------|----------|-----------|", "type": "paragraph"},
+    {"text": "| <code>start</code> | Прижать к началу | Дети прижаты к началу поперечной оси |", "type": "paragraph"},
+    {"text": "| <code>end</code> | Прижать к концу | Дети прижаты к концу поперечной оси |", "type": "paragraph"},
+    {"text": "| <code>center</code> | По центру | Дети отцентрованы по поперечной оси |", "type": "paragraph"},
+    {"text": "| <code>stretch</code> | Растянуть | Дети растягиваются на всю высоту/ширину поперечной оси |", "type": "paragraph"},
+    {"text": "| <code>baseline</code> | По базовой линии | Дети выравниваются по базовой линии текста |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Примеры для Row (поперечная ось — вертикальная)"},
+    {"content": "// CrossAxisAlignment.center — по умолчанию для Row
+Row(
+crossAxisAlignment: CrossAxisAlignment.center,
+children: const [
+Text('Короткий'),
+Text('Очень длинный текст, который занимает несколько строк'),
+Text('X'),
+],
+)
+// Все три элемента отцентрованы по вертикали
+
+// CrossAxisAlignment.start
+Row(
+crossAxisAlignment: CrossAxisAlignment.start,
+children: const [
+Text('Короткий'),
+Text('Очень длинный текст, который занимает несколько строк'),
+Text('X'),
+],
+)
+// Верхний край всех элементов выровнен по верху
+
+// CrossAxisAlignment.end
+Row(
+crossAxisAlignment: CrossAxisAlignment.end,
+children: const [
+Text('Короткий'),
+Text('Очень длинный текст, который занимает несколько строк'),
+Text('X'),
+],
+)
+// Нижний край всех элементов выровнен по низу
+
+// CrossAxisAlignment.stretch
+Row(
+crossAxisAlignment: CrossAxisAlignment.stretch,
+children: const [
+Container(width: 50, color: Colors.red),
+Container(width: 50, color: Colors.green),
+Container(width: 50, color: Colors.blue),
+],
+)
+// Все контейнеры растягиваются на полную высоту Row
+
+// CrossAxisAlignment.baseline
+Row(
+crossAxisAlignment: CrossAxisAlignment.baseline,
+textBaseline: TextBaseline.alphabetic,
+children: const [
+Text('Короткий'),
+Text('Очень длинный текст'),
+],
+)
+// Текст выровнен по базовой линии (нижняя линия букв)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Примеры для Column (поперечная ось — горизонтальная)"},
+    {"content": "Column(
+crossAxisAlignment: CrossAxisAlignment.center,
+children: const [
+Text('Короткий'),
+Text('Очень длинный текст, который занимает много символов'),
+Text('X'),
+],
+)
+// Все элементы отцентрованы по горизонтали", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "MainAxisSize — размер по главной оси"},
+    {"text": "<code>MainAxisSize</code> определяет, как Row/Column рассчитывают свой размер по главной оси.", "type": "paragraph"},
+    {"text": "| Значение | Описание | Поведение |", "type": "paragraph"},
+    {"text": "|----------|----------|-----------|", "type": "paragraph"},
+    {"text": "| <code>max</code> | Максимальный размер (по умолчанию) | Row/Column занимает всё доступное пространство |", "type": "paragraph"},
+    {"text": "| <code>min</code> | Минимальный размер | Row/Column занимает только столько, сколько нужно детям |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Примеры"},
+    {"content": "// MainAxisSize.max — по умолчанию
+Scaffold(
+body: Row(
+mainAxisSize: MainAxisSize.max,
+children: const [
+Text('A'),
+Text('B'),
+],
+),
+)
+// Row занимает всю ширину экрана, дети прижаты к началу (start)
+
+// MainAxisSize.min
+Scaffold(
+body: Row(
+mainAxisSize: MainAxisSize.min,
+children: const [
+Text('A'),
+Text('B'),
+],
+),
+)
+// Row занимает только ширину текста «A» + «B» + отступы", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Expanded и Flexible — растягивание детей"},
+    {"text": "Когда <code>MainAxisSize</code> равен <code>max</code>, свободное пространство можно распределить между детьми с помощью <code>Expanded</code> и <code>Flexible</code>.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Expanded"},
+    {"text": "Заставляет ребёнка занять всё доступное свободное пространство. Если несколько детей имеют <code>Expanded</code>, пространство делится пропорционально <code>flex</code>.", "type": "paragraph"},
+    {"content": "Row(
+children: const [
+Text('Фиксированный'),
+Expanded(
+child: Text('Растягивается на всё оставшееся пространство'),
+),
+Text('Фиксированный'),
+],
+)
+// [Фиксированный] [Растягивается на всё оставшееся пространство] [Фиксированный]", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Flexible"},
+    {"text": "Позволяет ребёнку растягиваться, но не принуждает его. Ребёнок может быть меньше доступного пространства.", "type": "paragraph"},
+    {"content": "Row(
+children: const [
+Text('Фиксированный'),
+Flexible(
+child: Text('Может растягиваться, но не обязан'),
+),
+Text('Фиксированный'),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Flex-коэффициенты"},
+    {"content": "Row(
+children: [
+Expanded(
+flex: 1,
+child: Container(color: Colors.red, height: 50),
+),
+Expanded(
+flex: 2,
+child: Container(color: Colors.green, height: 50),
+),
+Expanded(
+flex: 1,
+child: Container(color: Colors.blue, height: 50),
+),
+],
+)
+// Красный: 25% ширины, Зелёный: 50%, Синий: 25%", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Combinations — комбинирование свойств"},
+    {"content": "// Пример: карточки в ряд с равными отступами
+Row(
+mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+crossAxisAlignment: CrossAxisAlignment.start,
+children: [
+Card(child: Text('Карточка 1')),
+Card(child: Text('Карточка 2')),
+Card(child: Text('Карточка 3')),
+],
+)", "language": "dart", "type": "code"},
+    {"content": "// Пример: список с растянутыми элементами
+Column(
+mainAxisSize: MainAxisSize.min,
+mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+children: [
+Expanded(child: ListTile(title: const Text('Пункт 1'))),
+Expanded(child: ListTile(title: const Text('Пункт 2'))),
+Expanded(child: ListTile(title: const Text('Пункт 3'))),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["Используйте <code>mainAxisSize: MainAxisSize.min</code> для компактных Row/Column внутри других виджетов", "<code>Expanded</code> — когда элемент <strong>должен</strong> занять пространство; <code>Flexible</code> — когда может", "<code>CrossAxisAlignment.stretch</code> полезен для карточек одинаковой высоты", "<code>baseline</code> работает только с текстовыми детьми или контейнерами с текстом", "Для <code>spaceBetween</code>/<code>spaceAround</code>/<code>spaceEvenly</code> убедитесь, что у Row/Column достаточно пространства по главной оси", "Комбинируйте <code>mainAxisSize: MainAxisSize.min</code> с <code>CrossAxisAlignment.stretch</code> для компактных растянутых карточек"], "type": "ul"}
+  ]
+}

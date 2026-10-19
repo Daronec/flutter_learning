@@ -1,0 +1,249 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "LayoutBuilder и ConstrainedBox"},
+    {"text": "<code>LayoutBuilder</code> и <code>ConstrainedBox</code> — мощные инструменты для создания адаптивных и кастомных макетов. Они позволяют виджетам реагировать на доступное пространство и модифицировать ограничения для дочерних элементов.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "LayoutBuilder — построение макета на основе доступного пространства"},
+    {"text": "<code>LayoutBuilder</code> — это виджет, который получает доступное пространство на этапе build и позволяет создавать макеты, адаптированные к этому пространству.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Как работает LayoutBuilder"},
+    {"content": "LayoutBuilder(
+builder: (BuildContext context, BoxConstraints constraints) {
+// constraints.maxWidth — максимальная доступная ширина
+// constraints.maxHeight — максимальная доступная высота
+// constraints.minWidth — минимальная доступная ширина
+// constraints.minHeight — минимальная доступная высота
+return Container();
+},
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример: адаптивный макет"},
+    {"content": "LayoutBuilder(
+builder: (context, constraints) {
+if (constraints.maxWidth < 600) {
+// Узкий экран — вертикальный макет
+return Column(
+children: [
+Container(height: 200, color: Colors.red),
+Container(height: 200, color: Colors.green),
+Container(height: 200, color: Colors.blue),
+],
+);
+} else {
+// Широкий экран — горизонтальный макет
+return Row(
+children: [
+Expanded(child: Container(height: 200, color: Colors.red)),
+Expanded(child: Container(height: 200, color: Colors.green)),
+Expanded(child: Container(height: 200, color: Colors.blue)),
+],
+);
+}
+},
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "BoxConstraints в LayoutBuilder"},
+    {"content": "LayoutBuilder(
+builder: (context, constraints) {
+// Доступные ограничения зависят от родителя
+print('maxWidth: ${constraints.maxWidth}');
+print('maxHeight: ${constraints.maxHeight}');
+print('minWidth: ${constraints.minWidth}');
+print('minHeight: ${constraints.minHeight}');
+
+// Пример: адаптивная сетка
+final itemWidth = 150.0;
+final crossAxisSpacing = 16.0;
+final itemCount = (constraints.maxWidth / (itemWidth + crossAxisSpacing)).floor();
+
+return GridView.builder(
+gridDelegate: SliverGridDelegateWithFixedCrossAxisAxis(
+crossAxisCount: itemCount > 0 ? itemCount : 1,
+crossAxisSpacing: crossAxisSpacing,
+mainAxisSpacing: crossAxisSpacing,
+),
+itemCount: 20,
+itemBuilder: (context, index) {
+return Container(
+color: Colors.primaries[index % Colors.primaries.length].shade200,
+child: Center(child: Text('$index')),
+);
+},
+);
+},
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "ConstrainedBox — модификация ограничений для child"},
+    {"text": "<code>ConstrainedBox</code> накладывает дополнительные ограничения на дочерний виджет:", "type": "paragraph"},
+    {"content": "ConstrainedBox(
+constraints: BoxConstraints(
+minWidth: 100,
+maxWidth: 300,
+minHeight: 50,
+maxHeight: 200,
+),
+child: const Text('Текст с ограниченными размерами'),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Как ConstrainedBox модифицирует ограничения"},
+    {"content": "Родитель передаёт ConstrainedBox:
+minWidth: 0,    maxWidth: 500
+minHeight: 0,   maxHeight: 400
+───────────────────────────────────────
+ConstrainedBox накладывает свои ограничения:
+minWidth: 100,  maxWidth: 300
+minHeight: 50,  maxHeight: 200
+───────────────────────────────────────
+Child получает (пересечение):
+minWidth: 100,  maxWidth: 300
+minHeight: 50,  maxHeight: 200", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "ConstrainedBox для принудительного размера"},
+    {"content": "// Принудительный размер — min и max одинаковы
+ConstrainedBox(
+constraints: const BoxConstraints.tightFor(width: 200, height: 100),
+child: const Text('Фиксированный размер'),
+)
+// Child получит: 200 ≤ w ≤ 200, 100 ≤ h ≤ 100
+// Child обязан выбрать именно 200 × 100", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "ConstrainedBox для минимального размера"},
+    {"content": "// Гарантирует, что child не будет меньше заданных размеров
+ConstrainedBox(
+constraints: const BoxConstraints(minWidth: 200, minHeight: 100),
+child: const Text('Минимум 200×100'),
+)
+// Если родитель даёт 0 ≤ w ≤ 100, child получит 0 ≤ w ≤ 100
+// Но если child хочет быть 300px, он будет ограничен 200px минимум", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Combinations — LayoutBuilder + ConstrainedBox"},
+    {"content": "LayoutBuilder(
+builder: (context, constraints) {
+// Адаптивные ограничения на основе доступного пространства
+final maxWidth = constraints.maxWidth.clamp(200, 600);
+
+return ConstrainedBox(
+constraints: BoxConstraints(
+maxWidth: maxWidth,
+minHeight: 100,
+),
+child: const Card(
+child: Padding(
+padding: EdgeInsets.all(16.0),
+child: Text('Адаптивная карточка'),
+),
+),
+);
+},
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "LayoutBuilder для условного рендеринга"},
+    {"content": "class AdaptiveLayout extends StatelessWidget {
+const AdaptiveLayout({super.key});
+
+@override
+Widget build(BuildContext context) {
+return LayoutBuilder(
+builder: (context, constraints) {
+// Определяем брейкпоинты
+const mobileBreakpoint = 600.0;
+const tabletBreakpoint = 1000.0;
+
+if (constraints.maxWidth < mobileBreakpoint) {
+return _MobileLayout();
+} else if (constraints.maxWidth < tabletBreakpoint) {
+return _TabletLayout();
+} else {
+return _DesktopLayout();
+}
+},
+);
+}
+}
+
+class _MobileLayout extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return ListView(
+children: const [
+ListTile(title: Text('Пункт 1')),
+ListTile(title: Text('Пункт 2')),
+ListTile(title: Text('Пункт 3')),
+],
+);
+}
+}
+
+class _TabletLayout extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return Row(
+children: [
+SizedBox(width: 200, child: _Sidebar()),
+Expanded(child: _Content()),
+],
+);
+}
+}
+
+class _DesktopLayout extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return Row(
+children: [
+SizedBox(width: 250, child: _Sidebar()),
+Expanded(flex: 2, child: _Content()),
+SizedBox(width: 200, child: _Details()),
+],
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Практические примеры"},
+    {"level": 3, "type": "heading", "text": "Адаптивная типографика"},
+    {"content": "LayoutBuilder(
+builder: (context, constraints) {
+final fontSize = constraints.maxWidth > 600 ? 24.0 : 18.0;
+
+return Text(
+'Адаптивный текст',
+style: TextStyle(fontSize: fontSize),
+);
+},
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Адаптивная сетка карточек"},
+    {"content": "LayoutBuilder(
+builder: (context, constraints) {
+final cardWidth = 200.0;
+final spacing = 16.0;
+final crossAxisCount = (constraints.maxWidth / (cardWidth + spacing)).floor().clamp(1, 5);
+
+return GridView.builder(
+shrinkWrap: true,
+gridDelegate: SliverGridDelegateWithFixedCrossAxisAxis(
+crossAxisCount: crossAxisCount,
+crossAxisSpacing: spacing,
+mainAxisSpacing: spacing,
+childAspectRatio: 3 / 4,
+),
+itemCount: 20,
+itemBuilder: (context, index) {
+return Card(
+child: Center(child: Text('Карточка $index')),
+);
+},
+);
+},
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Контекст в LayoutBuilder"},
+    {"content": "LayoutBuilder(
+builder: (context, constraints) {
+// Важно: context внутри LayoutBuilder — это контекст build-метода
+// Он находится \"внутри\" LayoutBuilder, поэтому можно использовать
+// MediaQuery.of(context), Theme.of(context) и т.д.
+
+final screenWidth = MediaQuery.of(context).size.width;
+final theme = Theme.of(context);
+
+return ConstrainedBox(
+constraints: BoxConstraints(maxWidth: screenWidth * 0.9),
+child: Text(
+'Доступная ширина: ${constraints.maxWidth.toStringAsFixed(0)}',
+style: theme.textTheme.headlineSmall,
+),
+);
+},
+},", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<code>LayoutBuilder</code> — лучший выбор для адаптивных макетов, реагирующих на доступное пространство", "Используйте <code>constraints.maxWidth</code> для определения брейкпоинтов, а не фиксированные значения экрана", "<code>ConstrainedBox</code> полезен для принудительного задания минимальных/максимальных размеров", "Комбинируйте <code>LayoutBuilder</code> и <code>ConstrainedBox</code> для создания адаптивных ограничений", "<code>LayoutBuilder</code> перестраивается при изменении доступного пространства (например, при повороте экрана)", "Избегайте глубокой вложенности <code>LayoutBuilder</code> — это может ухудшить производительность", "Используйте <code>clamp()</code> для ограничения значений в разумных пределах"], "type": "ul"}
+  ]
+}

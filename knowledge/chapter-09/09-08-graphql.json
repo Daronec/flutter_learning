@@ -1,0 +1,260 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "GraphQL — основы и интеграция с Flutter"},
+    {"text": "GraphQL — это язык запросов и серверная runtime-технология для API, разработанная Facebook. В отличие от REST, GraphQL позволяет клиенту запрашивать точно те данные, которые нужны.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "REST vs GraphQL"},
+    {"text": "| REST | GraphQL |", "type": "paragraph"},
+    {"text": "|------|---------|", "type": "paragraph"},
+    {"text": "| Несколько endpoint'ов | Один endpoint |", "type": "paragraph"},
+    {"text": "| Фиксированная структура ответа | Гибкая структура запроса |", "type": "paragraph"},
+    {"text": "| Over-fetching / Under-fetching | Запрашиваем только нужное |", "type": "paragraph"},
+    {"text": "| Версионирование API | Эволюция без версий |", "type": "paragraph"},
+    {"text": "| HTTP методы для действий | Один метод — POST |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Основные концепции"},
+    {"level": 3, "type": "heading", "text": "Типы запросов"},
+    {"text": "| Тип | Описание |", "type": "paragraph"},
+    {"text": "|-----|----------|", "type": "paragraph"},
+    {"text": "| Query | Чтение данных (аналог GET) |", "type": "paragraph"},
+    {"text": "| Mutation | Изменение данных (аналог POST/PUT/DELETE) |", "type": "paragraph"},
+    {"text": "| Subscription | Real-time обновления (WebSocket) |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Базовый Query"},
+    {"content": "# Запрос конкретных полей
+query {
+user(id: 1) {
+id
+name
+email
+}
+}
+
+# Запрос списка с полями
+query {
+users(limit: 10) {
+id
+name
+avatarUrl
+}
+}", "language": "graphql", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Query с переменными"},
+    {"content": "query GetUser($id: ID!) {
+user(id: $id) {
+id
+name
+email
+posts {
+title
+createdAt
+}
+}
+}", "language": "graphql", "type": "code"},
+    {"content": "// Переменные для запроса
+{
+\"id\": \"1\"
+}", "language": "json", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Mutation"},
+    {"content": "# Создание пользователя
+mutation CreateUser($input: CreateUserInput!) {
+createUser(input: $input) {
+id
+name
+email
+}
+}
+
+# Обновление
+mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
+updateUser(id: $id, input: $input) {
+id
+name
+email
+}
+}
+
+# Удаление
+mutation DeleteUser($id: ID!) {
+deleteUser(id: $id) {
+success
+message
+}
+}", "language": "graphql", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Nested запросы"},
+    {"content": "query GetUserWithPosts($id: ID!) {
+user(id: $id) {
+id
+name
+email
+posts {
+id
+title
+content
+comments {
+id
+text
+author {
+name
+}
+}
+}
+}
+}", "language": "graphql", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Пакет graphql"},
+    {"level": 3, "type": "heading", "text": "Установка"},
+    {"content": "dependencies:
+graphql: ^5.1.3+1
+normalize: ^9.0.3", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Настройка клиента"},
+    {"content": "import 'package:graphql_flutter/graphql_flutter.dart';
+
+void main() async {
+final ValueNotifier<GraphQLClient> client = createGraphQLClient();
+
+runApp(
+GraphQLProvider(
+client: client,
+child: MyApp(),
+),
+);
+}
+
+ValueNotifier<GraphQLClient> createGraphQLClient() {
+final HttpLink httpLink = HttpLink(
+'https://api.example.com/graphql',
+);
+
+return ValueNotifier(
+GraphQLClient(
+cache: GraphQLCache(),
+link: httpLink,
+),
+);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Выполнение Query"},
+    {"content": "// Query с помощью runQuery
+final QueryOptions options = QueryOptions(
+document: gql('''
+query GetUsers {
+users {
+id
+name
+email
+}
+}
+'''),
+);
+
+final QueryResult result = await client.query(options);
+
+if (result.hasException) {
+print('Ошибка: ${result.exception}');
+} else {
+final List<dynamic> users = result.data!['users'];
+for (var user in users) {
+print('${user['name']} — ${user['email']}');
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Query с переменными"},
+    {"content": "final QueryOptions options = QueryOptions(
+document: gql('''
+query GetUser($id: ID!) {
+user(id: $id) {
+id
+name
+email
+posts {
+title
+createdAt
+}
+}
+}
+'''),
+variables: {'id': '1'},
+);
+
+final QueryResult result = await client.query(options);
+final Map<String, dynamic> data = result.data!;
+final user = data['user'];", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Mutation"},
+    {"content": "final MutationOptions options = MutationOptions(
+document: gql('''
+mutation CreateUser($name: String!, $email: String!) {
+createUser(input: {name: $name, email: $email}) {
+id
+name
+email
+}
+}
+'''),
+variables: {
+'name': 'Иван Петров',
+'email': 'ivan@example.com',
+},
+);
+
+final QueryResult result = await client.mutate(options);
+
+if (result.hasException) {
+print('Ошибка: ${result.exception}');
+} else {
+final newUser = result.data!['createUser'];
+print('Создан: ${newUser['name']}');
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Subscription (Real-time)"},
+    {"content": "final SubscriptionOptions options = SubscriptionOptions(
+document: gql('''
+subscription OnNewMessage {
+onNewMessage {
+id
+text
+sender {
+name
+}
+}
+}
+'''),
+);
+
+client.subscribe(Options(options)).listen(
+(result) {
+final message = result.data!['onNewMessage'];
+print('Новое сообщение: ${message['text']}');
+},
+onError: (error) {
+print('Ошибка подписки: $error');
+},
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Использование с Flutter Widget"},
+    {"content": "class UserListWidget extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return GraphQLQuery(
+options: QueryOptions(
+document: gql('query { users { id name email } }'),
+),
+builder: (BuildResult result, {VoidCallback? refetch, FetchMore? fetchMore}) {
+if (result.loading) {
+return const Center(child: CircularProgressIndicator());
+}
+
+if (result.hasException) {
+return Center(child: Text('Ошибка: ${result.exception}'));
+}
+
+final List<dynamic> users = result.data!['users'];
+return ListView.builder(
+itemCount: users.length,
+itemBuilder: (context, index) {
+final user = users[index];
+return ListTile(
+title: Text(user['name']),
+subtitle: Text(user['email']),
+);
+},
+);
+},
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Используйте переменные</strong> — никогда не подставляйте данные напрямую в запрос", "<strong>Запрашивайте только нужные поля</strong> — не используйте <code>*</code> или избыточные данные", "<strong>Кэшируйте ответы</strong> — GraphQL-клиент автоматически кэширует данные", "<strong>Используйте Mutation</strong> для изменений — не Query", "<strong>Обрабатывайте ошибки</strong> — проверяйте <code>result.hasException</code>", "<strong>Используйте Subscription</strong> для real-time данных — чат, уведомления"], "type": "ul"}
+  ]
+}

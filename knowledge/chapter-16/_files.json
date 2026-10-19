@@ -1,0 +1,55 @@
+﻿{
+    "files":  [
+                  {
+                      "name":  "16-01-platform-channels.md",
+                      "path":  "chapter-16/16-01-platform-channels.md",
+                      "size":  16450
+                  },
+                  {
+                      "name":  "16-02-native-plugins.md",
+                      "path":  "chapter-16/16-02-native-plugins.md",
+                      "size":  15318
+                  },
+                  {
+                      "name":  "16-03-flutter-engine.md",
+                      "path":  "chapter-16/16-03-flutter-engine.md",
+                      "size":  17011
+                  },
+                  {
+                      "name":  "16-04-skia-impeller.md",
+                      "path":  "chapter-16/16-04-skia-impeller.md",
+                      "size":  14721
+                  },
+                  {
+                      "name":  "16-05-custom-painting.md",
+                      "path":  "chapter-16/16-05-custom-painting.md",
+                      "size":  18452
+                  },
+                  {
+                      "name":  "16-06-shaders.md",
+                      "path":  "chapter-16/16-06-shaders.md",
+                      "size":  14661
+                  },
+                  {
+                      "name":  "16-07-flutter-web-advanced.md",
+                      "path":  "chapter-16/16-07-flutter-web-advanced.md",
+                      "size":  11653
+                  },
+                  {
+                      "name":  "16-08-flutter-desktop-advanced.md",
+                      "path":  "chapter-16/16-08-flutter-desktop-advanced.md",
+                      "size":  15946
+                  },
+                  {
+                      "name":  "16-09-multiplatform.md",
+                      "path":  "chapter-16/16-09-multiplatform.md",
+                      "size":  15926
+                  },
+                  {
+                      "name":  "16-10-future-flutter.md",
+                      "path":  "chapter-16/16-10-future-flutter.md",
+                      "size":  17515
+                  }
+              ],
+    "chapter":  "chapter-16"
+}

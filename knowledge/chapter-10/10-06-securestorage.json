@@ -1,0 +1,206 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "SecureStorage — безопасное хранение данных"},
+    {"text": "flutter_secure_storage — это пакет для безопасного хранения чувствительных данных. Он использует Keychain на iOS и Keystore/EncryptedSharedPreferences на Android.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Установка"},
+    {"content": "dependencies:
+flutter_secure_storage: ^9.0.0", "language": "yaml", "type": "code"},
+    {"content": "flutter pub add flutter_secure_storage", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Требования к платформам"},
+    {"level": 3, "type": "heading", "text": "Android"},
+    {"text": "Добавьте в <code>android/app/build.gradle</code>:", "type": "paragraph"},
+    {"content": "android {
+defaultConfig {
+// Для Android 6.0+
+minSdkVersion 20
+}
+}", "language": "gradle", "type": "code"},
+    {"level": 3, "type": "heading", "text": "iOS"},
+    {"text": "Для iOS 12+ шифрование включено по умолчанию. Для более старых версий добавьте в <code>ios/Runner/Info.plist</code>:", "type": "paragraph"},
+    {"content": "<key>NSFaceIDUsageDescription</key>
+<string>Для доступа к данным</string>", "language": "xml", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Базовое использование"},
+    {"level": 3, "type": "heading", "text": "Инициализация"},
+    {"content": "import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+final storage = const FlutterSecureStorage();", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Запись данных"},
+    {"content": "// Сохранить строку
+await storage.write(key: 'auth_token', value: 'eyJhbGc...');
+
+// Сохранить email
+await storage.write(key: 'user_email', value: 'ivan@example.com');
+
+// Сохранить JSON
+await storage.write(
+key: 'user_data',
+value: '{\"id\":1,\"name\":\"Иван\",\"email\":\"ivan@example.com\"}',
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Чтение данных"},
+    {"content": "// Прочитать значение
+String? token = await storage.read(key: 'auth_token');
+
+// Прочитать email
+String? email = await storage.read(key: 'user_email');
+
+// Прочитать JSON
+String? json = await storage.read(key: 'user_data');
+if (json != null) {
+final userData = jsonDecode(json);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Удаление данных"},
+    {"content": "// Удалить конкретный ключ
+await storage.delete(key: 'auth_token');
+
+// Удалить все данные
+await storage.deleteAll();", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Проверка наличия данных"},
+    {"content": "// Проверить наличие ключа
+bool hasToken = await storage.containsKey(key: 'auth_token');
+
+if (hasToken) {
+final token = await storage.read(key: 'auth_token');
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Конфигурация хранилища"},
+    {"level": 3, "type": "heading", "text": "iOS-специфичная конфигурация"},
+    {"content": "const storage = FlutterSecureStorage(
+aOptions: AndroidOptions(
+encryptedSharedPreferences: true,
+),
+iOptions: IOSOptions(
+accessibility: KeychainAccessibility.first_unlock_this_device,
+authenticationPolicy: AuthenticationPolicy.userPresence,
+),
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Android-специцифичная конфигурация"},
+    {"content": "const storage = FlutterSecureStorage(
+aOptions: AndroidOptions(
+encryptedSharedPreferences: true,
+// Аутентификация через биометрию
+authenticationCreds: AndroidCredentials.biometricPrompt(
+AndroidBiometricPrompt(
+title: 'Биометрическая аутентификация',
+subtitle: 'Для доступа к данным',
+description: 'Используйте отпечаток или Face ID',
+negativeButtonText: 'Отмена',
+),
+),
+),
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Доступность данных (iOS)"},
+    {"text": "| Доступность | Описание |", "type": "paragraph"},
+    {"text": "|-------------|----------|", "type": "paragraph"},
+    {"text": "| <code>always</code> | Данные доступны всегда (не рекомендуется) |", "type": "paragraph"},
+    {"text": "| <code>first_unlock</code> | Доступны после первой разблокировки устройства |", "type": "paragraph"},
+    {"text": "| <code>first_unlock_this_device</code> | Только после разблокировки на текущем устройстве |", "type": "paragraph"},
+    {"text": "| <code>unlock_this_device</code> | Только когда устройство разблокировано |", "type": "paragraph"},
+    {"text": "| <code>unlock_this_device_passcode</code> | Только с PIN-кодом (не биометрией) |", "type": "paragraph"},
+    {"text": "| <code>after_first_unlock</code> | Доступны после первой разблокировки |", "type": "paragraph"},
+    {"content": "const storage = FlutterSecureStorage(
+iOptions: IOSOptions(
+accessibility: KeychainAccessibility.unlock_this_device,
+),
+);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Практические примеры"},
+    {"level": 3, "type": "heading", "text": "Хранение токенов аутентификации"},
+    {"content": "class AuthStorage {
+final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+static const _accessTokenKey = 'access_token';
+static const _refreshTokenKey = 'refresh_token';
+static const _userIdKey = 'user_id';
+
+// Сохранить токены
+Future<void> saveTokens({
+required String accessToken,
+required String refreshToken,
+required int userId,
+}) async {
+await _storage.write(key: _accessTokenKey, value: accessToken);
+await _storage.write(key: _refreshTokenKey, value: refreshToken);
+await _storage.write(key: _userIdKey, value: userId.toString());
+}
+
+// Получить access токен
+Future<String?> getAccessToken() async {
+return await _storage.read(key: _accessTokenKey);
+}
+
+// Получить refresh токен
+Future<String?> getRefreshToken() async {
+return await _storage.read(key: _refreshTokenKey);
+}
+
+// Получить user ID
+Future<int?> getUserId() async {
+final id = await _storage.read(key: _userIdKey);
+return id != null ? int.tryParse(id) : null;
+}
+
+// Проверить авторизацию
+Future<bool> isAuthenticated() async {
+final token = await _storage.read(key: _accessTokenKey);
+return token != null && token.isNotEmpty;
+}
+
+// Выйти из системы
+Future<void> logout() async {
+await _storage.delete(key: _accessTokenKey);
+await _storage.delete(key: _refreshTokenKey);
+await _storage.delete(key: _userIdKey);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Хранение PIN-кода"},
+    {"content": "class PinStorage {
+final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+static const _pinKey = 'user_pin';
+
+Future<void> savePin(String pin) async {
+// Важно: НЕ храните PIN в открытом виде!
+// В реальном приложении используйте хеширование
+await _storage.write(key: _pinKey, value: pin);
+}
+
+Future<String?> getPin() async {
+return await _storage.read(key: _pinKey);
+}
+
+Future<void> deletePin() async {
+await _storage.delete(key: _pinKey);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Работа с JSON"},
+    {"content": "class SecureJsonStorage {
+final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+Future<void> saveSecureData(String key, Map<String, dynamic> data) async {
+final json = jsonEncode(data);
+await _storage.write(key: key, value: json);
+}
+
+Map<String, dynamic>? getSecureData(String key) {
+final json = _storage.readSync(key: key);
+if (json != null) {
+return jsonDecode(json) as Map<String, dynamic>;
+}
+return null;
+}
+
+Future<void> deleteSecureData(String key) async {
+await _storage.delete(key: key);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение: SharedPreferences vs SecureStorage"},
+    {"text": "| Характеристика | SharedPreferences | SecureStorage |", "type": "paragraph"},
+    {"text": "|----------------|-------------------|---------------|", "type": "paragraph"},
+    {"text": "| Безопасность | Низкая | Высокая |", "type": "paragraph"},
+    {"text": "| Шифрование | Нет | Да (Keychain/Keystore) |", "type": "paragraph"},
+    {"text": "| Производительность | Быстрее | Чуть медленнее |", "type": "paragraph"},
+    {"text": "| Объём данных | Неограничен | Небольшой |", "type": "paragraph"},
+    {"text": "| Использование | Настройки, данные | Токены, пароли |", "type": "paragraph"},
+    {"text": "| Биометрия | Нет | Да (Android) |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Храните только чувствительные данные</strong> — токены, пароли, ключи API", "<strong>Не храните большие объёмы</strong> — SecureStorage медленнее SharedPreferences", "<strong>Используйте шифрование</strong> — по умолчанию включено на обеих платформах", "<strong>Очищайте данные при выходе</strong> — вызывайте <code>delete()</code> при logout", "<strong>Используйте биометрию</strong> — на Android для дополнительного уровня защиты", "<strong>Не логируйте данные</strong> — не выводите токены в лог"], "type": "ul"}
+  ]
+}

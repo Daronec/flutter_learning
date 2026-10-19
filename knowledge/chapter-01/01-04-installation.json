@@ -1,0 +1,77 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "1.4 Установка и настройка окружения (Flutter SDK, IDE, эмулятор)"},
+    {"level": 2, "type": "heading", "text": "Системные требования"},
+    {"level": 3, "type": "heading", "text": "Windows"},
+    {"items": ["<strong>ОС</strong>: Windows 10 или новее (64-bit)", "<strong>Диск</strong>: 2.82 ГБ (плюс место для IDE и эмуляторов)", "<strong>RAM</strong>: 8 ГБ минимум", "<strong>PowerShell</strong>: версия 5.0+"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "macOS"},
+    {"items": ["<strong>ОС</strong>: macOS 10.15 или новее", "<strong>Диск</strong>: 3.0 ГБ", "<strong>RAM</strong>: 8 ГБ минимум", "<strong>Xcode</strong>: для iOS-разработки"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Linux"},
+    {"items": ["<strong>ОС</strong>: Ubuntu 20.04 или новее (другие дистрибутивы тоже поддерживаются)", "<strong>Диск</strong>: 2.8 ГБ", "<strong>RAM</strong>: 8 ГБ минимум"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Шаг 1: Установка Flutter SDK"},
+    {"level": 3, "type": "heading", "text": "Скачивание"},
+    {"items": ["Перейти на <a href=\"https://flutter.dev/docs/get-started/install\" target=\"_blank\">flutter.dev/docs/get-started/install</a>", "Скачать архив для вашей платформы", "Распаковать в предпочитаемую директорию"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Настройка PATH"},
+    {"text": "<strong>Windows (PowerShell):</strong>", "type": "paragraph"},
+    {"content": "# Добавить Flutter в PATH
+$env:Path += \";C:\\\\src\\\\flutter\\\\bin\"
+
+# Для постоянной настройки:
+# Settings → System → About → Advanced system settings → Environment Variables
+# Добавить системную переменную FLUTTER_ROOT = C:\\\\src\\\\flutter
+# Добавить в Path: %FLUTTER_ROOT%\\\\bin", "language": "powershell", "type": "code"},
+    {"text": "<strong>macOS/Linux (bash/zsh):</strong>", "type": "paragraph"},
+    {"content": "# Добавить в ~/.bashrc или ~/.zshrc
+export PATH=\"$PATH:`pwd`/flutter/bin\"
+source ~/.bashrc  # или ~/.zshrc", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Проверка установки"},
+    {"content": "flutter doctor", "language": "bash", "type": "code"},
+    {"text": "Эта команда проверяет окружение и показывает, что нужно установить/настроить.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Шаг 2: Установка IDE"},
+    {"level": 3, "type": "heading", "text": "Android Studio (рекомендуется)"},
+    {"items": ["Скачать с <a href=\"https://developer.android.com/studio\" target=\"_blank\">androidstudio.google.com</a>", "Установить плагины:"], "type": "ol"},
+    {"items": ["<strong>Flutter</strong> — основная поддержка фреймворка", "<strong>Dart</strong> — поддержка языка"], "type": "ul"},
+    {"items": ["Плагины устанавливаются через:"], "type": "ol"},
+    {"items": ["<code>File → Settings → Plugins → Marketplace</code>", "Поиск: «Flutter» и «Dart»", "Установка и перезапуск IDE"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "VS Code"},
+    {"items": ["Скачать с <a href=\"https://code.visualstudio.com\" target=\"_blank\">code.visualstudio.com</a>", "Установить расширения:"], "type": "ol"},
+    {"items": ["<strong>Flutter</strong> (от Dart Code)", "<strong>Dart</strong> (от Dart Code)"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "IntelliJ IDEA / PyCharm Pro"},
+    {"items": ["Поддержка Flutter встроена в Professional версии", "Установить плагины Flutter и Dart через Settings → Plugins"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Шаг 3: Настройка эмулятора"},
+    {"level": 3, "type": "heading", "text": "Android Emulator"},
+    {"items": ["Открыть Android Studio", "<code>Tools → Device Manager</code>", "<code>Create Device</code> — выбрать виртуальное устройство (Pixel 5, Nexus 6P и т.д.)", "Скачать системный образ (рекомендуется API 33+)", "Запустить эмулятор"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "iOS Simulator (только macOS)"},
+    {"items": ["Установить Xcode из App Store", "Симулятор доступен через:"], "type": "ol"},
+    {"items": ["Android Studio → Device Manager", "Терминал: <code>open -a Simulator</code>", "Xcode → Window → Devices and Simulators"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Desktop эмуляторы"},
+    {"items": ["<strong>Windows/macOS/Linux</strong> — приложения запускаются нативно на десктоп-платформе", "Дополнительная настройка не требуется"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Шаг 4: Flutter doctor — проверка"},
+    {"content": "flutter doctor", "language": "bash", "type": "code"},
+    {"text": "<strong>Пример вывода:</strong>", "type": "paragraph"},
+    {"content": "Doctor summary (to see all details, run flutter doctor -v):
+
+[√] Flutter (Channel stable, 3.x.x, on Microsoft Windows)
+[√] Windows version (installed)
+[√] Android toolchain - develop for Android devices
+[√] Chrome - develop for the web
+[!] Android Studio (not configured)
+[√] VS Code
+[!] Connected device
+! No issues found!", "language": "", "type": "code"},
+    {"text": "<strong>Красные/восклицательные знаки</strong> означают, что нужно что-то доустановить или настроить.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Шаг 5: Создание первого проекта"},
+    {"content": "flutter create my_app
+cd my_app
+flutter run", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Распространённые проблемы"},
+    {"level": 3, "type": "heading", "text": "<code>flutter doctor</code> показывает ошибки"},
+    {"items": ["<strong>Android SDK</strong>: установить через Android Studio SDK Manager", "<strong>Java/SDK</strong>: установить JDK через Android Studio", "<strong>Android License</strong>: <code>flutter doctor --android-licenses</code>", "<strong>Chrome</strong>: установить Chrome для веб-разработки"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Эмулятор не запускается"},
+    {"items": ["Включить виртуализацию в BIOS (Intel VT-x / AMD-V)", "Проверить свободное место на диске", "Обновить HAXM (Windows) или Hyper-V"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Медленная загрузка эмулятора"},
+    {"items": ["Использовать эмулятор с <strong>Google Play</strong> образом (оптимизирован)", "Включить <strong>Hardware Acceleration</strong>", "Использовать <strong>snapshot</strong> эмулятора"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Правильная настройка окружения — основа продуктивной разработки. Регулярно запускайте <code>flutter doctor</code> для контроля состояния окружения.", "type": "paragraph"}
+  ]
+}

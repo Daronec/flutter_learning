@@ -1,0 +1,307 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "BLoC (Business Logic Component) — паттерн проектирования"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "<strong>BLoC (Business Logic Component)</strong> — это паттерн проектирования, который разделяет бизнес-логику и UI. Он основан на реактивном программировании и использует Streams для передачи данных между слоями приложения.", "type": "paragraph"},
+    {"content": "**Ключевая идея:** BLoC получает события (Events) и генерирует состояния (States). UI реагирует на изменения состояний.", "type": "blockquote"},
+    {"level": 2, "type": "heading", "text": "Принципы BLoC"},
+    {"level": 3, "type": "heading", "text": "1. Разделение ответственности"},
+    {"content": "┌─────────────────────────────────────────────────────────┐
+│                    UI Layer (Widgets)                     │
+│  - Отображает данные                                     │
+│  - Генерирует события при взаимодействии                 │
+└─────────────────────────────────────────────────────────┘
+↓ Events
+┌─────────────────────────────────────────────────────────┐
+│                 BLoC Layer (Logic)                       │
+│  - Принимает события                                     │
+│  - Обрабатывает бизнес-логику                            │
+│  - Генерирует состояния                                  │
+└─────────────────────────────────────────────────────────┘
+↓ States
+┌─────────────────────────────────────────────────────────┐
+│                    UI Layer (Widgets)                     │
+│  - Реагирует на изменения состояний                      │
+│  - Перестраивает UI                                      │
+└─────────────────────────────────────────────────────────┘", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "2. Однонаправленный поток данных"},
+    {"content": "UI → Event → BLoC → State → UI", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Установка"},
+    {"content": "# pubspec.yaml
+dependencies:
+flutter:
+sdk: flutter
+flutter_bloc: ^8.1.0
+bloc: ^8.1.0", "language": "yaml", "type": "code"},
+    {"content": "flutter pub get", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Основы BLoC"},
+    {"level": 3, "type": "heading", "text": "1. Определение событий и состояний"},
+    {"content": "// События — что может произойти
+abstract class CounterEvent {}
+
+class CounterIncrementPressed extends CounterEvent {}
+class CounterDecrementPressed extends CounterEvent {}
+class CounterResetPressed extends CounterEvent {}
+
+// Состояния — что может быть отображено
+abstract class CounterState {
+final int count;
+
+CounterState({required this.count});
+}
+
+class CounterInitial extends CounterState {
+CounterInitial() : super(count: 0);
+}
+
+class CounterIncremented extends CounterState {
+CounterIncremented(int count) : super(count: count);
+}
+
+class CounterDecremented extends CounterState {
+CounterDecremented(int count) : super(count: count);
+}
+
+class CounterResetted extends CounterState {
+CounterResetted(int count) : super(count: count);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "2. Создание BLoC"},
+    {"content": "import 'package:bloc/bloc.dart';
+
+class CounterBloc extends Bloc<CounterEvent, CounterState> {
+CounterBloc() : super(CounterInitial()) {
+// Обработка событий
+on<CounterIncrementPressed>(_onIncrement);
+on<CounterDecrementPressed>(_onDecrement);
+on<CounterResetPressed>(_onReset);
+}
+
+void _onIncrement(CounterIncrementPressed event, Emitter<CounterState> emit) {
+emit(CounterIncremented(state.count + 1));
+}
+
+void _onDecrement(CounterDecrementPressed event, Emitter<CounterState> emit) {
+emit(CounterDecremented(state.count - 1));
+}
+
+void _onReset(CounterResetPressed event, Emitter<CounterState> emit) {
+emit(CounterResetted(0));
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "3. Использование в UI"},
+    {"content": "import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class CounterPage extends StatelessWidget {
+const CounterPage({super.key});
+
+@override
+Widget build(BuildContext context) {
+return BlocProvider(
+create: (_) => CounterBloc(),
+child: Scaffold(
+appBar: AppBar(title: const Text('BLoC Counter')),
+body: BlocBuilder<CounterBloc, CounterState>(
+builder: (context, state) {
+return Center(
+child: Text(
+'Счётчик: ${state.count}',
+style: Theme.of(context).textTheme.headlineLarge,
+),
+);
+},
+),
+floatingActionButton: Column(
+crossAxisAlignment: CrossAxisAlignment.end,
+mainAxisAlignment: MainAxisAlignment.end,
+children: [
+FloatingActionButton(
+onPressed: () => context.read<CounterBloc>().add(CounterIncrementPressed()),
+child: const Icon(Icons.add),
+),
+const SizedBox(height: 8),
+FloatingActionButton(
+onPressed: () => context.read<CounterBloc>().add(CounterDecrementPressed()),
+child: const Icon(Icons.remove),
+),
+],
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "flutter_bloc package"},
+    {"level": 3, "type": "heading", "text": "Основные виджеты"},
+    {"text": "| Виджет | Назначение |", "type": "paragraph"},
+    {"text": "|---|---|", "type": "paragraph"},
+    {"text": "| <code>BlocProvider</code> | Предоставляет BLoC виджетам |", "type": "paragraph"},
+    {"text": "| <code>BlocBuilder</code> | Строит UI на основе состояний |", "type": "paragraph"},
+    {"text": "| <code>BlocListener</code> | Выполняет действия при изменении состояний |", "type": "paragraph"},
+    {"text": "| <code>BlocConsume</code> | Одноразовое получение состояния |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "BlocBuilder — построение UI"},
+    {"content": "BlocBuilder<CounterBloc, CounterState>(
+builder: (context, state) {
+if (state is CounterInitial) {
+return const Text('Начальное состояние');
+} else if (state is CounterIncremented) {
+return Text('Счётчик: ${state.count}');
+} else if (state is CounterDecremented) {
+return Text('Счётчик: ${state.count}');
+}
+return const Text('Неизвестное состояние');
+},
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "BlocListener — побочные эффекты"},
+    {"content": "BlocListener<CounterBloc, CounterState>(
+listener: (context, state) {
+if (state is CounterResetted) {
+ScaffoldMessenger.of(context).showSnackBar(
+const SnackBar(content: Text('Счётчик сброшен')),
+);
+}
+},
+child: BlocBuilder<CounterBloc, CounterState>(
+builder: (context, state) {
+return Text('Счётчик: ${state.count}');
+},
+),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Архитектура BLoC"},
+    {"level": 3, "type": "heading", "text": "Слои приложения"},
+    {"content": "lib/
+├── main.dart
+├── blocs/
+│   ├── counter/
+│   │   ├── counter_event.dart
+│   │   ├── counter_state.dart
+│   │   └── counter_bloc.dart
+│   ├── auth/
+│   │   ├── auth_event.dart
+│   │   ├── auth_state.dart
+│   │   └── auth_bloc.dart
+│   └── todos/
+│       ├── todo_event.dart
+│       ├── todo_state.dart
+│       └── todo_bloc.dart
+├── repositories/
+│   ├── auth_repository.dart
+│   └── todo_repository.dart
+├── models/
+│   ├── user.dart
+│   └── todo.dart
+└── pages/
+├── counter_page.dart
+├── auth_page.dart
+└── todos_page.dart", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример: BLoC с репозиторием"},
+    {"content": "// Репозиторий
+class TodoRepository {
+Future<List<Todo>> fetchTodos() async {
+// Запрос к API
+return await api.getTodos();
+}
+
+Future<void> saveTodo(Todo todo) async {
+await api.saveTodo(todo);
+}
+}
+
+// События
+abstract class TodoEvent {}
+
+class TodoLoaded extends TodoEvent {}
+class TodoAdded extends TodoEvent {
+final String title;
+TodoAdded(this.title);
+}
+
+class TodoToggled extends TodoEvent {
+final String id;
+TodoToggled(this.id);
+}
+
+// Состояния
+abstract class TodoState {
+final List<Todo> todos;
+final bool isLoading;
+final String? error;
+
+TodoState({required this.todos, required this.isLoading, this.error});
+
+TodoState.initial() : this(todos: [], isLoading: false);
+}
+
+class TodoLoading extends TodoState {
+TodoLoading() : super(todos: [], isLoading: true);
+}
+
+class TodoLoadedState extends TodoState {
+TodoLoadedState({required List<Todo> todos})
+: super(todos: todos, isLoading: false);
+}
+
+class TodoErrorState extends TodoState {
+TodoErrorState(String error) : super(todos: [], isLoading: false, error: error);
+}
+
+// BLoC
+class TodoBloc extends Bloc<TodoEvent, TodoState> {
+final TodoRepository _repository;
+
+TodoBloc(this._repository) : super(TodoState.initial()) {
+on<TodoLoaded>(_onTodoLoaded);
+on<TodoAdded>(_onTodoAdded);
+on<TodoToggled>(_onTodoToggled);
+}
+
+Future<void> _onTodoLoaded(
+TodoLoaded event,
+Emitter<TodoState> emit,
+) async {
+emit(TodoLoading());
+try {
+final todos = await _repository.fetchTodos();
+emit(TodoLoadedState(todos: todos));
+} catch (e) {
+emit(TodoErrorState(e.toString()));
+}
+}
+
+Future<void> _onTodoAdded(
+TodoAdded event,
+Emitter<TodoState> emit,
+) async {
+final currentState = state;
+if (currentState is TodoLoadedState) {
+final newTodo = Todo(id: DateTime.now().toString(), title: event.title);
+await _repository.saveTodo(newTodo);
+emit(TodoLoadedState(todos: [...currentState.todos, newTodo]));
+}
+}
+
+Future<void> _onTodoToggled(
+TodoToggled event,
+Emitter<TodoState> emit,
+) async {
+final currentState = state;
+if (currentState is TodoLoadedState) {
+final updatedTodos = currentState.todos.map((todo) {
+if (todo.id == event.id) {
+return todo.copyWith(isCompleted: !todo.isCompleted);
+}
+return todo;
+}).toList();
+emit(TodoLoadedState(todos: updatedTodos));
+}
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "✅ Делайте"},
+    {"items": ["Делайте события и состояния независимыми классами", "Используйте <code>emit</code> вместо <code>add</code> для изменения состояния", "Обрабатывайте ошибки в BLoC", "Используйте <code>BlocListener</code> для побочных эффектов", "Тестируйте BLoC отдельно от UI"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "❌ Не делайте"},
+    {"items": ["Не размещайте бизнес-логику в UI", "Не создавайте слишком много событий", "Не смешивайте разные домены в одном BLoC", "Не обращайтесь к API напрямую из UI"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "BLoC — это мощный паттерн для управления состоянием в сложных приложениях. Он обеспечивает чёткое разделение ответственности и делает код легко тестируемым.", "type": "paragraph"},
+    {"content": "**Правило:** Используйте BLoC для приложений среднего и большого размера. Для простых приложений используйте Provider или Riverpod.", "type": "blockquote"}
+  ]
+}

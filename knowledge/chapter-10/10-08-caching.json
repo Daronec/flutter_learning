@@ -1,0 +1,317 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Кэширование — стратегии и реализация"},
+    {"text": "Кэширование — это техника сохранения данных для быстрого повторного доступа. В мобильных приложениях кэширование улучшает производительность, снижает нагрузку на сеть и экономит трафик пользователя.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Типы кэширования"},
+    {"text": "| Тип | Описание | Пример |", "type": "paragraph"},
+    {"text": "|-----|----------|--------|", "type": "paragraph"},
+    {"text": "| Memory Cache | Данные в оперативной памяти | List\\\\<T\\\\> в памяти |", "type": "paragraph"},
+    {"text": "| Disk Cache | Данные на диске | SharedPreferences, файлы |", "type": "paragraph"},
+    {"text": "| Network Cache | Прокси-кэш | HTTP-кэш браузера |", "type": "paragraph"},
+    {"text": "| Image Cache | Кэш изображений | AssetImage, CachedNetworkImage |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Стратегии кэширования"},
+    {"level": 3, "type": "heading", "text": "Cache-First (сначала кэш)"},
+    {"content": "class CacheFirstStrategy {
+final SharedPreferences _prefs;
+final Dio _dio;
+
+CacheFirstStrategy(this._prefs, this._dio);
+
+Future<dynamic> fetchData(String key, String url) async {
+// 1. Сначала проверяем кэш
+final cached = _prefs.getString(key);
+if (cached != null) {
+final data = jsonDecode(cached);
+// Можно добавить проверку актуальности кэша
+return data;
+}
+
+// 2. Если кэша нет — запрос к API
+try {
+final response = await _dio.get(url);
+// 3. Сохраняем в кэш
+_prefs.setString(key, jsonEncode(response.data));
+return response.data;
+} catch (e) {
+// 4. При ошибке возвращаем кэш или бросаем ошибку
+if (cached != null) {
+return jsonDecode(cached);
+}
+rethrow;
+}
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Network-First (сначала сеть)"},
+    {"content": "class NetworkFirstStrategy {
+final SharedPreferences _prefs;
+final Dio _dio;
+
+NetworkFirstStrategy(this._prefs, this._dio);
+
+Future<dynamic> fetchData(String key, String url) async {
+try {
+// 1. Сначала пробуем сеть
+final response = await _dio.get(url);
+// 2. Сохраняем в кэш
+_prefs.setString(key, jsonEncode(response.data));
+return response.data;
+} catch (e) {
+// 3. При ошибке — возвращаем кэш
+final cached = _prefs.getString(key);
+if (cached != null) {
+return jsonDecode(cached);
+}
+rethrow;
+}
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Stale-While-Revalidate (устаревший + обновление)"},
+    {"content": "class StaleWhileRevalidateStrategy {
+final SharedPreferences _prefs;
+final Dio _dio;
+
+StaleWhileRevalidateStrategy(this._prefs, this._dio);
+
+Future<dynamic> fetchData(String key, String url, {
+Duration maxAge = const Duration(minutes: 5),
+}) async {
+final cached = _prefs.getString(key);
+final timestamp = _prefs.getString('${key}_timestamp');
+
+// Если кэш есть и не истёк — возвращаем сразу
+if (cached != null && timestamp != null) {
+final age = DateTime.now().difference(DateTime.parse(timestamp));
+if (age < maxAge) {
+return jsonDecode(cached);
+}
+}
+
+// Фоновое обновление
+_fetchAndCache(key, url).catchError((_) {});
+
+// Возвращаем кэш (даже устаревший)
+if (cached != null) {
+return jsonDecode(cached);
+}
+
+// Если кэша нет — ждём сеть
+return await _fetchAndCache(key, url);
+}
+
+Future<dynamic> _fetchAndCache(String key, String url) async {
+final response = await _dio.get(url);
+_prefs.setString(key, jsonEncode(response.data));
+_prefs.setString('${key}_timestamp', DateTime.now().toIso8601String());
+return response.data;
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Кэширование в Dio"},
+    {"level": 3, "type": "heading", "text": "Встроенный HTTP-кэш"},
+    {"content": "import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+
+final dio = Dio();
+
+dio.interceptors.add(
+DioCacheInterceptor(
+options: CacheOptions(
+store: MemCacheStore(), // Кэш в памяти
+policy: CachePolicy.forceCache, // Только кэш
+maxStale: const Duration(minutes: 5), // Макс. время хранения
+requestType: RequestType.cacheable, // Кэшировать GET
+),
+),
+);
+
+// Запрос будет кэшироваться автоматически
+final response = await dio.get('/users');", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Различные политики кэширования"},
+    {"text": "| Политика | Описание |", "type": "paragraph"},
+    {"text": "|----------|----------|", "type": "paragraph"},
+    {"text": "| <code>noCache</code> | Всегда запрос к серверу |", "type": "paragraph"},
+    {"text": "| <code>cacheFirst</code> | Сначала кэш, потом сервер |", "type": "paragraph"},
+    {"text": "| <code>serverFirst</code> | Сначала сервер, потом кэш |", "type": "paragraph"},
+    {"text": "| <code>forceCache</code> | Только кэш |", "type": "paragraph"},
+    {"text": "| <code>cacheOnly</code> | Только кэш (ошибка если нет) |", "type": "paragraph"},
+    {"text": "| <code>serverOnly</code> | Только сервер (ошибка если нет) |", "type": "paragraph"},
+    {"content": "// Использование разных политик
+await dio.get(
+'/users',
+options: Options(
+extra: {
+'cache': CacheOptions(
+store: MemCacheStore(),
+policy: CachePolicy.cacheFirst,
+maxStale: const Duration(hours: 1),
+),
+},
+),
+);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Кэширование изображений"},
+    {"level": 3, "type": "heading", "text": "CachedNetworkImage"},
+    {"content": "dependencies:
+cached_network_image: ^3.3.0", "language": "yaml", "type": "code"},
+    {"content": "import 'package:cached_network_image/cached_network_image.dart';
+
+// Базовое использование
+CachedNetworkImage(
+imageUrl: 'https://example.com/image.jpg',
+placeholder: (context, url) => const CircularProgressIndicator(),
+errorWidget: (context, url, error) => const Icon(Icons.error),
+);
+
+// С кастомным плейсхолдером
+CachedNetworkImage(
+imageUrl: 'https://example.com/image.jpg',
+fit: BoxFit.cover,
+width: double.infinity,
+height: 200,
+placeholder: (context, url) => Container(
+color: Colors.grey[200],
+child: const Center(child: Text('Загрузка...')),
+),
+errorWidget: (context, url, error) => Container(
+color: Colors.grey[200],
+child: const Center(child: Icon(Icons.broken_image)),
+),
+);
+
+// Настройка кэша
+CachedNetworkImage(
+imageUrl: 'https://example.com/image.jpg',
+cacheManager: CustomCacheManager(),
+fadeInDuration: const Duration(milliseconds: 300),
+fadeOutDuration: const Duration(milliseconds: 300),
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Кастомный CacheManager"},
+    {"content": "class CustomCacheManager extends CacheManager {
+static const key = 'custom_cache';
+
+static final CustomCacheManager _instance =
+CustomCacheManager._internal();
+
+factory CustomCacheManager() => _instance;
+
+CustomCacheManager._internal()
+: super(CacheConfig(key, stalePeriod: const Duration(days: 7)));
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Память vs Диск"},
+    {"level": 3, "type": "heading", "text": "Сравнение стратегий"},
+    {"text": "| Характеристика | Memory Cache | Disk Cache |", "type": "paragraph"},
+    {"text": "|----------------|-------------|------------|", "type": "paragraph"},
+    {"text": "| Скорость | Мгновенная | Медленнее |", "type": "paragraph"},
+    {"text": "| Объём | Ограничен RAM | Ограничен хранилищем |", "type": "paragraph"},
+    {"text": "| Сохранение | Теряется при закрытии | Сохраняется |", "type": "paragraph"},
+    {"text": "| Использование | Активные данные | Часто используемые |", "type": "paragraph"},
+    {"text": "| Пример | List\\\\<T\\\\> | SharedPreferences, файлы |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Гибридное кэширование"},
+    {"content": "class HybridCache<T> {
+final Map<String, CacheEntry<T>> _memoryCache = {};
+final SharedPreferences _prefs;
+
+HybridCache(this._prefs);
+
+// Запись в кэш
+void put(String key, T data, {Duration ttl = const Duration(hours: 1)}) {
+// Memory cache
+_memoryCache[key] = CacheEntry(data: data, timestamp: DateTime.now(), ttl: ttl);
+
+// Disk cache
+_prefs.setString(key, jsonEncode(data));
+}
+
+// Чтение из кэша
+T? get(String key) {
+// Сначала memory cache
+final memory = _memoryCache[key];
+if (memory != null && !memory.isExpired) {
+return memory.data;
+}
+
+// Затем disk cache
+final disk = _prefs.getString(key);
+if (disk != null) {
+final data = jsonDecode(disk) as T;
+// Восстанавливаем в memory cache
+_memoryCache[key] = CacheEntry(
+data: data,
+timestamp: DateTime.now(),
+ttl: const Duration(hours: 1),
+);
+return data;
+}
+
+return null;
+}
+
+// Очистка
+void remove(String key) {
+_memoryCache.remove(key);
+_prefs.remove(key);
+}
+}
+
+class CacheEntry<T> {
+final T data;
+final DateTime timestamp;
+final Duration ttl;
+
+CacheEntry({
+required this.data,
+required this.timestamp,
+required this.ttl,
+});
+
+bool get isExpired =>
+DateTime.now().difference(timestamp) > ttl;
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Инвалидация кэша"},
+    {"level": 3, "type": "heading", "text": "По времени"},
+    {"content": "// Кэш с временем жизни
+class TimeBasedCache {
+final Map<String, CacheEntry> _cache = {};
+
+void put(String key, dynamic data, {Duration ttl = const Duration(minutes: 5)}) {
+_cache[key] = CacheEntry(
+data: data,
+timestamp: DateTime.now(),
+ttl: ttl,
+);
+}
+
+dynamic get(String key) {
+final entry = _cache[key];
+if (entry == null || entry.isExpired) {
+_cache.remove(key);
+return null;
+}
+return entry.data;
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "По событию"},
+    {"content": "// Инвалидация при изменении данных
+class EventBasedCache {
+final Map<String, dynamic> _cache = {};
+
+void put(String key, dynamic data) {
+_cache[key] = data;
+}
+
+dynamic get(String key) => _cache[key];
+
+// Инвалидация конкретного ключа
+void invalidate(String key) {
+_cache.remove(key);
+}
+
+// Инвалидация по префиксу
+void invalidatePrefix(String prefix) {
+_cache.removeWhere((key, _) => key.startsWith(prefix));
+}
+
+// Полная очистка
+void clear() => _cache.clear();
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Используйте cache-first для чтения</strong> — быстрее, экономит трафик", "<strong>Используйте network-first для записи</strong> — актуальные данные", "<strong>Устанавливайте TTL</strong> — кэш должен инвалидироваться", "<strong>Кэшируйте изображения</strong> — используйте <code>cached_network_image</code>", "<strong>Очищайте кэш</strong> — не позволяйте ему расти бесконечно", "<strong>Показывайте кэшированные данные</strong> — пока идёт загрузка с сервера", "<strong>Используйте гибридный подход</strong> — memory + disk для максимальной скорости"], "type": "ul"}
+  ]
+}

@@ -1,0 +1,127 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "1.6 Первый запуск: создание и запуск приложения"},
+    {"level": 2, "type": "heading", "text": "Создание проекта"},
+    {"level": 3, "type": "heading", "text": "Команда flutter create"},
+    {"content": "# Создание проекта в текущей директории
+flutter create my_app
+
+# Создание проекта с указанием имени пакета
+flutter create com.example.my_app
+
+# Создание проекта для конкретной платформы
+flutter create my_app --platforms=android,ios    # только мобильные
+flutter create my_app --platforms=web            # только веб
+flutter create my_app --platforms=windows,linux  # только десктоп
+
+# Создание проекта с выбором языка
+flutter create my_app --org com.example          # organization reverse domain", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Аргументы команды"},
+    {"text": "| Аргумент | Описание |", "type": "paragraph"},
+    {"text": "|---|---|", "type": "paragraph"},
+    {"text": "| <code>--org</code> | Reverse domain name (например, com.example) |", "type": "paragraph"},
+    {"text": "| <code>--platforms</code> | Список платформ (android, ios, linux, macos, web, windows) |", "type": "paragraph"},
+    {"text": "| <code>--template</code> | Шаблон: app, plugin, packages, module |", "type": "paragraph"},
+    {"text": "| <code>--dart-sdk</code> | Путь к Dart SDK |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Запуск приложения"},
+    {"level": 3, "type": "heading", "text": "Запуск на подключённом устройстве"},
+    {"content": "# Показать доступные устройства
+flutter devices
+
+# Запустить на первом доступном устройстве
+flutter run
+
+# Запустить на конкретном устройстве
+flutter run -d <device-id>
+
+# Запустить на эмуляторе Android
+flutter run -d emulator
+
+# Запустить на iOS симуляторе
+flutter run -d iPhone
+
+# Запустить в Chrome (веб)
+flutter run -d chrome
+
+# Запустить на Windows
+flutter run -d windows", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Режимы запуска"},
+    {"text": "| Режим | Описание |", "type": "paragraph"},
+    {"text": "|---|---|", "type": "paragraph"},
+    {"text": "| <strong>Debug</strong> | По умолчанию, с DevTools, отладкой, без оптимизации |", "type": "paragraph"},
+    {"text": "| <strong>Profile</strong> | Для профилирования производительности |", "type": "paragraph"},
+    {"text": "| <strong>Release</strong> | Оптимизированная сборка для публикации |", "type": "paragraph"},
+    {"content": "# Запуск в разных режимах
+flutter run --debug          # Debug (по умолчанию)
+flutter run --profile        # Profile
+flutter run --release        # Release", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Структура стартового приложения"},
+    {"text": "После создания проекта в <code>lib/main.dart</code> генерируется стартовое приложение:", "type": "paragraph"},
+    {"content": "import 'package:flutter/material.dart';
+
+void main() {
+runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+const MyApp({super.key});
+
+@override
+Widget build(BuildContext context) {
+return MaterialApp(
+title: 'Flutter Demo',
+theme: ThemeData(
+primarySwatch: Colors.blue,
+),
+home: const MyHomePage(title: 'Flutter Demo Home Page'),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Разбор компонентов"},
+    {"items": ["<strong><code>void main()</code></strong> — точка входа, аналог <code>main()</code> в других языках", "<strong><code>runApp()</code></strong> — функция, которая «запускает» виджет как корневой", "<strong><code>MaterialApp</code></strong> — корневой виджет Material Design приложения", "<strong><code>theme</code></strong> — тема приложения (цвета, шрифты)", "<strong><code>home</code></strong> — первый экран, отображаемый при запуске"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Запуск с параметрами"},
+    {"content": "# Горячая перезагрузка при запуске
+flutter run --flavor dev
+
+# С указанием профиля сборки
+flutter run --dart-define=ENV=production
+
+# На конкретной платформе
+flutter run -d windows --release", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Горячая перезагрузка (Hot Reload)"},
+    {"text": "При запуске через IDE (Android Studio, VS Code):", "type": "paragraph"},
+    {"items": ["<strong>Ctrl+S</strong> (Windows/Linux) или <strong>Cmd+S</strong> (macOS) — сохранение файла", "IDE автоматически выполняет Hot Reload", "Состояние сохраняется, UI обновляется мгновенно"], "type": "ul"},
+    {"text": "Через терминал:", "type": "paragraph"},
+    {"content": "r — Hot Reload
+R — Hot Restart
+q — Quit", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Создание простого приложения"},
+    {"content": "import 'package:flutter/material.dart';
+
+void main() {
+runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+const MyApp({super.key});
+
+@override
+Widget build(BuildContext context) {
+return MaterialApp(
+title: 'Мое первое приложение',
+home: Scaffold(
+appBar: AppBar(
+title: const Text('Привет, Flutter!'),
+),
+body: const Center(
+child: Text('Hello, World!'),
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Первый запуск Flutter-приложения — простой процесс:", "type": "paragraph"},
+    {"items": ["<code>flutter create my_app</code> — создание проекта", "<code>flutter run</code> — запуск на устройстве", "Hot Reload — мгновенное отображение изменений"], "type": "ol"}
+  ]
+}

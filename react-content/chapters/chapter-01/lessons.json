@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "chapter-01",
+  "lessons": [
+    {
+      "id": "01-01-what-is-flutter",
+      "slug": "what-is-flutter",
+      "title": "1.1 Что такое Flutter? История и философия Google",
+      "order": 1,
+      "file": "content/01-01-what-is-flutter.md",
+      "summary": "Flutter — это UI-фреймворк с открытым исходным кодом, разработанный компанией Google для создания нативных приложений для мобильных, веб и десктоп-платформ из единой кодовой базы. Первый публичный релиз Flutter 1.0 состоялся в декабре 20...",
+      "tags": []
+    },
+    {
+      "id": "01-02-architecture",
+      "slug": "architecture",
+      "title": "1.2 Архитектура Flutter: Engine, Framework, Embedder",
+      "order": 2,
+      "file": "content/01-02-architecture.md",
+      "summary": "Flutter состоит из трёх основных слоёв, каждый из которых отвечает за свою задачу:",
+      "tags": []
+    },
+    {
+      "id": "01-03-dart-vs-flutter",
+      "slug": "dart-vs-flutter",
+      "title": "1.3 Dart vs Flutter — в чём разница",
+      "order": 3,
+      "file": "content/01-03-dart-vs-flutter.md",
+      "summary": "Dart и Flutter — это два разных, но тесно связанных продукта от Google:",
+      "tags": []
+    },
+    {
+      "id": "01-04-installation",
+      "slug": "installation",
+      "title": "1.4 Установка и настройка окружения (Flutter SDK, IDE, эмулятор)",
+      "order": 4,
+      "file": "content/01-04-installation.md",
+      "summary": "Windows (PowerShell):",
+      "tags": []
+    },
+    {
+      "id": "01-05-project-structure",
+      "slug": "project-structure",
+      "title": "1.5 Структура Flutter-проекта: папки и файлы",
+      "order": 5,
+      "file": "content/01-05-project-structure.md",
+      "summary": "При создании нового Flutter-проекта (flutter create myapp) генерируется следующая структура:",
+      "tags": []
+    },
+    {
+      "id": "01-06-first-run",
+      "slug": "first-run",
+      "title": "1.6 Первый запуск: создание и запуск приложения",
+      "order": 6,
+      "file": "content/01-06-first-run.md",
+      "summary": "После создания проекта в lib/main.dart генерируется стартовое приложение:",
+      "tags": []
+    },
+    {
+      "id": "01-07-hot-reload",
+      "slug": "hot-reload",
+      "title": "1.7 Hot Reload, Hot Restart — принципы работы",
+      "order": 7,
+      "file": "content/01-07-hot-reload.md",
+      "summary": "Flutter предоставляет два механизма мгновенного обновления кода во время разработки:",
+      "tags": []
+    }
+  ]
+}

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Загрузка...</title>
+    <link rel="stylesheet" href="chapter.css">
+    <script src="data.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div id="content">
+            <div class="loading">Загрузка содержимого...</div>
+        </div>
+    </div>
+
+    <script>
+        // Chapter metadata
+        const chapters = {
+            'chapter-01': { name: 'Глава 1. Введение в Flutter', shortName: 'Введение' },
+            'chapter-02': { name: 'Глава 2. Основы Dart', shortName: 'Dart' },
+            'chapter-03': { name: 'Глава 3. Виджеты', shortName: 'Виджеты' },
+            'chapter-04': { name: 'Глава 4. Основные виджеты', shortName: 'Основные виджеты' },
+            'chapter-05': { name: 'Глава 5. Система лейаутов', shortName: 'Лейаут' },
+            'chapter-06': { name: 'Глава 6. Управление состоянием', shortName: 'Состояние' },
+            'chapter-07': { name: 'Глава 7. Навигация', shortName: 'Навигация' },
+            'chapter-08': { name: 'Глава 8. Формы', shortName: 'Формы' },
+            'chapter-09': { name: 'Глава 9. Работа с API', shortName: 'API' },
+            'chapter-10': { name: 'Глава 10. Локальное хранение данных', shortName: 'Хранение данных' },
+            'chapter-11': { name: 'Глава 11. Чистая архитектура', shortName: 'Архитектура' },
+            'chapter-12': { name: 'Глава 12. Анимации', shortName: 'Анимации' },
+            'chapter-13': { name: 'Глава 13. Тестирование', shortName: 'Тесты' },
+            'chapter-14': { name: 'Глава 14. Производительность', shortName: 'Производительность' },
+            'chapter-15': { name: 'Глава 15. Сборка приложения', shortName: 'Сборка' },
+            'chapter-16': { name: 'Глава 16. Platform Channels', shortName: 'Platform Channels' }
+        };
+
+        // Get chapter and file from URL
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                chapter: params.get('chapter') || 'chapter-01',
+                file: params.get('file') || ''
+            };
+        }
+
+        // Build chapter info
+        function getChapterInfo(chapter, file) {
+            const chapterInfo = chapters[chapter] || { name: chapter, shortName: chapter };
+            let fileName = file || 'unknown';
+            
+            // Extract chapter number and file number from filename
+            const match = fileName.match(/(\d+)-(\d+)-(.+)/);
+            let fileTitle = fileName;
+            if (match) {
+                const chapterNum = match[1];
+                const fileNum = match[2];
+                const titlePart = match[3].replace(/-/g, ' ');
+                fileTitle = `${chapterNum}.${fileNum} ${titlePart.replace(/-/g, ' ').replace(/^\w/, c => c.toUpperCase())}`;
+            }
+
+            return {
+                ...chapterInfo,
+                chapterKey: chapter,
+                fileTitle: fileTitle,
+                fileName: fileName
+            };
+        }
+
+        // Render a list with nested support
+        function renderListItems(items) {
+            return items.map(item => {
+                if (item && typeof item === 'object' && (item.type === 'ul' || item.type === 'ol')) {
+                    return `<li>${renderSection(item)}</li>`;
+                }
+                return `<li>${item}</li>`;
+            }).join('');
+        }
+
+        // Render a section based on its type
+        function renderSection(section) {
+            switch (section.type) {
+                case 'heading':
+                    return `<h${section.level}>${section.text}</h${section.level}>`;
+                
+                case 'paragraph':
+                    return `<p>${section.text}</p>`;
+                
+                case 'ul':
+                    return `<ul>${renderListItems(section.items)}</ul>`;
+                
+                case 'ol':
+                    return `<ol>${renderListItems(section.items)}</ol>`;
+                
+                case 'code':
+                    return `<pre><code>${section.content}</code></pre>`;
+                
+                case 'blockquote':
+                    return `<blockquote>${section.content}</blockquote>`;
+                
+                case 'hr':
+                    return '<hr>';
+                
+                default:
+                    return '';
+            }
+        }
+
+        // Load and display content
+        async function loadContent() {
+            const params = getUrlParams();
+            const contentDiv = document.getElementById('content');
+            
+            try {
+                const chapterInfo = getChapterInfo(params.chapter, params.file);
+                
+                // Try to load files list
+                let files = [];
+                try {
+                    // Read from embedded data.js first (works with file:// protocol)
+                    if (typeof CHAPTER_FILES !== 'undefined' && CHAPTER_FILES[params.chapter]) {
+                        files = CHAPTER_FILES[params.chapter];
+                    } else {
+                        // Fallback: fetch (works only over HTTP)
+                        const response = await fetch(`${params.chapter}/_files.json`);
+                        if (response.ok) {
+                            const data = await response.json();
+                            files = data.files || [];
+                        }
+                    }
+                } catch (e) {
+                    console.log('Could not load files list');
+                }
+                
+                // Determine current file index
+                let currentIndex = -1;
+                if (files.length > 0) {
+                    currentIndex = files.findIndex(f => f.name.replace('.md', '') === params.file);
+                }
+
+                // Load JSON content
+                let jsonData = null;
+                let jsonPath = null;
+                
+                if (currentIndex >= 0 && files.length > 0) {
+                    jsonPath = `${params.chapter}/${files[currentIndex].name.replace('.md', '.json')}`;
+                } else {
+                    jsonPath = `${params.file}.json`;
+                }
+                
+                // Try embedded LESSON_CONTENT first (works with file:// protocol)
+                if (typeof LESSON_CONTENT !== 'undefined' && LESSON_CONTENT[jsonPath]) {
+                    jsonData = LESSON_CONTENT[jsonPath];
+                } else {
+                    // Fallback: fetch (works only over HTTP)
+                    try {
+                        const response = await fetch(jsonPath);
+                        if (response.ok) {
+                            jsonData = await response.json();
+                        }
+                    } catch (e) {
+                        console.error('Error loading JSON:', e);
+                    }
+                }
+
+                if (!jsonData || !jsonData.sections) {
+                    contentDiv.innerHTML = `
+                        <div class="error-message">
+                            <p>❌ Не удалось загрузить файл</p>
+                            <p style="margin-top: 12px; font-size: 0.9rem;">Путь: <code>${jsonPath}</code></p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Render sections
+                let html = '';
+                for (const section of jsonData.sections) {
+                    html += renderSection(section);
+                }
+                
+                // Build navigation
+                let prevLink = '';
+                let nextLink = '';
+                let centerNav = `<a href="index.html?chapter=${params.chapter}">📑 ${chapterInfo.name}</a>`;
+
+                if (files.length > 0) {
+                    if (currentIndex > 0) {
+                        const prevFile = files[currentIndex - 1];
+                        prevLink = `<a href="chapter.html?chapter=${params.chapter}&file=${prevFile.name.replace('.md', '')}" class="nav-btn">← Назад</a>`;
+                    } else {
+                        prevLink = `<span class="nav-btn disabled">← Назад</span>`;
+                    }
+
+                    if (currentIndex < files.length - 1) {
+                        const nextFile = files[currentIndex + 1];
+                        nextLink = `<a href="chapter.html?chapter=${params.chapter}&file=${nextFile.name.replace('.md', '')}" class="nav-btn">Далее →</a>`;
+                    } else {
+                        nextLink = `<span class="nav-btn disabled">Далее →</span>`;
+                    }
+                }
+
+                // Render content
+                contentDiv.innerHTML = `
+                    <a href="index.html" class="home-link">🏠 На главную</a>
+                    <span class="chapter-badge">${chapterInfo.shortName}</span>
+                    ${html}
+                    <div class="navigation">
+                        ${prevLink}
+                        <div class="nav-center">${centerNav}</div>
+                        ${nextLink}
+                    </div>
+                `;
+
+                // Update page title
+                document.title = chapterInfo.fileTitle + ' — Flutter Learning';
+
+            } catch (error) {
+                contentDiv.innerHTML = `
+                    <div class="error-message">
+                        <p>❌ Ошибка загрузки: <strong>${error.message}</strong></p>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize
+        loadContent();
+    </script>
+</body>
+</html>

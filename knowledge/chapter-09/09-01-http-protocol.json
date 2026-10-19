@@ -1,0 +1,226 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "HTTP-протокол: основы и работа с сетью в Flutter"},
+    {"text": "HTTP (HyperText Transfer Protocol) — это прикладной протокол передачи данных, лежащий в основе обмена информацией между клиентом и сервером в вебе и мобильных приложениях.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Что такое HTTP?"},
+    {"text": "HTTP — это протокол «клиент-сервер», где клиент (Flutter-приложение) отправляет <strong>запрос</strong> (request), а сервер отвечает <strong>ответом</strong> (response). Протокол является без状态ным (stateless), то есть каждый запрос независим.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные компоненты HTTP"},
+    {"text": "| Компонент | Описание |", "type": "paragraph"},
+    {"text": "|-----------|----------|", "type": "paragraph"},
+    {"text": "| Request | Запрос от клиента к серверу |", "type": "paragraph"},
+    {"text": "| Response | Ответ от сервера клиенту |", "type": "paragraph"},
+    {"text": "| Method | Действие, которое нужно выполнить (GET, POST и т.д.) |", "type": "paragraph"},
+    {"text": "| Status Code | Код состояния ответа сервера |", "type": "paragraph"},
+    {"text": "| Headers | Метаданные запроса/ответа |", "type": "paragraph"},
+    {"text": "| Body | Тело запроса или ответа (данные) |", "type": "paragraph"},
+    {"text": "| URI/URL | Адрес ресурса на сервере |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "HTTP-методы (Methods)"},
+    {"text": "HTTP-методы определяют действие, которое нужно выполнить над ресурсом.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Безопасные методы"},
+    {"text": "| Метод | Описание | Безопасный | Idempotent |", "type": "paragraph"},
+    {"text": "|-------|----------|------------|------------|", "type": "paragraph"},
+    {"text": "| GET | Получение ресурса | Да | Да |", "type": "paragraph"},
+    {"text": "| HEAD | Получение заголовков без тела | Да | Да |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Методы с побочными эффектами"},
+    {"text": "| Метод | Описание | Idempotent |", "type": "paragraph"},
+    {"text": "|-------|----------|------------|", "type": "paragraph"},
+    {"text": "| POST | Создание нового ресурса | Нет |", "type": "paragraph"},
+    {"text": "| PUT | Полное обновление ресурса | Да |", "type": "paragraph"},
+    {"text": "| PATCH | Частичное обновление ресурса | Нет |", "type": "paragraph"},
+    {"text": "| DELETE | Удаление ресурса | Да |", "type": "paragraph"},
+    {"content": "// Пример использования разных HTTP-методов
+import 'package:http/http.dart' as http;
+
+class ApiService {
+final String baseUrl = 'https://api.example.com';
+
+// GET — получение данных
+Future<http.Response> getUsers() async {
+return http.get(Uri.parse('$baseUrl/users'));
+}
+
+// POST — создание ресурса
+Future<http.Response> createUser(Map<String, dynamic> user) async {
+return http.post(
+Uri.parse('$baseUrl/users'),
+headers: {'Content-Type': 'application/json'},
+body: jsonEncode(user),
+);
+}
+
+// PUT — полное обновление
+Future<http.Response> updateUser(int id, Map<String, dynamic> user) async {
+return http.put(
+Uri.parse('$baseUrl/users/$id'),
+headers: {'Content-Type': 'application/json'},
+body: jsonEncode(user),
+);
+}
+
+// PATCH — частичное обновление
+Future<http.Response> patchUser(int id, Map<String, dynamic> updates) async {
+return http.patch(
+Uri.parse('$baseUrl/users/$id'),
+headers: {'Content-Type': 'application/json'},
+body: jsonEncode(updates),
+);
+}
+
+// DELETE — удаление ресурса
+Future<http.Response> deleteUser(int id) async {
+return http.delete(Uri.parse('$baseUrl/users/$id'));
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Коды состояния HTTP"},
+    {"text": "Коды состояния делятся на пять классов в зависимости от первой цифры.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Классы кодов состояния"},
+    {"text": "| Диапазон | Значение | Описание |", "type": "paragraph"},
+    {"text": "|----------|----------|----------|", "type": "paragraph"},
+    {"text": "| 2xx | Успех | Запрос выполнен успешно |", "type": "paragraph"},
+    {"text": "| 3xx | Перенаправление | Требуется дополнительное действие |", "type": "paragraph"},
+    {"text": "| 4xx | Ошибка клиента | Запрос содержит ошибку |", "type": "paragraph"},
+    {"text": "| 5xx | Ошибка сервера | Сервер не справился с запросом |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Распространённые коды"},
+    {"text": "| Код | Значение | Когда используется |", "type": "paragraph"},
+    {"text": "|-----|----------|-------------------|", "type": "paragraph"},
+    {"text": "| 200 | OK | Запрос GET/PUT/PATCH выполнен успешно |", "type": "paragraph"},
+    {"text": "| 201 | Created | Ресурс успешно создан (POST) |", "type": "paragraph"},
+    {"text": "| 204 | No Content | Успешно, но нет тела ответа |", "type": "paragraph"},
+    {"text": "| 301 | Moved Permanently | Ресурс перемещён навсегда |", "type": "paragraph"},
+    {"text": "| 304 | Not Modified | Кэшированная версия актуальна |", "type": "paragraph"},
+    {"text": "| 400 | Bad Request | Неверный формат запроса |", "type": "paragraph"},
+    {"text": "| 401 | Unauthorized | Требуется аутентификация |", "type": "paragraph"},
+    {"text": "| 403 | Forbidden | Нет прав доступа |", "type": "paragraph"},
+    {"text": "| 404 | Not Found | Ресурс не найден |", "type": "paragraph"},
+    {"text": "| 409 | Conflict | Конфликт данных (например, дубликат) |", "type": "paragraph"},
+    {"text": "| 422 | Unprocessable Entity | Данные валидны по формату, но не по смыслу |", "type": "paragraph"},
+    {"text": "| 429 | Too Many Requests | Превышен лимит запросов |", "type": "paragraph"},
+    {"text": "| 500 | Internal Server Error | Внутренняя ошибка сервера |", "type": "paragraph"},
+    {"text": "| 502 | Bad Gateway | Неверный ответ от промежуточного сервера |", "type": "paragraph"},
+    {"text": "| 503 | Service Unavailable | Сервис временно недоступен |", "type": "paragraph"},
+    {"content": "// Проверка кодов состояния
+Future<void> handleResponse(http.Response response) async {
+switch (response.statusCode) {
+case 200:
+print('Успешный запрос: ${response.body}');
+break;
+case 201:
+print('Ресурс создан: ${response.body}');
+break;
+case 400:
+print('Ошибка клиента: ${response.body}');
+break;
+case 401:
+print('Не авторизован — перенаправить на вход');
+break;
+case 404:
+print('Ресурс не найден');
+break;
+case 500:
+print('Ошибка сервера — повторить позже');
+break;
+default:
+print('Неожиданный код: ${response.statusCode}');
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Заголовки HTTP"},
+    {"text": "Заголовки передают дополнительную информацию о запросе или ответе.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные заголовки запроса"},
+    {"text": "| Заголовок | Описание | Пример |", "type": "paragraph"},
+    {"text": "|-----------|----------|--------|", "type": "paragraph"},
+    {"text": "| Content-Type | Тип тела запроса | <code>application/json</code> |", "type": "paragraph"},
+    {"text": "| Authorization | Токен авторизации | <code>Bearer eyJhbGc...</code> |", "type": "paragraph"},
+    {"text": "| Accept | Ожидаемый формат ответа | <code>application/json</code> |", "type": "paragraph"},
+    {"text": "| User-Agent | Информация о клиенте | <code>Flutter/3.0</code> |", "type": "paragraph"},
+    {"text": "| Cache-Control | Управление кэшированием | <code>no-cache</code> |", "type": "paragraph"},
+    {"text": "| X-Request-ID | Идентификатор запроса | <code>abc-123-def</code> |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные заголовки ответа"},
+    {"text": "| Заголовок | Описание | Пример |", "type": "paragraph"},
+    {"text": "|-----------|----------|--------|", "type": "paragraph"},
+    {"text": "| Content-Type | Тип содержимого ответа | <code>application/json; charset=utf-8</code> |", "type": "paragraph"},
+    {"text": "| Content-Length | Размер тела в байтах | <code>1234</code> |", "type": "paragraph"},
+    {"text": "| Set-Cookie | Установка cookie | <code>session=xyz; HttpOnly</code> |", "type": "paragraph"},
+    {"text": "| Cache-Control | Правила кэширования | <code>max-age=3600</code> |", "type": "paragraph"},
+    {"text": "| ETag | Контрольная сумма ресурса | <code>\"abc123\"</code> |", "type": "paragraph"},
+    {"text": "| X-RateLimit-Remaining | Оставшиеся запросы | <code>42</code> |", "type": "paragraph"},
+    {"content": "// Установка заголовков в запросе
+final response = await http.get(
+Uri.parse('https://api.example.com/users'),
+headers: {
+'Content-Type': 'application/json',
+'Accept': 'application/json',
+'Authorization': 'Bearer $token',
+'X-Request-ID': 'req-001',
+},
+);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Тело запроса (Request Body)"},
+    {"text": "Тело запроса содержит данные, отправляемые на сервер. Формат зависит от Content-Type.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Форматы тела"},
+    {"text": "| Content-Type | Формат | Пример |", "type": "paragraph"},
+    {"text": "|--------------|--------|--------|", "type": "paragraph"},
+    {"text": "| application/json | JSON | <code>{\"name\": \"Иван\"}</code> |", "type": "paragraph"},
+    {"text": "| application/x-www-form-urlencoded | Форма | <code>name=Иван&age=25</code> |", "type": "paragraph"},
+    {"text": "| multipart/form-data | Множественная форма | Файлы + данные |", "type": "paragraph"},
+    {"text": "| text/plain | Текстовый | <code>Простой текст</code> |", "type": "paragraph"},
+    {"text": "| application/xml | XML | <code><user><name>Иван</name></user></code> |", "type": "paragraph"},
+    {"content": "// Отправка JSON в теле запроса
+final userData = {
+'name': 'Иван',
+'email': 'ivan@example.com',
+'age': 25,
+};
+
+final response = await http.post(
+Uri.parse('https://api.example.com/users'),
+headers: {'Content-Type': 'application/json'},
+body: jsonEncode(userData),
+);
+
+// Отправка формы
+final response = await http.post(
+Uri.parse('https://api.example.com/login'),
+headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+body: {'username': 'ivan', 'password': 'secret123'},
+);
+
+// Загрузка файла (multipart)
+final request = http.MultipartRequest(
+'POST',
+Uri.parse('https://api.example.com/upload'),
+);
+request.fields['title'] = 'Фото';
+request.files.add(
+await http.MultipartFile.fromPath('file', 'assets/photo.jpg'),
+);
+final streamedResponse = await request.send();
+final response = await http.Response.fromStream(streamedResponse);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "HTTP в контексте Flutter"},
+    {"text": "При работе с HTTP в Flutter важно учитывать особенности платформы:", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Таймауты"},
+    {"content": "// Установка таймаута для запроса
+final client = http.Client();
+
+Future<http.Response> fetchWithTimeout() async {
+try {
+final response = await client
+.get(Uri.parse('https://api.example.com/data'))
+.timeout(const Duration(seconds: 10));
+return response;
+} on TimeoutException {
+print('Запрос превысил лимит времени');
+rethrow;
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Особенности на разных платформах"},
+    {"text": "| Платформа | Особенности |", "type": "paragraph"},
+    {"text": "|-----------|------------|", "type": "paragraph"},
+    {"text": "| Android | Требуется разрешение <code>INTERNET</code> в AndroidManifest.xml |", "type": "paragraph"},
+    {"text": "| iOS | По умолчанию HTTPS, HTTP требует настройку App Transport Security |", "type": "paragraph"},
+    {"text": "| Web | Использует XMLHttpRequest / fetch API браузера |", "type": "paragraph"},
+    {"text": "| Desktop | Использует системный HTTP-стек |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Безопасность (HTTPS)"},
+    {"items": ["Всегда используйте HTTPS в production", "На iOS настройте <code>Info.plist</code> дл�� ограничения HTTP", "На Android убедитесь, что <code>android:usesCleartextTraffic=\"false\"</code>"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Всегда используйте HTTPS</strong> для передачи данных", "<strong>Обрабатывайте все коды состояния</strong> — не только 200", "<strong>Устанавливайте таймауты</strong> — не позволяйте запросам висеть вечно", "<strong>Валидируйте входные данные</strong> до отправки на сервер", "<strong>Кэшируйте ответы</strong> для часто запрашиваемых ресурсов", "<strong>Используйте логирование</strong> для отладки сетевых запросов", "<strong>Обрабатывайте потерю соединения</strong> — показывайте пользователю понятное сообщение", "<strong>Используйте пагинацию</strong> — не загружайте все данные сразу"], "type": "ul"}
+  ]
+}

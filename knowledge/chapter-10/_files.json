@@ -1,0 +1,45 @@
+﻿{
+    "files":  [
+                  {
+                      "name":  "10-01-sharedpreferences.md",
+                      "path":  "chapter-10/10-01-sharedpreferences.md",
+                      "size":  7910
+                  },
+                  {
+                      "name":  "10-02-sqlite.md",
+                      "path":  "chapter-10/10-02-sqlite.md",
+                      "size":  8382
+                  },
+                  {
+                      "name":  "10-03-drift.md",
+                      "path":  "chapter-10/10-03-drift.md",
+                      "size":  7699
+                  },
+                  {
+                      "name":  "10-04-hive.md",
+                      "path":  "chapter-10/10-04-hive.md",
+                      "size":  7247
+                  },
+                  {
+                      "name":  "10-05-isar.md",
+                      "path":  "chapter-10/10-05-isar.md",
+                      "size":  8104
+                  },
+                  {
+                      "name":  "10-06-securestorage.md",
+                      "path":  "chapter-10/10-06-securestorage.md",
+                      "size":  8371
+                  },
+                  {
+                      "name":  "10-07-file-io.md",
+                      "path":  "chapter-10/10-07-file-io.md",
+                      "size":  9600
+                  },
+                  {
+                      "name":  "10-08-caching.md",
+                      "path":  "chapter-10/10-08-caching.md",
+                      "size":  10915
+                  }
+              ],
+    "chapter":  "chapter-10"
+}

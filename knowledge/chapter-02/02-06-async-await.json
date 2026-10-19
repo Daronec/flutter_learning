@@ -1,0 +1,197 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "2.6 Асинхронность: Future, Stream, isolate"},
+    {"level": 2, "type": "heading", "text": "Future"},
+    {"level": 3, "type": "heading", "text": "Основы"},
+    {"content": "// Future представляет отложенный результат
+Future<String> fetchData() async {
+await Future.delayed(Duration(seconds: 2));
+return 'Data loaded';
+}
+
+// Использование с await
+void main() async {
+String result = await fetchData();
+print(result);
+}
+
+// Использование с .then()
+fetchData().then((data) {
+print(data);
+}).catchError((error) {
+print('Error: $error');
+});", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Создание Future"},
+    {"content": "// Из значения
+Future<int> fromValue() => Future.value(42);
+
+// Из исключения
+Future<int> fromError() => Future.error('Something went wrong');
+
+// Задержка
+Future<void> delayed() => Future.delayed(Duration(seconds: 1));
+
+// Синхронный Future
+Future<int> syncFuture() => Future.sync(() => 42);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Параллельное выполнение"},
+    {"content": "// Несколько Future параллельно
+Future<void> parallel() async {
+var results = await Future.wait([
+fetchUsers(),
+fetchPosts(),
+fetchComments(),
+]);
+
+var users = results[0] as List<User>;
+var posts = results[1] as List<Post>;
+var comments = results[2] as List<Comment>;
+}
+
+// Первый завершившийся
+Future<void> fastest() async {
+var result = await Future.any([
+fetchFromApi1(),
+fetchFromApi2(),
+fetchFromApi3(),
+]);
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Stream"},
+    {"level": 3, "type": "heading", "text": "Основы"},
+    {"content": "// Stream — последовательность асинхронных событий
+Stream<int> countStream(int max) async* {
+for (int i = 1; i <= max; i++) {
+yield i;
+}
+}
+
+// Подписка на Stream
+void main() {
+countStream(5).listen(
+(data) => print('Data: $data'),
+onError: (error) => print('Error: $error'),
+onDone: () => print('Stream completed'),
+);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Типы Stream"},
+    {"text": "| Тип | Описание |", "type": "paragraph"},
+    {"text": "|---|---|", "type": "paragraph"},
+    {"text": "| <strong>Single-subscription</strong> | Одна подписка, последовательная доставка |", "type": "paragraph"},
+    {"text": "| <strong>Broadcast</strong> | Множественные подписки, события дублируются |", "type": "paragraph"},
+    {"content": "// Single-subscription (по умолчанию)
+Stream<int> single = countStream(5);
+
+// Broadcast
+Stream<int> broadcast = countStream(5).asBroadcastStream();", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Stream методы"},
+    {"content": "Stream<int> numbers = Stream.fromIterable([1, 2, 3, 4, 5, 6]);
+
+// Transform
+var even = numbers.where((n) => n % 2 == 0); // [2, 4, 6]
+var doubled = numbers.map((n) => n * 2);      // [2, 4, 6, 8, 10, 12]
+
+// Aggregate
+var sum = numbers.reduce((a, b) => a + b);     // 21
+var first = numbers.first;                      // 1
+var last = numbers.last;                        // 6
+var any = numbers.any((n) => n > 3);            // true
+var all = numbers.every((n) => n > 0);          // true
+
+// Conversion
+var list = numbers.toList();    // [1, 2, 3, 4, 5, 6]
+var set = numbers.toSet();      // {1, 2, 3, 4, 5, 6}
+var string = numbers.join(', '); // '1, 2, 3, 4, 5, 6'", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "StreamController"},
+    {"content": "// Создание Stream вручную
+class Counter {
+final _controller = StreamController<int>();
+
+Stream<int> get stream => _controller.stream;
+
+void increment() {
+_controller.add(_controller.hasListener
+? _controller.stream.toList().then((l) => l.last + 1)
+: 1);
+}
+
+void dispose() {
+_controller.close();
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Isolate"},
+    {"level": 3, "type": "heading", "text": "Что такое Isolate?"},
+    {"text": "Isolate — это отдельный поток выполнения с собственной памятью. В отличие от threads, изоляты не разделяют память.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Создание Isolate"},
+    {"content": "// Worker функция (должна быть top-level или static)
+void workerFunction(SendPort sendPort) {
+// Тяжёлые вычисления
+int result = 0;
+for (int i = 0; i < 1000000; i++) {
+result += i;
+}
+
+// Отправка результата обратно
+sendPort.send(result);
+}
+
+// Запуск Isolate
+void main() async {
+final receivePort = ReceivePort();
+
+await Isolate.spawn(workerFunction, receivePort.sendPort);
+
+receivePort.listen((message) {
+print('Result: $message');
+receivePort.close();
+});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Isolate с ReceivePort"},
+    {"content": "Future<int> heavyComputation() async {
+final receivePort = ReceivePort();
+
+await Isolate.spawn(_worker, receivePort.sendPort);
+
+final response = await receivePort.first;
+
+await (response[0] as Isolate).kill();
+return response[1] as int;
+}
+
+static void _worker(SendPort sendPort) {
+int result = 0;
+for (int i = 0; i < 1000000; i++) {
+result += i;
+}
+
+sendPort.send([Isolate.current, result]);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "compute() — утилита Flutter"},
+    {"content": "// Встроенная утилита Flutter для простых вычислений
+import 'package:flutter/foundation.dart';
+
+// Простая функция
+int computeFactorial(int n) {
+int result = 1;
+for (int i = 2; i <= n; i++) {
+result *= i;
+}
+return result;
+}
+
+// Использование
+void main() async {
+int result = await compute(computeFactorial, 20);
+print(result);
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение: Future vs Stream vs Isolate"},
+    {"text": "| | Future | Stream | Isolate |", "type": "paragraph"},
+    {"text": "|---|---|---|---|", "type": "paragraph"},
+    {"text": "| <strong>Значения</strong> | Одно | Множество | Одно |", "type": "paragraph"},
+    {"text": "| <strong>Асинхронность</strong> | Да | Да | Да |", "type": "paragraph"},
+    {"text": "| <strong>Память</strong> | Общий heap | Общий heap | Свой heap |", "type": "paragraph"},
+    {"text": "| <strong>Использование</strong> | Один запрос | Последовательность | Тяжёлые вычисления |", "type": "paragraph"},
+    {"text": "| <strong>Пример</strong> | HTTP запрос | Клик пользователя | Обработка изображения |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Асинхронность в Dart строится на трёх столпах:", "type": "paragraph"},
+    {"items": ["<strong>Future</strong> — для одиночных отложенных операций", "<strong>Stream</strong> — для последовательностей событий", "<strong>Isolate</strong> — для тяжёлых вычислений без блокировки UI потока"], "type": "ul"}
+  ]
+}

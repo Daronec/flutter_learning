@@ -1,0 +1,450 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Пакет test — основа для unit-тестов"},
+    {"text": "Пакет <code>test</code> — это стандартный фреймворк для тестирования в Dart. Он является основой для unit-тестирования в Flutter и предоставляет мощный набор инструментов для написания чистых, читаемых и поддерживаемых тестов.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Установка и настройка"},
+    {"level": 3, "type": "heading", "text": "Добавление в pubspec.yaml"},
+    {"content": "# pubspec.yaml
+dev_dependencies:
+test: ^1.25.0
+flutter_test:
+sdk: flutter", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Запуск тестов"},
+    {"content": "# Запуск всех тестов
+flutter test
+
+# Запуск конкретного файла
+flutter test test/calculator_test.dart
+
+# Запуск тестов с фильтрацией по имени
+flutter test --name \"add\"
+
+# Запуск с подробным выводом
+flutter test -r expanded
+
+# Запуск с отслеживанием покрытия
+flutter test --coverage
+
+# Мониторинг изменений (watch mode)
+flutter test --reporter expanded", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Базовая структура теста"},
+    {"text": "Каждый тест в пакете <code>test</code> состоит из трёх основных частей:", "type": "paragraph"},
+    {"items": ["<strong>Arrange</strong> (Подготовка) — создание объектов и настройка данных", "<strong>Act</strong> (Действие) — вызов тестируемого метода", "<strong>Assert</strong> (Проверка) — проверка результата"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Пример базового теста"},
+    {"content": "import 'package:test/test.dart';
+
+class BankAccount {
+final String _owner;
+double _balance;
+
+BankAccount(this._owner, this._balance);
+
+double get balance => _balance;
+String get owner => _owner;
+
+void deposit(double amount) {
+if (amount <= 0) throw ArgumentError('Сумма должна быть положительной');
+_balance += amount;
+}
+
+bool withdraw(double amount) {
+if (amount <= 0) return false;
+if (amount > _balance) return false;
+_balance -= amount;
+return true;
+}
+}
+
+void main() {
+test('BankAccount должен иметь начальное значение баланса', () {
+// Arrange
+final account = BankAccount('Иван', 100.0);
+
+// Act
+final balance = account.balance;
+
+// Assert
+expect(balance, equals(100.0));
+expect(account.owner, equals('Иван'));
+});
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Группировка тестов с group"},
+    {"text": "Для организации связанных тестов используется функция <code>group</code>:", "type": "paragraph"},
+    {"content": "void main() {
+group('BankAccount', () {
+late BankAccount account;
+
+setUp(() {
+account = BankAccount('Иван', 100.0);
+});
+
+test('должен иметь начальное значение баланса', () {
+expect(account.balance, equals(100.0));
+});
+
+group('deposit', () {
+test('должен увеличивать баланс', () {
+account.deposit(50.0);
+expect(account.balance, equals(150.0));
+});
+
+test('должен бросать исключение при отрицательной сумме', () {
+expect(() => account.deposit(-10.0), throwsArgumentError);
+});
+
+test('должен принимать ноль как недействительную сумму', () {
+expect(() => account.deposit(0.0), throwsArgumentError);
+});
+});
+
+group('withdraw', () {
+test('должен уменьшать баланс при достаточных средствах', () {
+final success = account.withdraw(30.0);
+expect(success, isTrue);
+expect(account.balance, equals(70.0));
+});
+
+test('должен возвращать false при недостаточных средствах', () {
+final success = account.withdraw(200.0);
+expect(success, isFalse);
+expect(account.balance, equals(100.0));
+});
+});
+});
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "setUp и tearDown"},
+    {"text": "Методы <code>setUp</code> и <code>tearDown</code> позволяют выполнять код до и после каждого теста:", "type": "paragraph"},
+    {"content": "void main() {
+late List<String> items;
+late Map<String, int> scores;
+
+setUp(() {
+// Выполняется перед КАЖДЫМ тестом
+items = [];
+scores = {};
+print('setUp: подготовка выполнена');
+});
+
+tearDown(() {
+// Выполняется после КАЖДОГО теста
+items.clear();
+scores.clear();
+print('tearDown: очистка выполнена');
+});
+
+test('должен добавлять элементы в список', () {
+items.add('Первый');
+items.add('Второй');
+expect(items.length, equals(2));
+});
+
+test('должен добавлять очки игроку', () {
+scores['Игрок1'] = 100;
+scores['Игрок2'] = 200;
+expect(scores['Игрок1'], equals(100));
+});
+
+test('должен работать с пустым списком', () {
+expect(items.isEmpty, isTrue);
+});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "setUpAll и tearDownAll"},
+    {"text": "Для дорогостоящей инициализации, которая нужна только один раз:", "type": "paragraph"},
+    {"content": "void main() {
+late DatabaseConnection connection;
+
+setUpAll(() async {
+// Выполняется ОДИН РАЗ перед всеми тестами в группе
+connection = await DatabaseConnection.connect('test.db');
+await connection.createTables();
+print('setUpAll: база данных готова');
+});
+
+tearDownAll(() async {
+// Выполняется ОДИН РАЗ после всех тестов в группе
+await connection.close();
+print('tearDownAll: соединение закрыто');
+});
+
+test('должен вставлять данные', () async {
+await connection.insert('users', {'name': 'Иван'});
+expect(await connection.count('users'), equals(1));
+});
+
+test('должен находить данные по ID', () async {
+await connection.insert('users', {'name': 'Мария'});
+final user = await connection.find('users', 1);
+expect(user!['name'], equals('Мария'));
+});
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "describe и описания тестов"},
+    {"text": "Функция <code>describe</code> помогает структурировать тесты:", "type": "paragraph"},
+    {"content": "void main() {
+group('UserRepository', () {
+late UserRepository repository;
+late MockApi mockApi;
+
+setUp(() {
+mockApi = MockApi();
+repository = UserRepository(api: mockApi);
+});
+
+group('loadUsers', () {
+test('должен возвращать список пользователей при успешном запросе', () {
+// ...
+});
+
+test('должен возвращать пустой список при отсутствии данных', () {
+// ...
+});
+
+test('должен обрабатывать ошибку сети', () {
+// ...
+});
+});
+
+group('createUser', () {
+test('должен создавать пользователя и возвращать ID', () {
+// ...
+});
+
+test('должен валидировать email', () {
+// ...
+});
+});
+});
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Асинхронные тесты"},
+    {"text": "Для тестирования асинхронного кода используйте <code>async/await</code>:", "type": "paragraph"},
+    {"content": "class UserRepository {
+final ApiClient api;
+
+UserRepository({required this.api});
+
+Future<List<User>> loadUsers() async {
+final response = await api.get('/users');
+return response.map((json) => User.fromJson(json)).toList();
+}
+
+Future<User> loadUserById(int id) async {
+final response = await api.get('/users/$id');
+return User.fromJson(response);
+}
+
+Future<void> deleteUser(int id) async {
+await api.delete('/users/$id');
+}
+}
+
+void main() {
+group('UserRepository', () {
+late UserRepository repository;
+late MockApiClient mockApi;
+
+setUp(() {
+mockApi = MockApiClient();
+repository = UserRepository(api: mockApi);
+});
+
+test('loadUsers должен возвращать список пользователей', () async {
+// Arrange
+mockApi.stubGet(
+'/users',
+[
+{'id': 1, 'name': 'Иван'},
+{'id': 2, 'name': 'Мария'},
+],
+);
+
+// Act
+final users = await repository.loadUsers();
+
+// Assert
+expect(users.length, equals(2));
+expect(users[0].name, equals('Иван'));
+expect(users[1].name, equals('Мария'));
+});
+
+test('loadUserById должен возвращать пользователя по ID', () async {
+// Arrange
+mockApi.stubGet(
+'/users/42',
+{'id': 42, 'name': 'Пётр'},
+);
+
+// Act
+final user = await repository.loadUserById(42);
+
+// Assert
+expect(user.id, equals(42));
+expect(user.name, equals('Пётр'));
+});
+
+test('deleteUser должен вызывать API', () async {
+// Arrange
+mockApi.stubDelete('/users/5');
+
+// Act
+await repository.deleteUser(5);
+
+// Assert
+expect(mockApi.calledDelete, isTrue);
+});
+});
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Фильтрация тестов"},
+    {"level": 3, "type": "heading", "text": "Запуск конкретных тестов"},
+    {"content": "# По имени
+flutter test --name \"должен возвращать\"
+
+# По описанию group
+flutter test --name \"loadUsers\"
+
+# По файлу
+flutter test test/repository/user_repository_test.dart", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пропуск тестов"},
+    {"content": "void main() {
+test('этот тест выполняется', () {
+expect(1 + 1, equals(2));
+});
+
+test('этот тест пропускается', () {
+expect(1 + 1, equals(3));
+}, skip: 'Пока не реализовано');
+
+test('этот тест пропускается на определённой платформе', () {
+expect(Platform.isWindows, isFalse);
+}, skip: Platform.isWindows);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Ожидание исключений"},
+    {"content": "class PaymentService {
+Future<void> processPayment(double amount) async {
+if (amount <= 0) {
+throw ArgumentError('Сумма должна быть положительной');
+}
+if (amount > 10000) {
+throw InsufficientFundsException('Превышен лимит');
+}
+// Обработка платежа
+}
+}
+
+void main() {
+group('PaymentService', () {
+late PaymentService service;
+
+setUp(() {
+service = PaymentService();
+});
+
+test('должен бросать ArgumentError при отрицательной сумме', () {
+expect(
+() => service.processPayment(-10.0),
+throwsA(isA<ArgumentError>()),
+);
+});
+
+test('должен бросать InsufficientFundsException при превышении лимита',
+() async {
+expect(
+() => service.processPayment(15000.0),
+throwsA(isA<InsufficientFundsException>()),
+);
+});
+
+test('должен бросать исключение с конкретным сообщением', () {
+expect(
+() => service.processPayment(-5.0),
+throwsA(
+predicate<ArgumentError>(
+(e) => e.message.contains('положительной'),
+),
+),
+);
+});
+});
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Тестирование потоков (Streams)"},
+    {"content": "class CounterStream {
+final _controller = StreamController<int>.broadcast();
+
+Stream<int> get stream => _controller.stream;
+
+void increment() {
+_controller.add(_controller.hasData ? _controller.last + 1 : 1);
+}
+
+void dispose() {
+_controller.close();
+}
+}
+
+void main() {
+group('CounterStream', () {
+late CounterStream counter;
+
+setUp(() {
+counter = CounterStream();
+});
+
+tearDown(() {
+counter.dispose();
+});
+
+test('должен отправлять значения в поток', () async {
+final received = <int>[];
+final subscription = counter.stream.listen(received.add);
+
+counter.increment();
+await Future.delayed(Duration(milliseconds: 10));
+counter.increment();
+counter.increment();
+
+await subscription.cancel();
+expect(received, equals([1, 2, 3]));
+});
+
+test('должен обрабатывать ошибки потока', () async {
+final errorController = StreamController<int>.broadcast();
+final errors = <Object>[];
+
+errorController.stream.listen(
+(value) {},
+onError: (error) => errors.add(error),
+);
+
+errorController.addError(Exception('Тестовая ошибка'));
+await Future.delayed(Duration(milliseconds: 10));
+
+expect(errors.length, equals(1));
+expect(errors.first, isA<Exception>());
+
+await errorController.close();
+});
+});
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Настройка конфигурации тестов"},
+    {"level": 3, "type": "heading", "text": "Файл конфигурации test.yaml"},
+    {"content": "# test/test.yaml
+name: my_app_tests
+timeout: long
+concurrency: 4
+randomize: true", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Командные флаги"},
+    {"content": "# Установить таймаут для всех тестов
+flutter test --timeout 5m
+
+# Запустить тесты в определённом порядке
+flutter test --concurrency 1
+
+# Случайный порядок выполнения
+flutter test --randomize
+
+# Включить покрытие
+flutter test --coverage", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Лучшие практики"},
+    {"items": ["<strong>Используйте setUp для изоляции</strong> — каждый тест должен работать с новыми объектами", "<strong>Группируйте связанные тесты</strong> — используйте <code>group</code> для организации", "<strong>Описывайте тесты понятно</strong> — название теста должно объяснять поведение", "<strong>Тестируйте один аспект за раз</strong> — один тест = одна проверка", "<strong>Используйте async/await</strong> — для асинхронного кода всегда используйте await", "<strong>Очищайте ресурсы</strong> — используйте tearDown для освобождения памяти", "<strong>Не делайте тесты зависимыми</strong> — порядок выполнения не должен влиять на результат", "<strong>Используйте setUpAll для дорогостоящих операций</strong> — инициализация один раз"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Пакет <code>test</code> предоставляет мощный и гибкий фреймворк для unit-тестирования в Dart. Его основные преимущества — простота, скорость и полная интеграция с экосистемой Dart/Flutter. Понимание основ <code>test</code> package является фундаментом для написания качественных тестов в Flutter-приложениях.", "type": "paragraph"}
+  ]
+}

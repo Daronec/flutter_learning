@@ -1,0 +1,396 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "14-02. Widget Build-оптимизация: const-конструкторы и ключи"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Оптимизация сборки виджетов — одна из самых эффективных техник повышения производительности Flutter. Правильное использование <code>const</code>-конструкторов и ключей (<code>Keys</code>) позволяет значительно сократить количество ненужных rebuild'ов и ускорить рендеринг.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Как работает Build-фаза"},
+    {"level": 3, "type": "heading", "text": "Жизненный цикл виджета"},
+    {"text": "Каждый виджет в Flutter проходит через несколько этапов:", "type": "paragraph"},
+    {"content": "Создание виджета → Build → Layout → Paint → Composite", "language": "", "type": "code"},
+    {"text": "При изменении состояния (<code>setState</code>) весь поддерево виджетов перестраивается. Оптимизация заключается в том, чтобы минимизировать эту перестройку.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Что происходит при rebuild"},
+    {"items": ["Flutter вызывает <code>build()</code> метод виджета", "Создаётся новое дерево виджетов", "Flutter сравнивает новое дерево со старым", "Изменённые элементы перестраиваются", "Новые элементы добавляются", "Удалённые элементы удаляются"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Const-конструкторы"},
+    {"level": 3, "type": "heading", "text": "Что такое const-конструктор"},
+    {"text": "<code>const</code>-конструктор указывает Flutter, что экземпляр виджета не будет изменяться. Это позволяет Flutter переиспользовать один и тот же экземпляр виджета вместо создания нового.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Преимущества const-конструкторов"},
+    {"text": "| Преимущество | Описание |", "type": "paragraph"},
+    {"text": "|--------------|----------|", "type": "paragraph"},
+    {"text": "| Кэширование | Один и тот же const-виджет переиспользуется |", "type": "paragraph"},
+    {"text": "| Скорость сравнения | Ссылочное сравнение быстрее глубокого сравнения |", "type": "paragraph"},
+    {"text": "| Меньше памяти | Один экземпляр вместо множества копий |", "type": "paragraph"},
+    {"text": "| Меньше rebuild'ов | Flutter пропускает rebuild если const-виджет не изменился |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Пример: без const"},
+    {"content": "class BadWidget extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+// Каждый раз создаётся новый экземпляр Container
+return Container(
+color: Colors.blue,
+child: Text('Hello'),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример: с const"},
+    {"content": "class GoodWidget extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+// Flutter переиспользует один и тот же экземпляр
+return const Column(
+children: [
+SizedBox(height: 16),
+Text('Hello'),
+Divider(),
+],
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Правила использования const"},
+    {"content": "// Правильно
+const Row(
+children: [
+Text('Hello'),
+Icon(Icons.star),
+],
+);
+
+// Неправильно — Text не является const
+const Row(
+children: [
+Text('Hello'),  // Text не const
+Icon(Icons.star),
+],
+);", "language": "dart", "type": "code"},
+    {"content": "// Правильно
+const Text(
+'Static text',
+style: TextStyle(fontSize: 16),
+);
+
+// Неправильно — fontSize вычисляется динамически
+const Text(
+'Dynamic text',
+style: TextStyle(fontSize: calculateFontSize()),
+);", "language": "dart", "type": "code"},
+    {"content": "class OptimizedWidget extends StatelessWidget {
+final String title;
+final IconData icon;
+
+const OptimizedWidget({
+super.key,
+required this.title,
+required this.icon,
+});
+
+@override
+Widget build(BuildContext context) {
+return Row(
+children: [
+Icon(icon),
+const SizedBox(width: 8),
+Text(title),
+],
+);
+}
+}", "language": "dart", "type": "code"},
+    {"items": ["<strong>Все дочерние виджеты тоже должны быть const</strong>", "<strong>Все аргументы конструктора должны быть константами</strong>", "<strong>Используйте const в StatelessWidget</strong>"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Const в StatefulWidget"},
+    {"text": "В <code>StatefulWidget</code> const можно использовать для статических частей:", "type": "paragraph"},
+    {"content": "class MyWidget extends StatefulWidget {
+const MyWidget({super.key});
+
+@override
+State<MyWidget> createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<MyWidget> {
+int _counter = 0;
+
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+// Const-часть — не перестраивается при изменении _counter
+const Text(
+'Counter:',
+style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+),
+const SizedBox(height: 8),
+// Динамическая часть — перестраивается
+Text('$_counter'),
+],
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Keys для оптимизации"},
+    {"level": 3, "type": "heading", "text": "Что такое Keys"},
+    {"text": "<code>Key</code> — это идентификатор виджета, который помогает Flutter определить, как сопоставить элементы при перестройке дерева виджетов.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Типы Keys"},
+    {"text": "| Тип Key | Описание |", "type": "paragraph"},
+    {"text": "|---------|----------|", "type": "paragraph"},
+    {"text": "| <code>ValueKey</code> | Основан на значении (строка, число) |", "type": "paragraph"},
+    {"text": "| <code>ObjectKey</code> | Основан на объекте (сравнение через <code>==</code>) |", "type": "paragraph"},
+    {"text": "| <code>UniqueKey</code> | Уникальный для каждого экземпляра |", "type": "paragraph"},
+    {"text": "| <code>GlobalKey</code> | Уникальный в пределах всего приложения |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "ValueKey"},
+    {"content": "// Использование ValueKey с индексом
+ListView.builder(
+itemCount: items.length,
+itemBuilder: (context, index) {
+return ListTile(
+key: ValueKey(index),
+title: Text(items[index]),
+);
+},
+);
+
+// Использование ValueKey с идентификатором
+ListView.builder(
+itemCount: items.length,
+itemBuilder: (context, index) {
+return ListTile(
+key: ValueKey(items[index].id),
+title: Text(items[index].name),
+);
+},
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "ObjectKey"},
+    {"content": "class Item {
+final int id;
+final String name;
+
+Item({required this.id, required this.name});
+
+@override
+bool operator ==(Object other) =>
+identical(this, other) ||
+other is Item && runtimeType == other.runtimeType && id == other.id;
+
+@override
+int get hashCode => id.hashCode;
+}
+
+// ObjectKey сравнивает объекты через ==
+ListView.builder(
+itemCount: items.length,
+itemBuilder: (context, index) {
+return ListTile(
+key: ObjectKey(items[index]),
+title: Text(items[index].name),
+);
+},
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "UniqueKey"},
+    {"content": "// НЕ рекомендуется для списков — создаёт новый ключ каждый раз
+ListView.builder(
+itemCount: items.length,
+itemBuilder: (context, index) {
+return ListTile(
+key: UniqueKey(),  // Плохо! Каждый rebuild создаёт новый ключ
+title: Text(items[index].name),
+);
+},
+);
+
+// Правильное использование UniqueKey
+// Когда нужно каждый раз создавать новый виджет
+class DynamicWidget extends StatefulWidget {
+const DynamicWidget({super.key});
+
+@override
+State<DynamicWidget> createState() => _DynamicWidgetState();
+}
+
+class _DynamicWidgetState extends State<DynamicWidget> {
+@override
+Widget build(BuildContext context) {
+return TextField(
+key: UniqueKey(),  // Гарантирует новый контроллер каждый раз
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "GlobalKey"},
+    {"content": "// GlobalKey позволяет получить доступ к State из любого места
+final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+class MyForm extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return Form(
+key: _formKey,
+child: Column(
+children: [
+TextFormField(
+validator: (value) {
+if (value == null || value.isEmpty) {
+return 'Введите значение';
+}
+return null;
+},
+),
+ElevatedButton(
+onPressed: () {
+if (_formKey.currentState!.validate()) {
+// Форма валидна
+}
+},
+child: const Text('Отправить'),
+),
+],
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Когда использовать Keys"},
+    {"level": 3, "type": "heading", "text": "Случаи использования Keys"},
+    {"text": "| Случай | Рекомендация |", "type": "paragraph"},
+    {"text": "|--------|-------------|", "type": "paragraph"},
+    {"text": "| Статический список виджетов | <code>const</code> без Keys |", "type": "paragraph"},
+    {"text": "| Динамический список с неизменными элементами | <code>ValueKey</code> с индексом |", "type": "paragraph"},
+    {"text": "| Список с изменяемыми элементами | <code>ValueKey</code> с уникальным ID |", "type": "paragraph"},
+    {"text": "| Перемещение элементов в списке | <code>ValueKey</code> с ID |", "type": "paragraph"},
+    {"text": "| Вставка/удаление элементов | <code>ValueKey</code> с ID |", "type": "paragraph"},
+    {"text": "| Каждый элемент должен сохранять состояние | <code>UniqueKey</code> или <code>ValueKey</code> |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Пример: список с перемещением элементов"},
+    {"content": "class DraggableList extends StatefulWidget {
+const DraggableList({super.key});
+
+@override
+State<DraggableList> createState() => _DraggableListState();
+}
+
+class _DraggableListState extends State<DraggableList> {
+List<String> items = ['Item 1', 'Item 2', 'Item 3', 'Item 4'];
+
+void _moveItem(int fromIndex, int toIndex) {
+setState(() {
+final item = items.removeAt(fromIndex);
+items.insert(toIndex, item);
+});
+}
+
+@override
+Widget build(BuildContext context) {
+return ReorderableListView.builder(
+itemCount: items.length,
+onReorder: _moveItem,
+itemBuilder: (context, index) {
+return ListTile(
+key: ValueKey(items[index]),  // Key по значению элемента
+title: Text(items[index]),
+trailing: const Icon(Icons.drag_handle),
+);
+},
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Оптимизация вложенных виджетов"},
+    {"level": 3, "type": "heading", "text": "Разделение на мелкие виджеты"},
+    {"text": "Разделение больших виджетов на мелкие помогает Flutter более точно определить, какие части нужно перестроить:", "type": "paragraph"},
+    {"content": "// Плохо — весь виджет перестраивается при изменении любого состояния
+class BadWidget extends StatefulWidget {
+@override
+State<BadWidget> createState() => _BadWidgetState();
+}
+
+class _BadWidgetState extends State<BadWidget> {
+int _counter = 0;
+String _text = 'Hello';
+
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+// Изменение _counter перестраивает всё дерево
+Text('$_counter'),
+Text(_text),
+ElevatedButton(
+onPressed: () => setState(() => _counter++),
+child: const Text('Increment'),
+),
+ElevatedButton(
+onPressed: () => setState(() => _text = 'World'),
+child: const Text('Change Text'),
+),
+],
+);
+}
+}
+
+// Хорошо — каждый виджет перестраивается независимо
+class GoodWidget extends StatefulWidget {
+@override
+State<GoodWidget> createState() => _GoodWidgetState();
+}
+
+class _GoodWidgetState extends State<GoodWidget> {
+int _counter = 0;
+String _text = 'Hello';
+
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+_CounterWidget(counter: _counter),
+_TextWidget(text: _text),
+_IncrementButton(onIncrement: () => setState(() => _counter++)),
+_TextChangeButton(onChange: () => setState(() => _text = 'World')),
+],
+);
+}
+}
+
+class _CounterWidget extends StatelessWidget {
+final int counter;
+const _CounterWidget({required this.counter});
+
+@override
+Widget build(BuildContext context) {
+return Text('$counter');
+}
+}
+
+class _TextWidget extends StatelessWidget {
+final String text;
+const _TextWidget({required this.text});
+
+@override
+Widget build(BuildContext context) {
+return Text(text);
+}
+}
+
+class _IncrementButton extends StatelessWidget {
+final VoidCallback onIncrement;
+const _IncrementButton({required this.onIncrement});
+
+@override
+Widget build(BuildContext context) {
+return ElevatedButton(
+onPressed: onIncrement,
+child: const Text('Increment'),
+);
+}
+}
+
+class _TextChangeButton extends StatelessWidget {
+final VoidCallback onChange;
+const _TextChangeButton({required this.onChange});
+
+@override
+Widget build(BuildContext context) {
+return ElevatedButton(
+onPressed: onChange,
+child: const Text('Change Text'),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "Рекомендации по оптимизации виджетов"},
+    {"items": ["<strong>Используйте <code>const</code> везде, где возможно</strong> — это самая простая и эффективная оптимизация", "<strong>Разделяйте виджеты на мелкие компоненты</strong> — это уменьшает область перестройки", "<strong>Используйте <code>ValueKey</code> с уникальными ID</strong> для динамических списков", "<strong>Избегайте <code>UniqueKey</code> в списках</strong> — он ломает сопоставление элементов", "<strong>Используйте <code>GlobalKey</code> только когда необходимо</strong> — он имеет накладные расходы", "<strong>Проверяйте Performance Overlay</strong> — убедитесь, что const-оптимизация работает"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Чек-лист оптимизации"},
+    {"items": ["[ ] Все статические виджеты помечены как <code>const</code>", "[ ] Все дочерние виджеты в <code>const</code>-конструкциях тоже <code>const</code>", "[ ] Динамические списки используют <code>ValueKey</code> с ID", "[ ] Большие виджеты разделены на мелкие компоненты", "[ ] Нет <code>UniqueKey</code> в списках", "[ ] FPS стабильно 55-60 на Performance Overlay"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Правильное использование <code>const</code>-конструкторов и <code>Keys</code> — это фундамент оптимизации виджетов в Flutter. Эти техники просты в применении и дают значительный прирост производительности. В следующих разделах мы рассмотрим более продвинутые техники: избегание лишних rebuild'ов и ленивую загрузку.", "type": "paragraph"}
+  ]
+}

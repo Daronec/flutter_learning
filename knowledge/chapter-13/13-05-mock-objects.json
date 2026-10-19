@@ -1,0 +1,404 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Mock-объекты: mockito, mocktail"},
+    {"text": "Mock-объекты — это имитации реальных объектов, используемые для изоляции тестируемого кода от внешних зависимостей. В Dart/Flutter популярен пакет <code>mockito</code>, а также его более простая альтернатива — <code>mocktail</code>.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Зачем нужны mock-объекты"},
+    {"text": "Mock-объекты позволяют:", "type": "paragraph"},
+    {"items": ["Тестировать код без реальных зависимостей (API, база данных)", "Проверять, что методы были вызваны с нужными параметрами", "Имитировать различные сценарии (успех, ошибка, таймаут)", "Ускорять тесты (не нужно реальных сетевых запросов)"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "mockito"},
+    {"level": 3, "type": "heading", "text": "Установка"},
+    {"content": "# pubspec.yaml
+dev_dependencies:
+mockito: ^5.4.4
+build_runner: ^2.4.8", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Генерация mock-классов"},
+    {"content": "# Генерация mock-классов
+dart run build_runner build --delete-conflicting-outputs", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Создание интерфейса и mock"},
+    {"content": "import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+
+// Интерфейс API
+abstract class ApiClient {
+Future<Map<String, dynamic>> getUser(int id);
+Future<List<Map<String, dynamic>>> getUsers();
+Future<void> createUser(Map<String, dynamic> user);
+Future<void> deleteUser(int id);
+}
+
+// Анонтация для генерации mock
+@GenerateMocks([ApiClient])
+import 'api_client_mock.dart';
+
+// Тестируемый сервис
+class UserService {
+final ApiClient api;
+
+UserService({required this.api});
+
+Future<User> loadUser(int id) async {
+final data = await api.getUser(id);
+return User.fromJson(data);
+}
+
+Future<List<User>> loadAllUsers() async {
+final data = await api.getUsers();
+return data.map((json) => User.fromJson(json)).toList();
+}
+
+Future<void> registerUser(String name, String email) async {
+await api.createUser({'name': name, 'email': email});
+}
+}
+
+class User {
+final int id;
+final String name;
+final String email;
+
+User({required this.id, required this.name, required this.email});
+
+factory User.fromJson(Map<String, dynamic> json) {
+return User(
+id: json['id'] as int,
+name: json['name'] as String,
+email: json['email'] as String,
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "when — настройка поведения mock"},
+    {"content": "import 'package:test/test.dart';
+import 'package:mockito/mockito';
+
+// Предположим, что MockApiClient сгенерирован через @GenerateMocks
+class MockApiClient extends Mock implements ApiClient {}
+
+void main() {
+group('UserService', () {
+late MockApiClient mockApi;
+late UserService service;
+
+setUp(() {
+mockApi = MockApiClient();
+service = UserService(api: mockApi);
+});
+
+test('loadUser должен возвращать пользователя из API', () async {
+// Настраиваем mock: когда вызывается getUser(1), возвращаем данные
+when(mockApi.getUser(1)).thenAnswer(
+(_) async => {
+'id': 1,
+'name': 'Иван',
+'email': 'ivan@example.com',
+},
+);
+
+// Вызываем метод
+final user = await service.loadUser(1);
+
+// Проверяем результат
+expect(user.id, equals(1));
+expect(user.name, equals('Иван'));
+expect(user.email, equals('ivan@example.com'));
+});
+
+test('loadAllUsers должен возвращать список пользователей', () async {
+when(mockApi.getUsers()).thenAnswer(
+(_) async => [
+{'id': 1, 'name': 'Иван', 'email': 'ivan@example.com'},
+{'id': 2, 'name': 'Мария', 'email': 'maria@example.com'},
+],
+);
+
+final users = await service.loadAllUsers();
+
+expect(users.length, equals(2));
+expect(users[0].name, equals('Иван'));
+expect(users[1].name, equals('Мария'));
+});
+});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "thenThrow — имитация ошибок"},
+    {"content": "void main() {
+group('UserService — обработка ошибок', () {
+late MockApiClient mockApi;
+late UserService service;
+
+setUp(() {
+mockApi = MockApiClient();
+service = UserService(api: mockApi);
+});
+
+test('loadUser должен обрабатывать ошибку сети', () async {
+when(mockApi.getUser(1)).thenThrow(
+Exception('Ошибка сети'),
+);
+
+expect(
+() => service.loadUser(1),
+throwsA(isA<Exception>()),
+);
+});
+
+test('loadUser должен обрабатывать 404', () async {
+when(mockApi.getUser(999)).thenThrow(
+Exception('Пользователь не найден'),
+);
+
+expect(
+() => service.loadUser(999),
+throwsA(isA<Exception>()),
+);
+});
+});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "thenAnswer — сложная логика"},
+    {"content": "void main() {
+group('thenAnswer — сложная логика', () {
+test('должен возвращать разные данные для разных ID', () async {
+when(mockApi.getUser(any)).thenAnswer((invocation) async {
+final id = invocation.positionalArguments[0] as int;
+return {
+'id': id,
+'name': 'Пользователь $id',
+'email': 'user$id@example.com',
+};
+});
+
+final user1 = await service.loadUser(1);
+expect(user1.name, equals('Пользователь 1'));
+
+final user2 = await service.loadUser(2);
+expect(user2.name, equals('Пользователь 2'));
+});
+
+test('должен проверять аргументы вызова', () async {
+when(mockApi.createUser(any)).thenAnswer((invocation) async {
+final user = invocation.positionalArguments[0] as Map;
+expect(user['name'], isNotEmpty);
+expect(user['email'], contains('@'));
+return {};
+});
+
+await service.registerUser('Иван', 'ivan@example.com');
+});
+});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "verify — проверка вызовов"},
+    {"content": "void main() {
+group('verify — проверка вызовов', () {
+late MockApiClient mockApi;
+late UserService service;
+
+setUp(() {
+mockApi = MockApiClient();
+service = UserService(api: mockApi);
+});
+
+test('registerUser должен вызвать createUser с правильными данными',
+() async {
+when(mockApi.createUser(any)).thenAnswer((_) async => {});
+
+await service.registerUser('Иван', 'ivan@example.com');
+
+// Проверяем, что метод был вызван
+verify(mockApi.createUser(
+{'name': 'Иван', 'email': 'ivan@example.com'},
+)).called(1);
+});
+
+test('registerUser должен вызвать createUser ровно один раз', () async {
+when(mockApi.createUser(any)).thenAnswer((_) async => {});
+
+await service.registerUser('Иван', 'ivan@example.com');
+
+verify(mockApi.createUser(any)).called(1);
+});
+
+test('должен проверять порядок вызовов', () async {
+when(mockApi.getUser(any)).thenAnswer(
+(_) async => {'id': 1, 'name': 'Иван', 'email': 'ivan@example.com'},
+);
+when(mockApi.createUser(any)).thenAnswer((_) async => {});
+
+await service.loadUser(1);
+await service.registerUser('Мария', 'maria@example.com');
+
+// getUser должен быть вызван до createUser
+verify(mockApi.getUser(1)).called(1);
+verify(mockApi.createUser(any)).called(1);
+});
+});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "verifyNever — проверка отсутствия вызовов"},
+    {"content": "void main() {
+group('verifyNever', () {
+test('не должен вызывать deleteUser для неактивного пользователя',
+() async {
+when(mockApi.getUser(1)).thenAnswer(
+(_) async => {
+'id': 1,
+'name': 'Иван',
+'email': 'ivan@example.com',
+'active': false,
+},
+);
+
+// Метод, который не должен вызывать deleteUser
+final user = await service.loadUser(1);
+
+verifyNever(mockApi.deleteUser(any));
+});
+});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "verifyInOrder — проверка последовательности"},
+    {"content": "void main() {
+test('должен вызывать методы в правильном порядке', () async {
+when(mockApi.getUser(1)).thenAnswer(
+(_) async => {'id': 1, 'name': 'Иван', 'email': 'ivan@example.com'},
+);
+when(mockApi.createUser(any)).thenAnswer((_) async => {});
+when(mockApi.deleteUser(any)).thenAnswer((_) async => {});
+
+// Вызываем несколько методов
+await service.loadUser(1);
+await service.registerUser('Мария', 'maria@example.com');
+await service.registerUser('Пётр', 'petr@example.com');
+
+// Проверяем порядок
+verifyInOrder([
+mockApi.getUser(1),
+mockApi.createUser({'name': 'Мария', 'email': 'maria@example.com'}),
+mockApi.createUser({'name': 'Пётр', 'email': 'petr@example.com'}),
+]);
+});
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "mocktail — более простая альтернатива"},
+    {"level": 3, "type": "heading", "text": "Установка"},
+    {"content": "# pubspec.yaml
+dev_dependencies:
+mocktail: ^1.0.3", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "mocktail не требует генерации"},
+    {"text": "Главное преимущество mocktail — не нужно использовать build_runner. Mock создаётся напрямую:", "type": "paragraph"},
+    {"content": "import 'package:mocktail/mocktail.dart';
+
+// Создаём mock напрямую, без генерации
+class MockApiClient extends Mock implements ApiClient {}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Базовое использование mocktail"},
+    {"content": "import 'package:test/test.dart';
+import 'package:mocktail/mocktail.dart';
+
+abstract class ApiClient {
+Future<Map<String, dynamic>> getUser(int id);
+Future<List<Map<String, dynamic>>> getUsers();
+}
+
+class MockApiClient extends Mock implements ApiClient {}
+
+class UserService {
+final ApiClient api;
+
+UserService({required this.api});
+
+Future<User> loadUser(int id) async {
+final data = await api.getUser(id);
+return User.fromJson(data);
+}
+}
+
+class User {
+final int id;
+final String name;
+
+User({required this.id, required this.name});
+
+factory User.fromJson(Map<String, dynamic> json) {
+return User(id: json['id'] as int, name: json['name'] as String);
+}
+}
+
+void main() {
+group('UserService с mocktail', () {
+late MockApiClient mockApi;
+late UserService service;
+
+setUp(() {
+mockApi = MockApiClient();
+service = UserService(api: mockApi);
+});
+
+test('loadUser должен возвращать пользователя', () async {
+// thenAnswer — аналог mockito
+when(
+() => mockApi.getUser(any()),
+).thenAnswer(
+(_) async => {'id': 1, 'name': 'Иван'},
+);
+
+final user = await service.loadUser(1);
+expect(user.name, equals('Иван'));
+});
+
+test('должен проверять вызовы', () async {
+when(
+() => mockApi.getUser(any()),
+).thenAnswer(
+(_) async => {'id': 1, 'name': 'Иван'},
+);
+
+await service.loadUser(1);
+
+// verify — аналог mockito
+verify(
+() => mockApi.getUser(1),
+).called(1);
+});
+
+test('должен обрабатывать ошибки', () async {
+when(
+() => mockApi.getUser(any()),
+).thenThrow(Exception('Ошибка сети'));
+
+expect(
+() => service.loadUser(1),
+throwsA(isA<Exception>()),
+);
+});
+});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "whenNeverThrow — упрощённая обработка ошибок"},
+    {"content": "void main() {
+test('mocktail — whenNeverThrow', () {
+when(() => mockApi.getUser(any())).thenThrow(Exception('test'));
+
+// Пр��верка ошибки
+expect(
+() => mockApi.getUser(1),
+throwsA(isA<Exception>()),
+);
+});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Сравнение mockito и mocktail"},
+    {"text": "| Характеристика | mockito | mocktail |", "type": "paragraph"},
+    {"text": "|---------------|---------|----------|", "type": "paragraph"},
+    {"text": "| Генерация кода | Да (build_runner) | Нет |", "type": "paragraph"},
+    {"text": "| Сложность настройки | Высокая | Низкая |", "type": "paragraph"},
+    {"text": "| Скорость | Зависит от генерации | Быстрая |", "type": "paragraph"},
+    {"text": "| Синтаксис | <code>when(mock.method(arg))</code> | <code>when(() => mock.method(arg))</code> |", "type": "paragraph"},
+    {"text": "| Поддержка null-safety | Да | Да |", "type": "paragraph"},
+    {"text": "| Размер зависимостей | Больше | Меньше |", "type": "paragraph"},
+    {"text": "| Сообщения об ошибках | Подробные | Проще |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Когда использовать что"},
+    {"text": "| Ситуация | Рекомендация |", "type": "paragraph"},
+    {"text": "|----------|-------------|", "type": "paragraph"},
+    {"text": "| Простые mock-объекты | mocktail |", "type": "paragraph"},
+    {"text": "| Сложная генерация | mockito |", "type": "paragraph"},
+    {"text": "| Быстрый старт | mocktail |", "type": "paragraph"},
+    {"text": "| Крупный проект с множеством mock | mockito |", "type": "paragraph"},
+    {"text": "| Минимум зависимостей | mocktail |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Лучшие практики"},
+    {"items": ["<strong>Тестируйте только один метод за раз</strong> — изолируйте тестируемый код", "<strong>Используйте abstract class / interface</strong> — для лёгкого мокирования", "<strong>Называйте mock-классы понятно</strong> — <code>MockApiClient</code>, <code>MockDatabase</code>", "<strong>Проверяйте вызовы с правильными аргументами</strong> — используйте <code>verify</code>", "<strong>Не переусердствуйте с mock</strong> — не мокируйте то, что не тестируете", "<strong>Используйте mocktail для простоты</strong> — если нет сложных требований к генерации", "<strong>Изолируйте setUp</strong> — каждый тест должен иметь чистые mock-объекты"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Mock-объекты — незаменимый инструмент для тестирования кода с зависимостями. <code>mockito</code> — зрелый и мощный фреймворк с генерацией кода, а <code>mocktail</code> — его более простая и лёгкая альтернатива. Выбор зависит от потребностей проекта.", "type": "paragraph"}
+  ]
+}

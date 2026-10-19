@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "chapter-15",
+  "lessons": [
+    {
+      "id": "15-01-apk-aab",
+      "slug": "apk-aab",
+      "title": "Сборка APK и AAB — команды и параметры",
+      "order": 1,
+      "file": "content/15-01-apk-aab.md",
+      "summary": "Перед публикацией приложения в магазин приложений необходимо собрать релизную версию. Flutter поддерживает несколько форматов сборки для разных платформ. Понимание различий между форматами и правильная настройка сборки — ключевой этап по...",
+      "tags": []
+    },
+    {
+      "id": "15-02-code-signing",
+      "slug": "code-signing",
+      "title": "Подписание приложения (Code Signing)",
+      "order": 2,
+      "file": "content/15-02-code-signing.md",
+      "summary": "Подписание кода (code signing) — это процесс цифровой подписи приложения, который подтверждает авторство и гарантирует целостность кода. Без правильной подписи приложение не может быть установлено на устройство или опубликовано в магазине.",
+      "tags": []
+    },
+    {
+      "id": "15-03-google-play",
+      "slug": "google-play",
+      "title": "Публикация в Google Play Store",
+      "order": 3,
+      "file": "content/15-03-google-play.md",
+      "summary": "Google Play Store — крупнейший магазин приложений для Android. Публикация приложения требует подготовки, соблюдения правил платформы и правильного следования процессу релиза.",
+      "tags": []
+    },
+    {
+      "id": "15-04-app-store",
+      "slug": "app-store",
+      "title": "Публикация в Apple App Store",
+      "order": 4,
+      "file": "content/15-04-app-store.md",
+      "summary": "Apple App Store — официальный магазин приложений для iOS. Публикация требует аккаунта разработчика Apple, соблюдения строгих правил审核 и использования инструментов Xcode.",
+      "tags": []
+    },
+    {
+      "id": "15-05-flutter-web",
+      "slug": "flutter-web",
+      "title": "Flutter Web — деплой веб-версии",
+      "order": 5,
+      "file": "content/15-05-flutter-web.md",
+      "summary": "Flutter позволяет создавать веб-приложения, которые работают в любом современном браузере. Деплой веб-версии значительно проще, чем мобильных приложений, так как не требует审核 или подписания кода.",
+      "tags": []
+    },
+    {
+      "id": "15-06-flutter-desktop",
+      "slug": "flutter-desktop",
+      "title": "Flutter Desktop — Windows, macOS, Linux",
+      "order": 6,
+      "file": "content/15-06-flutter-desktop.md",
+      "summary": "Flutter поддерживает десктопные приложения для Windows, macOS и Linux. Деплой десктопных приложений имеет свои особенности по сравнению с мобильными платформами.",
+      "tags": []
+    },
+    {
+      "id": "15-07-firebase-distribution",
+      "slug": "firebase-distribution",
+      "title": "Firebase App Distribution — тестовый деплой",
+      "order": 7,
+      "file": "content/15-07-firebase-distribution.md",
+      "summary": "Firebase App Distribution — бесплатный сервис от Google для распространения предварительных сборок приложения среди тестировщиков. Идеально подходит для этапа тестирования перед публикацией в магазинах.",
+      "tags": []
+    },
+    {
+      "id": "15-08-versioning",
+      "slug": "versioning",
+      "title": "Versioning и релизные ветки",
+      "order": 8,
+      "file": "content/15-08-versioning.md",
+      "summary": "Правильная стратегия версионирования и управления ветками — основа успешного процесса разработки. Она обеспечивает предсказуемость релизов, упрощает отладку и помогает команде координировать работу.",
+      "tags": []
+    },
+    {
+      "id": "15-09-crash-reporting",
+      "slug": "crash-reporting",
+      "title": "Crash Reporting — Firebase Crashlytics",
+      "order": 9,
+      "file": "content/15-09-crash-reporting.md",
+      "summary": "Crashlytics — бесплатный инструмент от Google для мониторинга крашей и ошибок в реальном времени. Позволяет быстро обнаруживать, классифицировать и исправлять проблемы в приложении.",
+      "tags": []
+    },
+    {
+      "id": "15-10-analytics",
+      "slug": "analytics",
+      "title": "Analytics — сбор метрик использования",
+      "order": 10,
+      "file": "content/15-10-analytics.md",
+      "summary": "Analytics — сбор и анализ данных об использовании приложения. Позволяет понимать поведение пользователей, принимать решения на основе данных и улучшать продукт.",
+      "tags": []
+    }
+  ]
+}

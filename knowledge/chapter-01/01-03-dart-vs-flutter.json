@@ -1,0 +1,50 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "1.3 Dart vs Flutter — в чём разница"},
+    {"level": 2, "type": "heading", "text": "Ключевое различие"},
+    {"text": "<strong>Dart</strong> и <strong>Flutter</strong> — это два разных, но тесно связанных продукта от Google:", "type": "paragraph"},
+    {"text": "| | Dart | Flutter |", "type": "paragraph"},
+    {"text": "|---|---|---|", "type": "paragraph"},
+    {"text": "| <strong>Что это?</strong> | Язык программирования | UI-фреймворк |", "type": "paragraph"},
+    {"text": "| <strong>Роль</strong> | Синтаксис, логика, алгоритмы | Создание пользовательского интерфейса |", "type": "paragraph"},
+    {"text": "| <strong>Аналогия</strong> | Как «C++» | Как «Qt» или «MFC» |", "type": "paragraph"},
+    {"text": "| <strong>Использование</strong> | Серверы (Dart Frog, Shelf), CLI-инструменты, скрипты | Мобильные, веб, десктоп приложения |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Dart — язык программирования"},
+    {"text": "Dart — это объектно-ориентированный язык программирования, разработанный Google в 2011 году.", "type": "paragraph"},
+    {"text": "<strong>Возможности Dart без Flutter:</strong>", "type": "paragraph"},
+    {"items": ["<strong>Серверная разработка</strong> — Dart Frog, Shelf, Aqueduct", "<strong>CLI-инструменты</strong> — командные строки, скрипты автоматизации", "<strong>Генерация кода</strong> — build_runner, код-генерация", "<strong>Скрипты</strong> — автоматизация задач"], "type": "ul"},
+    {"text": "<strong>Ключевые особенности языка:</strong>", "type": "paragraph"},
+    {"items": ["Статическая типизация с null-safety", "garbage collection (автоматическое управление памятью)", "Асинхронность (async/await, Future, Stream)", "Generics, миксины, интерфейсы", "Компиляция в JIT (для разработки) и AOT (для релиза)"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Flutter — фреймворк для UI"},
+    {"text": "Flutter — это UI-фреймворк, который <em>использует</em> Dart как язык программирования.", "type": "paragraph"},
+    {"text": "<strong>Возможности Flutter:</strong>", "type": "paragraph"},
+    {"items": ["Создание кроссплатформенных UI", "Собственный рендерер (Skia/Impeller)", "Готовые виджеты для мобильных, веб, десктоп", "Анимации, жесты, рисование", "Интеграция с нативным кодом"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Взаимосвязь"},
+    {"content": "Dart (язык)                    Flutter (фреймворк)
+─────────                      ─────────────────
+main() {                       MaterialApp(
+runApp(MyApp());              home: Scaffold(
+}                               body: Center(
+child: Text('Hello'),
+),
+),
+);", "language": "", "type": "code"},
+    {"items": ["<strong>Dart</strong> — это язык, на котором пишется код", "<strong>Flutter</strong> — это библиотека (пакет), которую импортирует Dart-код для создания UI"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Можно ли использовать их по отдельности?"},
+    {"text": "<strong>Dart без Flutter:</strong>", "type": "paragraph"},
+    {"items": ["✅ Серверные приложения", "- CLI-утилиты", "- Скрипты и автоматизация", "- Веб-бэкенды"], "type": "ul"},
+    {"text": "<strong>Flutter без Dart:</strong>", "type": "paragraph"},
+    {"items": ["❌ Невозможно. Flutter написан на Dart и требует Dart для написания приложений"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Аналогии из других экосистем"},
+    {"text": "| Пара | Язык | Фреймворк |", "type": "paragraph"},
+    {"text": "|---|---|---|", "type": "paragraph"},
+    {"text": "| Dart + Flutter | Dart | Flutter |", "type": "paragraph"},
+    {"text": "| C++ + Qt | C++ | Qt |", "type": "paragraph"},
+    {"text": "| C# + WPF | C# | WPF |", "type": "paragraph"},
+    {"text": "| JavaScript + React | JavaScript | React |", "type": "paragraph"},
+    {"text": "| Swift + SwiftUI | Swift | SwiftUI |", "type": "paragraph"},
+    {"text": "| Java + JavaFX | Java | JavaFX |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"items": ["<strong>Dart</strong> — это инструмент (язык программирования)", "<strong>Flutter</strong> — это применение (создание UI)", "Для разработки Flutter-приложений нужен Dart", "Dart можно использовать и без Flutter для других задач"], "type": "ul"}
+  ]
+}

@@ -1,0 +1,366 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "TextField, TextFormField — поля ввода"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "<code>TextField</code> и <code>TextFormField</code> — основные виджеты для ввода текста в Flutter. <code>TextFormField</code> — это обёртка над <code>TextField</code> для использования в формах.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "TextField"},
+    {"text": "Виджет <code>TextField</code> предоставляет поле для ввода текста.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные свойства TextField"},
+    {"text": "| Свойство | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>controller</code> | <code>TextEditingController?</code> | Контроллер для управления текстом |", "type": "paragraph"},
+    {"text": "| <code>focusNode</code> | <code>FocusNode?</code> | Узел фокуса |", "type": "paragraph"},
+    {"text": "| <code>decoration</code> | <code>InputDecoration?</code> | Декорация поля |", "type": "paragraph"},
+    {"text": "| <code>keyboardType</code> | <code>TextInputType?</code> | Тип клавиатуры |", "type": "paragraph"},
+    {"text": "| <code>obscureText</code> | <code>bool</code> | Скрытие текста (пароль) |", "type": "paragraph"},
+    {"text": "| <code>maxLines</code> | <code>int?</code> | Максимальное количество строк |", "type": "paragraph"},
+    {"text": "| <code>minLines</code> | <code>int?</code> | Минимальное количество строк |", "type": "paragraph"},
+    {"text": "| <code>readOnly</code> | <code>bool</code> | Только для чтения |", "type": "paragraph"},
+    {"text": "| <code>enabled</code> | <code>bool</code> | Включено/отключено |", "type": "paragraph"},
+    {"text": "| <code>onChanged</code> | <code>ValueChanged<String>?</code> | Callback при изменении |", "type": "paragraph"},
+    {"text": "| <code>onSubmitted</code> | <code>ValueChanged<String>?</code> | Callback при отправке |", "type": "paragraph"},
+    {"text": "| <code>inputFormatters</code> | <code>List<TextInputFormatter>?</code> | Форматеры ввода |", "type": "paragraph"},
+    {"text": "| <code>textCapitalization</code> | <code>TextCapitalization</code> | Регистр текста |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Базовый TextField"},
+    {"content": "TextField(
+decoration: const InputDecoration(
+labelText: 'Имя пользователя',
+hintText: 'Введите имя',
+prefixIcon: Icon(Icons.person),
+border: OutlineInputBorder(),
+),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "TextEditingController"},
+    {"text": "<code>TextEditingController</code> управляет содержимым и позицией курсора в поле ввода.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Базовое использование"},
+    {"content": "class TextFieldExample extends StatefulWidget {
+@override
+_TextFieldExampleState createState() => _TextFieldExampleState();
+}
+
+class _TextFieldExampleState extends State<TextFieldExample> {
+final TextEditingController _controller = TextEditingController();
+
+@override
+void initState() {
+super.initState();
+// Начальное значение
+_controller.text = 'Привет';
+// Слушатель изменений
+_controller.addListener(() {
+print('Текст: ${_controller.text}');
+});
+}
+
+@override
+void dispose() {
+_controller.dispose(); // Обязательно!
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return TextField(
+controller: _controller,
+decoration: const InputDecoration(
+labelText: 'Текст',
+border: OutlineInputBorder(),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Очистка и установка текста"},
+    {"content": "// Очистка поля
+_controller.clear();
+
+// Установка текста
+_controller.text = 'Новый текст';
+
+// Вставка текста в позицию курсора
+_controller.insertText('Вставленный текст');
+
+// Получение выделенного текста
+TextSelection selection = _controller.selection;
+String selectedText = _controller.text.substring(
+selection.start,
+selection.end,
+);
+
+// Установка позиции курсора
+_controller.selection = TextSelection.fromPosition(
+TextPosition(offset: _controller.text.length),
+);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "InputDecoration"},
+    {"text": "<code>InputDecoration</code> определяет визуальное оформление поля ввода.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные свойства InputDecoration"},
+    {"text": "| Свойство | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>labelText</code> | <code>String?</code> | Метка, которая перемещается при вводе |", "type": "paragraph"},
+    {"text": "| <code>hintText</code> | <code>String?</code> | Подсказка, исчезает при вводе |", "type": "paragraph"},
+    {"text": "| <code>prefixText</code> | <code>String?</code> | Текст перед полем |", "type": "paragraph"},
+    {"text": "| <code>suffixText</code> | <code>String?</code> | Текст после поля |", "type": "paragraph"},
+    {"text": "| <code>prefixIcon</code> | <code>Widget?</code> | Иконка перед полем |", "type": "paragraph"},
+    {"text": "| <code>suffixIcon</code> | <code>Widget?</code> | Иконка после поля |", "type": "paragraph"},
+    {"text": "| <code>errorText</code> | <code>String?</code> | Текст ошибки |", "type": "paragraph"},
+    {"text": "| <code>helperText</code> | <code>String?</code> | Вспомогательный текст |", "type": "paragraph"},
+    {"text": "| <code>counterText</code> | <code>String?</code> | Счётчик символов |", "type": "paragraph"},
+    {"text": "| <code>border</code> | <code>InputBorder?</code> | Граница поля |", "type": "paragraph"},
+    {"text": "| <code>enabledBorder</code> | <code>InputBorder?</code> | Граница в активном состоянии |", "type": "paragraph"},
+    {"text": "| <code>focusedBorder</code> | <code>InputBorder?</code> | Граница в фокусе |", "type": "paragraph"},
+    {"text": "| <code>errorBorder</code> | <code>InputBorder?</code> | Граница в состоянии ошибки |", "type": "paragraph"},
+    {"text": "| <code>filled</code> | <code>bool</code> | Заполнен ли фон |", "type": "paragraph"},
+    {"text": "| <code>fillColor</code> | <code>Color?</code> | Цвет фона |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Пример InputDecoration"},
+    {"content": "TextField(
+decoration: InputDecoration(
+labelText: 'Email',
+hintText: 'user@example.com',
+prefixIcon: const Icon(Icons.email),
+suffixIcon: IconButton(
+icon: const Icon(Icons.clear),
+onPressed: () {
+_controller.clear();
+},
+),
+helperText: 'Введите ваш email',
+errorText: _hasError ? 'Неверный формат email' : null,
+counterText: '${_controller.text.length} символов',
+border: const OutlineInputBorder(),
+focusedBorder: const OutlineInputBorder(
+borderSide: BorderSide(color: Colors.blue, width: 2),
+),
+enabledBorder: const OutlineInputBorder(
+borderSide: BorderSide(color: Colors.grey),
+),
+errorBorder: const OutlineInputBorder(
+borderSide: BorderSide(color: Colors.red),
+),
+focusedErrorBorder: const OutlineInputBorder(
+borderSide: BorderSide(color: Colors.red, width: 2),
+),
+filled: true,
+fillColor: Colors.grey[100],
+),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Кастомные границы"},
+    {"content": "// Пунктирная граница
+TextField(
+decoration: InputDecoration(
+border: OutlineInputBorder(
+borderRadius: BorderRadius.circular(8),
+borderSide: const BorderSide(
+style: BorderStyle.solid,
+width: 2,
+),
+),
+),
+)
+
+// Без границы
+TextField(
+decoration: const InputDecoration(
+border: InputBorder.none,
+),
+)
+
+// Линия снизу
+TextField(
+decoration: const InputDecoration(
+border: UnderlineInputBorder(),
+),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "TextInputType — типы клавиатуры"},
+    {"text": "| Значение | Описание |", "type": "paragraph"},
+    {"text": "|----------|----------|", "type": "paragraph"},
+    {"text": "| <code>text</code> | Обычная клавиатура |", "type": "paragraph"},
+    {"text": "| <code>emailAddress</code> | Клавиатура с @ |", "type": "paragraph"},
+    {"text": "| <code>number</code> | Цифровая клавиатура |", "type": "paragraph"},
+    {"text": "| <code>phone</code> | Телефонная клавиатура |", "type": "paragraph"},
+    {"text": "| <code>datetime</code> | Клавиатура для даты/времени |", "type": "paragraph"},
+    {"text": "| <code>url</code> | Клавиатура для URL |", "type": "paragraph"},
+    {"text": "| <code>visiblePassword</code> | Клавиатура с видимым паролем |", "type": "paragraph"},
+    {"text": "| <code>multiline</code> | Многострочный ввод |", "type": "paragraph"},
+    {"content": "// Email
+TextField(
+keyboardType: TextInputType.emailAddress,
+decoration: const InputDecoration(labelText: 'Email'),
+)
+
+// Число
+TextField(
+keyboardType: TextInputType.number,
+decoration: const InputDecoration(labelText: 'Возраст'),
+)
+
+// Телефон
+TextField(
+keyboardType: TextInputType.phone,
+decoration: const InputDecoration(labelText: 'Телефон'),
+)
+
+// Пароль
+TextField(
+keyboardType: TextInputType.visiblePassword,
+obscureText: true,
+decoration: const InputDecoration(labelText: 'Пароль'),
+)
+
+// Многострочный
+TextField(
+maxLines: null, // null = неограниченное количество строк
+keyboardType: TextInputType.multiline,
+decoration: const InputDecoration(labelText: 'Комментарий'),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "InputFormatters — форматеры ввода"},
+    {"text": "<code>TextInputFormatter</code> ограничивает и форматирует вводимый текст.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные форматеры"},
+    {"content": "// Только цифры
+TextField(
+inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+decoration: const InputDecoration(labelText: 'Номер'),
+)
+
+// Только буквы
+TextField(
+inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Zа-яА-Я ]'))],
+decoration: const InputDecoration(labelText: 'Имя'),
+)
+
+// Только разрешённые символы
+TextField(
+inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+decoration: const InputDecoration(labelText: 'Цена'),
+)
+
+// Запрет символов
+TextField(
+inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'[<>]'))],
+decoration: const InputDecoration(labelText: 'Без спецсимволов'),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "LengthLimitingTextInputFormatter"},
+    {"content": "// Ограничение длины
+TextField(
+inputFormatters: [LengthLimitingTextInputFormatter(50)],
+decoration: const InputDecoration(
+labelText: 'Комментарий',
+counterText: '', // Скрыть стандартный счётчик
+),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "CustomTextInputFormatter"},
+    {"content": "// Форматирование телефона: +7 (999) 123-45-67
+class PhoneInputFormatter extends TextInputFormatter {
+@override
+TextEditingValue formatEditUpdate(
+TextEditingValue oldValue,
+TextEditingValue newValue,
+) {
+// Простая реализация
+return newValue;
+}
+}
+
+TextField(
+inputFormatters: [PhoneInputFormatter()],
+decoration: const InputDecoration(labelText: 'Телефон'),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "TextFormField"},
+    {"text": "<code>TextFormField</code> — обёртка над <code>TextField</code> для использования в <code>Form</code>.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные отличия"},
+    {"text": "| Характеристика | TextField | TextFormField |", "type": "paragraph"},
+    {"text": "|----------------|-----------|---------------|", "type": "paragraph"},
+    {"text": "| Форма | Нет | Да (validация) |", "type": "paragraph"},
+    {"text": "| <code>validator</code> | Нет | Да |", "type": "paragraph"},
+    {"text": "| <code>autovalidateMode</code> | Нет | Да |", "type": "paragraph"},
+    {"text": "| <code>onSaved</code> | Нет | Да |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Пример с валидацией"},
+    {"content": "class LoginScreen extends StatefulWidget {
+@override
+_LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+final _formKey = GlobalKey<FormState>();
+final _emailController = TextEditingController();
+final _passwordController = TextEditingController();
+
+bool _validateEmail(String value) {
+return value.contains('@') && value.contains('.');
+}
+
+@override
+Widget build(BuildContext context) {
+return Form(
+key: _formKey,
+child: Column(
+children: [
+TextFormField(
+controller: _emailController,
+keyboardType: TextInputType.emailAddress,
+decoration: const InputDecoration(
+labelText: 'Email',
+prefixIcon: Icon(Icons.email),
+border: OutlineInputBorder(),
+),
+validator: (value) {
+if (value == null || value.isEmpty) {
+return 'Введите email';
+}
+if (!_validateEmail(value)) {
+return 'Неверный формат';
+}
+return null;
+},
+),
+const SizedBox(height: 16),
+TextFormField(
+controller: _passwordController,
+obscureText: true,
+decoration: const InputDecoration(
+labelText: 'Пароль',
+prefixIcon: Icon(Icons.lock),
+border: OutlineInputBorder(),
+),
+validator: (value) {
+if (value == null || value.isEmpty) {
+return 'Введите пароль';
+}
+if (value.length < 6) {
+return 'Минимум 6 символов';
+}
+return null;
+},
+),
+const SizedBox(height: 24),
+ElevatedButton(
+onPressed: () {
+if (_formKey.currentState!.validate()) {
+// Форма валидна
+print('Email: ${_emailController.text}');
+print('Пароль: ${_passwordController.text}');
+}
+},
+child: const Text('Войти'),
+),
+],
+),
+);
+}
+
+@override
+void dispose() {
+_emailController.dispose();
+_passwordController.dispose();
+super.dispose();
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"content": "TextFormField(
+autovalidateMode: AutovalidateMode.onUserInteraction,
+validator: (value) => value!.isEmpty ? 'Обязательное поле' : null,
+)", "language": "dart", "type": "code"},
+    {"content": "TextField(
+textCapitalization: TextCapitalization.sentences,
+)", "language": "dart", "type": "code"},
+    {"items": ["<strong>Всегда вызывайте <code>dispose()</code></strong> для <code>TextEditingController</code> и <code>FocusNode</code>.", "<strong>Используйте <code>TextFormField</code></strong> для полей в формах с валидацией.", "<strong>Используйте подходящий <code>keyboardType</code></strong> для каждого поля ввода.", "<strong>Используйте <code>inputFormatters</code></strong> для ограничения ввода (только цифры, ограничение длины).", "<strong>Используйте <code>autovalidateMode</code></strong> для автоматической валидации:", "<strong>Используйте <code>suffixIcon</code></strong> для кнопки очистки поля ввода.", "<strong>Используйте <code>maxLines: null</code></strong> для многострочного ввода с автоматическим расширением.", "<strong>Используйте <code>textCapitalization</code></strong> для управления регистром:"], "type": "ol"}
+  ]
+}

@@ -1,0 +1,253 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Hive — NoSQL база данных на Dart"},
+    {"text": "Hive — это лёгкая и быстрая NoSQL база данных, написанная полностью на Dart. Она не зависит от нативного кода и работает на всех платформах, поддерживаемых Flutter.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Установка"},
+    {"content": "dependencies:
+hive: ^2.2.3
+hive_flutter: ^1.1.0
+
+dev_dependencies:
+hive_generator: ^2.0.1
+build_runner: ^2.4.8", "language": "yaml", "type": "code"},
+    {"content": "flutter pub add hive hive_flutter
+flutter pub add --dev hive_generator build_runner", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Инициализация"},
+    {"level": 3, "type": "heading", "text": "Настройка Hive"},
+    {"content": "import 'package:hive_flutter/hive_flutter.dart';
+
+void main() async {
+await Hive.initFlutter();
+
+// Регистрация адаптеров
+Hive.registerAdapter(UserAdapter());
+Hive.registerAdapter(TaskAdapter());
+
+// Открытие боксов
+await Hive.openBox<User>('users');
+await Hive.openBox<Task>('tasks');
+
+runApp(MyApp());
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Адаптеры"},
+    {"content": "import 'package:hive/hive.dart';
+
+part 'user_adapter.g.dart';
+
+@HiveType(typeId: 0)
+class User extends HiveObject {
+@HiveField(0)
+final int id;
+
+@HiveField(1)
+final String name;
+
+@HiveField(2)
+final String email;
+
+@HiveField(3)
+final int? age;
+
+User({
+required this.id,
+required this.name,
+required this.email,
+this.age,
+});
+}
+
+part 'task_adapter.g.dart';
+
+@HiveType(typeId: 1)
+class Task extends HiveObject {
+@HiveField(0)
+final int id;
+
+@HiveField(1)
+final String title;
+
+@HiveField(2)
+final bool isDone;
+
+@HiveField(3)
+final int userId;
+
+Task({
+required this.id,
+required this.title,
+this.isDone = false,
+required this.userId,
+});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Генерация адаптеров"},
+    {"content": "flutter pub run build_runner build --delete-conflicting-outputs", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Основные операции"},
+    {"level": 3, "type": "heading", "text": "Открытие и закрытие бокса"},
+    {"content": "// Открыть бокс
+Box<User> userBox = await Hive.openBox<User>('users');
+
+// Открыть бокс без типа (динамический)
+Box dynamicBox = await Hive.openBox('dynamic');
+
+// Закрыть бокс
+await userBox.close();
+
+// Закрыть все боксы
+await Hive.close();", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Запись данных"},
+    {"content": "// Добавить запись с автоматическим ключом
+final userId = userBox.add(User(
+id: 1,
+name: 'Иван Петров',
+email: 'ivan@example.com',
+age: 25,
+));
+
+// Добавить запись с конкретным ключом
+await userBox.put(1, User(
+id: 1,
+name: 'Иван Петров',
+email: 'ivan@example.com',
+age: 25,
+));
+
+// Добавить несколько записей
+await userBox.addAll([
+User(id: 2, name: 'Мария', email: 'maria@example.com', age: 30),
+User(id: 3, name: 'Алексей', email: 'alex@example.com', age: 28),
+]);
+
+// Записать в динамический бокс
+await dynamicBox.put('settings', {
+'theme': 'dark',
+'language': 'ru',
+'notifications': true,
+});", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Чтение данных"},
+    {"content": "// Получить запись по ключу
+User? user = userBox.get(1);
+
+// Получить с значением по умолчанию
+User user = userBox.get(1, defaultValue: User(
+id: 0, name: '', email: '',
+));
+
+// Получить все ключи
+List<int> keys = userBox.keys.toList();
+
+// Получить все значения
+List<User> values = userBox.values.toList();
+
+// Получить размер бокса
+int count = userBox.length;
+
+// Проверить наличие ключа
+bool hasKey = userBox.containsKey(1);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Обновление и удаление"},
+    {"content": "// Обновить запись
+await userBox.put(1, User(
+id: 1,
+name: 'Иван Новое Имя',
+email: 'ivan@example.com',
+age: 26,
+));
+
+// Удалить запись по ключу
+await userBox.delete(1);
+
+// Удалить все записи
+await userBox.clear();
+
+// Удалить бокс
+await Hive.deleteBoxFromDisk('users');", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Работа с HiveObject"},
+    {"text": "HiveObject предоставляет методы для работы с конкретной записью:", "type": "paragraph"},
+    {"content": "// Получить запись из бокса
+User? user = userBox.get(1);
+
+if (user != null) {
+// Обновить запись через HiveObject
+user.name = 'Обновлённое имя';
+user.age = 27;
+await user.save(); // Сохранить изменения
+
+// Удалить запись через HiveObject
+// await user.delete();
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Реактивное обновление (Streams)"},
+    {"level": 3, "type": "heading", "text": "Подписка на изменения"},
+    {"content": "// Получить stream изменений бокса
+userBox.openStream().listen((event) {
+print('Изменение: ключ=${event.key}, значение=${event.value}');
+});
+
+// Stream с фильтрацией
+userBox.openStream(start: 2, end: 5).listen((event) {
+print('Запись $key изменена');
+});", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Использование с Flutter"},
+    {"content": "class UserListWidget extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return HiveBuilder(
+box: Hive.box<User>('users'),
+builder: (context, box) {
+final users = box.values.toList();
+return ListView.builder(
+itemCount: users.length,
+itemBuilder: (context, index) {
+final user = users[index];
+return ListTile(
+title: Text(user.name),
+subtitle: Text(user.email),
+);
+},
+);
+},
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Типы данных в Hive"},
+    {"text": "| Тип Hive | Dart тип | Пример |", "type": "paragraph"},
+    {"text": "|----------|----------|--------|", "type": "paragraph"},
+    {"text": "| HiveString | String | <code>'Привет'</code> |", "type": "paragraph"},
+    {"text": "| HiveInt | int | <code>42</code> |", "type": "paragraph"},
+    {"text": "| HiveDouble | double | <code>3.14</code> |", "type": "paragraph"},
+    {"text": "| HiveBool | bool | <code>true</code> |", "type": "paragraph"},
+    {"text": "| HiveList | List\\\\<dynamic\\\\> | <code>[1, 2, 3]</code> |", "type": "paragraph"},
+    {"text": "| HiveMap | Map\\\\<dynamic, dynamic\\\\> | <code>{'key': 'value'}</code> |", "type": "paragraph"},
+    {"text": "| HiveBinary | Uint8List | <code>Uint8List.fromList([1, 2, 3])</code> |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Вложенные данные"},
+    {"level": 3, "type": "heading", "text": "Хранение вложенных структур"},
+    {"content": "@HiveType(typeId: 2)
+class Post extends HiveObject {
+@HiveField(0)
+final int id;
+
+@HiveField(1)
+final String title;
+
+@HiveField(2)
+final List<Comment> comments;
+
+Post({
+required this.id,
+required this.title,
+required this.comments,
+});
+}
+
+@HiveType(typeId: 3)
+class Comment extends HiveObject {
+@HiveField(0)
+final int id;
+
+@HiveField(1)
+final String text;
+
+Comment({required this.id, required this.text});
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Регистрируйте адаптеры</strong> — перед открытием бокса", "<strong>Используйте typeId</strong> — уникальные числа для каждого типа", "<strong>Используйте HiveObject</strong> — для удобной работы с записями", "<strong>Используйте streams</strong> — для реактивного обновления UI", "<strong>Закрывайте боксы</strong> — при уничтожении приложения", "<strong>Используйте <code>hive_flutter</code></strong> — для инициализации в Flutter"], "type": "ul"}
+  ]
+}

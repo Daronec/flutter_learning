@@ -1,0 +1,188 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "REST API — принципы и паттерны в Flutter"},
+    {"text": "REST (Representational State Transfer) — это архитектурный стиль для построения распределённых систем. Большинство современных API следуют принципам REST.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Принципы REST"},
+    {"text": "| Принцип | Описание |", "type": "paragraph"},
+    {"text": "|---------|----------|", "type": "paragraph"},
+    {"text": "| Client-Server | Клиент и сервер разделены |", "type": "paragraph"},
+    {"text": "| Stateless | Каждый запрос независим, без сохранения состояния |", "type": "paragraph"},
+    {"text": "| Cacheable | Ответы могут кэшироваться |", "type": "paragraph"},
+    {"text": "| Uniform Interface | Единый интерфейс для всех операций |", "type": "paragraph"},
+    {"text": "| Layered System | Архитектура состоит из слоёв |", "type": "paragraph"},
+    {"text": "| Code on Demand (опционально) | Сервер может передавать исполняемый код |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Ресурсы и URI"},
+    {"level": 3, "type": "heading", "text": "Именование ресурсов"},
+    {"content": "# Ресурсы — существительные во множественном числе
+GET    /api/users          — список пользователей
+POST   /api/users          — создать пользователя
+GET    /api/users/123      — получить пользователя с ID 123
+PUT    /api/users/123      — обновить пользователя
+DELETE /api/users/123      — удалить пользователя
+
+# Вложенные ресурсы
+GET    /api/users/123/posts      — посты пользователя
+POST   /api/users/123/posts      — создать пост пользователя
+GET    /api/users/123/posts/456  — конкретный пост", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Примеры эндпоинтов"},
+    {"text": "| Метод | URI | Описание |", "type": "paragraph"},
+    {"text": "|-------|-----|----------|", "type": "paragraph"},
+    {"text": "| GET | <code>/api/products</code> | Получить список продуктов |", "type": "paragraph"},
+    {"text": "| GET | <code>/api/products/42</code> | Получить продукт с ID 42 |", "type": "paragraph"},
+    {"text": "| POST | <code>/api/products</code> | Создать новый продукт |", "type": "paragraph"},
+    {"text": "| PUT | <code>/api/products/42</code> | Полностью обновить продукт |", "type": "paragraph"},
+    {"text": "| PATCH | <code>/api/products/42</code> | Частично обновить продукт |", "type": "paragraph"},
+    {"text": "| DELETE | <code>/api/products/42</code> | Удалить продукт |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Фильтрация, пагинация и сортировка"},
+    {"level": 3, "type": "heading", "text": "Query parameters"},
+    {"content": "# Фильтрация
+GET /api/users?role=admin&status=active
+
+# Пагинация
+GET /api/products?page=1&limit=20
+
+# Сортировка
+GET /api/products?sort=price&order=asc
+
+# Комбинация
+GET /api/users?role=admin&status=active&page=1&limit=10&sort=name", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Реализация в Flutter"},
+    {"content": "import 'package:dio/dio.dart';
+
+class UserRepository {
+final Dio _dio;
+
+UserRepository(this._dio);
+
+Future<List<User>> getUsers({
+int page = 1,
+int limit = 20,
+String? role,
+String? status,
+String sortBy = 'name',
+String sortOrder = 'asc',
+}) async {
+final response = await _dio.get(
+'/users',
+queryParameters: {
+'page': page,
+'limit': limit,
+if (role != null) 'role': role,
+if (status != null) 'status': status,
+'sort': sortBy,
+'order': sortOrder,
+},
+);
+
+final List<dynamic> data = response.data;
+return data.map((json) => User.fromJson(json as Map<String, dynamic>)).toList();
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Ответы API"},
+    {"level": 3, "type": "heading", "text": "Успешные ответы"},
+    {"content": "{
+\"id\": 1,
+\"name\": \"Иван Петров\",
+\"email\": \"ivan@example.com\",
+\"created_at\": \"2024-01-15T10:30:00Z\"
+}", "language": "json", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Ответы со списком"},
+    {"content": "{
+\"data\": [
+{\"id\": 1, \"name\": \"Иван\"},
+{\"id\": 2, \"name\": \"Мария\"}
+],
+\"pagination\": {
+\"page\": 1,
+\"limit\": 20,
+\"total\": 100,
+\"totalPages\": 5
+}
+}", "language": "json", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Ответы об ошибках"},
+    {"content": "{
+\"error\": {
+\"code\": \"VALIDATION_ERROR\",
+\"message\": \"Ошибка валидации данных\",
+\"details\": [
+{\"field\": \"email\", \"message\": \"Неверный формат email\"},
+{\"field\": \"name\", \"message\": \"Имя обязательно\"}
+]
+}
+}", "language": "json", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Реализация REST-клиента в Flutter"},
+    {"level": 3, "type": "heading", "text": "Сервис для работы с API"},
+    {"content": "import 'package:dio/dio.dart';
+
+class ApiService {
+final Dio _dio;
+
+ApiService(this._dio);
+
+// Получить список пользователей
+Future<List<User>> getUsers() async {
+final response = await _dio.get('/users');
+final List<dynamic> data = response.data;
+return data
+.map((json) => User.fromJson(json as Map<String, dynamic>))
+.toList();
+}
+
+// Получить пользователя по ID
+Future<User> getUser(int id) async {
+final response = await _dio.get('/users/$id');
+return User.fromJson(response.data as Map<String, dynamic>);
+}
+
+// Создать пользователя
+Future<User> createUser(Map<String, dynamic> userData) async {
+final response = await _dio.post('/users', data: userData);
+return User.fromJson(response.data as Map<String, dynamic>);
+}
+
+// Обновить пользователя
+Future<User> updateUser(int id, Map<String, dynamic> userData) async {
+final response = await _dio.put('/users/$id', data: userData);
+return User.fromJson(response.data as Map<String, dynamic>);
+}
+
+// Удалить пользователя
+Future<void> deleteUser(int id) async {
+await _dio.delete('/users/$id');
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Repository паттерн"},
+    {"content": "class UserRepository {
+final ApiService _apiService;
+final LocalStorage _storage;
+
+UserRepository(this._apiService, this._storage);
+
+Future<List<User>> getUsers() async {
+try {
+// Сначала пробуем из кэша
+final cached = _storage.getCachedUsers();
+if (cached != null) {
+return cached;
+}
+
+// Если кэш пуст — запрос к API
+return await _apiService.getUsers();
+} catch (e) {
+// При ошибке возвращаем кэш или пустой список
+return _storage.getCachedUsers() ?? [];
+}
+}
+
+Future<User> getUser(int id) async {
+return await _apiService.getUser(id);
+}
+
+Future<User> createUser(Map<String, dynamic> data) async {
+return await _apiService.createUser(data);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Используйте существительные</strong> для именования ресурсов", "<strong>Возвращайте правильные HTTP-статусы</strong> — 200, 201, 400, 404, 500", "<strong>Используйте пагинацию</strong> для больших списков", "<strong>Поддерживайте фильтрацию и сортировку</strong> через query parameters", "<strong>Возвращайте структурированные ошибки</strong> с кодами и деталями", "<strong>Версионируйте API</strong> — <code>/api/v1/users</code>, <code>/api/v2/users</code>", "<strong>Документируйте API</strong> — используйте OpenAPI/Swagger"], "type": "ul"}
+  ]
+}

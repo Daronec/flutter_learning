@@ -1,0 +1,45 @@
+﻿{
+    "files":  [
+                  {
+                      "name":  "11-01-clean-architecture.md",
+                      "path":  "chapter-11/11-01-clean-architecture.md",
+                      "size":  9809
+                  },
+                  {
+                      "name":  "11-02-repository-pattern.md",
+                      "path":  "chapter-11/11-02-repository-pattern.md",
+                      "size":  9893
+                  },
+                  {
+                      "name":  "11-03-dependency-injection.md",
+                      "path":  "chapter-11/11-03-dependency-injection.md",
+                      "size":  5862
+                  },
+                  {
+                      "name":  "11-04-getit.md",
+                      "path":  "chapter-11/11-04-getit.md",
+                      "size":  7137
+                  },
+                  {
+                      "name":  "11-05-inject.md",
+                      "path":  "chapter-11/11-05-inject.md",
+                      "size":  6816
+                  },
+                  {
+                      "name":  "11-06-push-notifications.md",
+                      "path":  "chapter-11/11-06-push-notifications.md",
+                      "size":  9869
+                  },
+                  {
+                      "name":  "11-07-geolocation.md",
+                      "path":  "chapter-11/11-07-geolocation.md",
+                      "size":  9844
+                  },
+                  {
+                      "name":  "11-08-camera-gallery.md",
+                      "path":  "chapter-11/11-08-camera-gallery.md",
+                      "size":  12339
+                  }
+              ],
+    "chapter":  "chapter-11"
+}

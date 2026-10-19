@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "chapter-10",
+  "lessons": [
+    {
+      "id": "10-01-sharedpreferences",
+      "slug": "sharedpreferences",
+      "title": "SharedPreferences — простые пары ключ-значение",
+      "order": 1,
+      "file": "content/10-01-sharedpreferences.md",
+      "summary": "SharedPreferences — это простой способ хранения небольших объёмов данных в виде пар ключ-значение. Идеально подходит для сохранения настроек пользователя, флагов и небольших данных.",
+      "tags": []
+    },
+    {
+      "id": "10-02-sqlite",
+      "slug": "sqlite",
+      "title": "SQLite — реляционные базы данных с sqflite",
+      "order": 2,
+      "file": "content/10-02-sqlite.md",
+      "summary": "SQLite — это встроенная реляционная база данных, которая не требует отдельного сервера. Пакет sqflite предоставляет доступ к SQLite из Flutter-приложений.",
+      "tags": []
+    },
+    {
+      "id": "10-03-drift",
+      "slug": "drift",
+      "title": "Drift (formerly Moor) — типобезопасная работа с БД",
+      "order": 3,
+      "file": "content/10-03-drift.md",
+      "summary": "Drift (ранее известный как Moor) — это типобезопасная библиотека для работы с SQLite в Dart/Flutter. Она генерирует код на основе объявлений таблиц и предоставляет удобный API для запросов.",
+      "tags": []
+    },
+    {
+      "id": "10-04-hive",
+      "slug": "hive",
+      "title": "Hive — NoSQL база данных на Dart",
+      "order": 4,
+      "file": "content/10-04-hive.md",
+      "summary": "Hive — это лёгкая и быстрая NoSQL база данных, написанная полностью на Dart. Она не зависит от нативного кода и работает на всех платформах, поддерживаемых Flutter.",
+      "tags": []
+    },
+    {
+      "id": "10-05-isar",
+      "slug": "isar",
+      "title": "Isar — высокопроизводительная база данных",
+      "order": 5,
+      "file": "content/10-05-isar.md",
+      "summary": "Isar — это высокопроизводительная NoSQL база данных, написанная на Dart. Она оптимизирована для скорости и использует кэширование в памяти для молниеносных запросов.",
+      "tags": []
+    },
+    {
+      "id": "10-06-securestorage",
+      "slug": "securestorage",
+      "title": "SecureStorage — безопасное хранение данных",
+      "order": 6,
+      "file": "content/10-06-securestorage.md",
+      "summary": "fluttersecurestorage — это пакет для безопасного хранения чувствительных данных. Он использует Keychain на iOS и Keystore/EncryptedSharedPreferences на Android.",
+      "tags": []
+    },
+    {
+      "id": "10-07-file-io",
+      "slug": "file-io",
+      "title": "File I/O — работа с файлами в Flutter",
+      "order": 7,
+      "file": "content/10-07-file-io.md",
+      "summary": "dart:io предоставляет API для работы с файловой системой. В Flutter это позволяет читать и записывать файлы, работать с директориями и управлять файловыми операциями.",
+      "tags": []
+    },
+    {
+      "id": "10-08-caching",
+      "slug": "caching",
+      "title": "Кэширование — стратегии и реализация",
+      "order": 8,
+      "file": "content/10-08-caching.md",
+      "summary": "Кэширование — это техника сохранения данных для быстрого повторного доступа. В мобильных приложениях кэширование улучшает производительность, снижает нагрузку на сеть и экономит трафик пользователя.",
+      "tags": []
+    }
+  ]
+}

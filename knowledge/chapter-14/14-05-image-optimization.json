@@ -1,0 +1,321 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "14-05. Image Optimization — Сжатие и формат изображений"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Изображения часто являются основным потребителем памяти и полосы пропускания в мобильных приложениях. Оптимизация изображений — это один из самых эффективных способов улучшить производительность и уменьшить размер приложения.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Форматы изображений"},
+    {"level": 3, "type": "heading", "text": "Сравнение форматов"},
+    {"text": "| Формат | Сжатие | Прозрачность | Анимация | Поддержка |", "type": "paragraph"},
+    {"text": "|--------|--------|-------------|----------|-----------|", "type": "paragraph"},
+    {"text": "| PNG | Без потерь | Да | Нет | Все платформы |", "type": "paragraph"},
+    {"text": "| JPEG | С потерями | Нет | Нет | Все платформы |", "type": "paragraph"},
+    {"text": "| WebP | Без/с потерями | Да | Да | Android 4.2+, iOS 14.2+, macOS 10.14.4+ |", "type": "paragraph"},
+    {"text": "| AVIF | Без/с потерями | Да | Да | Android 11+, iOS 16.4+ |", "type": "paragraph"},
+    {"text": "| GIF | С потерями | Да | Да | Все платформы |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "WebP — рекомендуемый формат"},
+    {"text": "WebP — это современный формат от Google, который обеспечивает лучшее сжатие при том же качестве:", "type": "paragraph"},
+    {"content": "JPEG:   100 KB
+WebP:   65 KB  (на 35% меньше)
+PNG:    200 KB
+WebP:   80 KB  (на 60% меньше)", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Конвертация изображений в WebP"},
+    {"content": "# Использование cwebp (инструмент от Google)
+cwebp -q 80 input.png -o output.webp
+
+# batch конвертация
+for f in *.png; do cwebp -q 80 \"$f\" -o \"${f%.png}.webp\"; done", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "BoxFit — управление размерами изображений"},
+    {"level": 3, "type": "heading", "text": "Что такое BoxFit"},
+    {"text": "<code>BoxFit</code> определяет, как изображение заполняет контейнер:", "type": "paragraph"},
+    {"text": "| Значение | Описание |", "type": "paragraph"},
+    {"text": "|----------|----------|", "type": "paragraph"},
+    {"text": "| <code>fill</code> | Растягивает изображение на весь контейнер (искажает пропорции) |", "type": "paragraph"},
+    {"text": "| <code>contain</code> | Показывает всё изображение в контейнере (может быть пустое пространство) |", "type": "paragraph"},
+    {"text": "| <code>cover</code> | Заполняет контейнер, сохраняя пропорции (может обрезать) |", "type": "paragraph"},
+    {"text": "| <code>fitWidth</code> | Растягивает по ширине, пропорционально по высоте |", "type": "paragraph"},
+    {"text": "| <code>fitHeight</code> | Растягивает по высоте, пропорционально по ширине |", "type": "paragraph"},
+    {"text": "| <code>none</code> | Изображение без изменений |", "type": "paragraph"},
+    {"text": "| <code>scaleDown</code> | Как <code>contain</code>, но может уменьшить изображение |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Примеры использования"},
+    {"content": "// contain — всё изображение видно
+Image.asset(
+'assets/images/photo.png',
+fit: BoxFit.contain,
+width: 200,
+height: 200,
+);
+
+// cover — заполняет контейнер, обрезая лишнее
+Image.asset(
+'assets/images/photo.png',
+fit: BoxFit.cover,
+width: 200,
+height: 200,
+);
+
+// fitWidth — по ширине контейнера
+Image.asset(
+'assets/images/photo.png',
+fit: BoxFit.fitWidth,
+width: 200,
+height: 100,
+);
+
+// fitHeight — по высоте контейнера
+Image.asset(
+'assets/images/photo.png',
+fit: BoxFit.fitHeight,
+width: 200,
+height: 100,
+);
+
+// none — оригинальный размер
+Image.asset(
+'assets/images/photo.png',
+fit: BoxFit.none,
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "CachedNetworkImage с BoxFit"},
+    {"content": "CachedNetworkImage(
+imageUrl: 'https://example.com/image.jpg',
+fit: BoxFit.cover,
+width: double.infinity,
+height: 200,
+placeholder: (context, url) => const CircularProgressIndicator(),
+errorWidget: (context, url, error) => const Icon(Icons.error),
+);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "CachedNetworkImage"},
+    {"level": 3, "type": "heading", "text": "Установка"},
+    {"content": "dependencies:
+cached_network_image: ^3.3.1", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Базовое использование"},
+    {"content": "class NetworkImageExample extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return CachedNetworkImage(
+imageUrl: 'https://example.com/image.jpg',
+placeholder: (context, url) => const CircularProgressIndicator(),
+errorWidget: (context, url, error) => const Icon(Icons.error),
+fit: BoxFit.cover,
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Настройка кэширования"},
+    {"content": "void main() {
+// Глобальная настройка кэша
+CachedNetworkImage.logLevel = Log.error;
+CachedNetworkImage.log = (message) {
+debugPrint(message);
+};
+
+runApp(const MyApp());
+}
+
+// Настройка кэша для конкретного изображения
+CachedNetworkImage(
+imageUrl: 'https://example.com/image.jpg',
+cacheManager: CustomCacheManager(),
+fadeInDuration: const Duration(milliseconds: 300),
+fadeOutDuration: const Duration(milliseconds: 300),
+maxWidthDiskCache: 1000,
+maxHeightDiskCache: 1000,
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Кастомный CacheManager"},
+    {"content": "class CustomCacheManager extends CacheManager {
+static const key = 'custom_cache';
+
+static final CustomCacheManager _instance = CustomCacheManager._();
+
+factory CustomCacheManager() => _instance;
+
+CustomCacheManager._()
+: super(
+Config(
+key,
+stalePeriod: const Duration(days: 7),
+maxNrOfCacheObjects: 200,
+repo: JsonCacheInfoRepository(databaseName: key),
+fileService: HttpFileService(),
+),
+);
+}
+
+// Использование кастомного CacheManager
+CachedNetworkImage(
+imageUrl: 'https://example.com/image.jpg',
+cacheManager: CustomCacheManager(),
+placeholder: (context, url) => const CircularProgressIndicator(),
+errorWidget: (context, url, error) => const Icon(Icons.error),
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "FadeIn анимация"},
+    {"content": "CachedNetworkImage(
+imageUrl: 'https://example.com/image.jpg',
+fadeInDuration: const Duration(milliseconds: 500),
+fadeOutDuration: const Duration(milliseconds: 300),
+fadeInCurve: Curves.easeIn,
+fadeOutCurve: Curves.easeOut,
+placeholder: (context, url) => Container(
+color: Colors.grey[200],
+child: const Center(
+child: CircularProgressIndicator(),
+),
+),
+errorWidget: (context, url, error) => Container(
+color: Colors.grey[200],
+child: const Center(
+child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
+),
+),
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "ImageProvider для кастомной логики"},
+    {"content": "class ResizedNetworkImage extends ImageProvider<ResizedNetworkImage> {
+final String url;
+final int width;
+final int height;
+
+const ResizedNetworkImage({
+required this.url,
+required this.width,
+required this.height,
+});
+
+@override
+Future<ResizedNetworkImage> obtainKey(ImageConfiguration configuration) {
+return SynchronousFuture<ResizedNetworkImage>(this);
+}
+
+@override
+ImageStreamCompleter loadImage(
+ResizedNetworkImage key,
+ImageDecoderCallback decode,
+) {
+return MultiFrameImageStreamCompleter(
+codec: _loadAsync(key, decode),
+scale: 1,
+informationCollector: () sync* {
+yield DiagnosticsProperty<ImageProvider>(
+'ResizedNetworkImage: $url ($width x $height)',
+this,
+);
+},
+);
+}
+
+Future<Codec> _loadAsync(
+ResizedNetworkImage key,
+ImageDecoderCallback decode,
+) async {
+final bytes = await NetworkAssetBundle(Uri.parse(url)).load('');
+// Здесь можно добавить логику ресайза
+return decode(await instantiateImageCodec(bytes.buffer.asUint8List()));
+}
+
+@override
+bool operator ==(Object other) =>
+identical(this, other) ||
+other is ResizedNetworkImage &&
+runtimeType == other.runtimeType &&
+url == other.url &&
+width == other.width &&
+height == other.height;
+
+@override
+int get hashCode => Object.hash(url, width, height);
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Оптимизация загрузки изображений"},
+    {"level": 3, "type": "heading", "text": "Загрузка изображений нужного размера"},
+    {"content": "// Загрузка изображения нужного размера с сервера
+class OptimizedImage extends StatelessWidget {
+final String url;
+final double width;
+final double height;
+final double? scale;
+
+const OptimizedImage({
+super.key,
+required this.url,
+required this.width,
+required this.height,
+this.scale,
+});
+
+String get _optimizedUrl {
+final devicePixelRatio = scale ?? MediaQuery.of(context).devicePixelRatio;
+final intWidth = (width * devicePixelRatio).toInt();
+final intHeight = (height * devicePixelRatio).toInt();
+// Добавляем параметры для серверной оптимизации
+return '$url?width=$intWidth&height=$intHeight&quality=80';
+}
+
+@override
+Widget build(BuildContext context) {
+return CachedNetworkImage(
+imageUrl: _optimizedUrl,
+width: width,
+height: height,
+fit: BoxFit.cover,
+placeholder: (context, url) => Container(
+width: width,
+height: height,
+color: Colors.grey[200],
+child: const Center(child: CircularProgressIndicator()),
+),
+errorWidget: (context, url, error) => Container(
+width: width,
+height: height,
+color: Colors.grey[200],
+child: const Center(child: Icon(Icons.error)),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Превью изображений"},
+    {"content": "class ThumbnailGrid extends StatelessWidget {
+final List<String> imageUrls;
+
+const ThumbnailGrid({super.key, required this.imageUrls});
+
+@override
+Widget build(BuildContext context) {
+return GridView.builder(
+gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+crossAxisCount: 3,
+mainAxisSpacing: 4,
+crossAxisSpacing: 4,
+),
+itemCount: imageUrls.length,
+itemBuilder: (context, index) {
+return CachedNetworkImage(
+imageUrl: imageUrls[index],
+fit: BoxFit.cover,
+// Маленькие размеры для превью
+maxWidthDiskCache: 200,
+maxHeightDiskCache: 200,
+placeholder: (context, url) => Container(
+color: Colors.grey[200],
+),
+errorWidget: (context, url, error) => Container(
+color: Colors.grey[200],
+child: const Icon(Icons.broken_image),
+),
+);
+},
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "Рекомендации по оптимизации изображений"},
+    {"items": ["<strong>Используйте WebP вместо PNG/JPEG</strong> — на 25-35% меньше размер", "<strong>Загружайте изображения нужного размера</strong> — не загружайте 4K для превью", "<strong>Используйте CachedNetworkImage</strong> — кэширование значительно ускоряет повторную загрузку", "<strong>Устанавливайте <code>maxWidthDiskCache</code> и <code>maxHeightDiskCache</code></strong> — ограничивает размер кэша", "<strong>Используйте <code>fit</code> правильно</strong> — избегайте <code>fill</code>, который искажает пропорции", "<strong>Добавляйте placeholder и errorWidget</strong> — улучшает UX", "<strong>Сжимайте изображения перед загрузкой</strong> — используйте инструменты сжатия"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Инструменты для оптимизации изображений"},
+    {"text": "| Инструмент | Назначение |", "type": "paragraph"},
+    {"text": "|------------|-----------|", "type": "paragraph"},
+    {"text": "| Squoosh | Онлайн-оптимизация изображений |", "type": "paragraph"},
+    {"text": "| ImageOptim | macOS-приложение для сжатия |", "type": "paragraph"},
+    {"text": "| TinyPNG | Сжатие PNG и JPEG |", "type": "paragraph"},
+    {"text": "| cwebp | Конвертация в WebP |", "type": "paragraph"},
+    {"text": "| Sharp | Node.js библиотека для обработки |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Чек-лист оптимизации изображений"},
+    {"items": ["[ ] Все изображения в формате WebP", "[ ] Изображения загружаются нужного размера", "[ ] Используется CachedNetworkImage", "[ ] Установлены ограничения кэша (maxWidthDiskCache, maxHeightDiskCache)", "[ ] Есть placeholder и errorWidget", "[ ] Используется правильный BoxFit", "[ ] Изображения сжаты перед загрузкой"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Оптимизация изображений — это критически важная часть производительности Flutter-приложений. Правильный выбор формата, размера и кэширования позволяет значительно улучшить как скорость загрузки, так и потребление памяти.", "type": "paragraph"}
+  ]
+}

@@ -1,0 +1,240 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Text, RichText, TextSpan — работа с текстом"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Текст — один из самых распространённых элементов в мобильных приложениях. Flutter предоставляет несколько виджетов для работы с текстом: <code>Text</code>, <code>RichText</code> и <code>TextSpan</code>.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Text"},
+    {"text": "Виджет <code>Text</code> — основной виджет для отображения строки с единообразным стилем.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные свойства Text"},
+    {"text": "| Свойство | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>data</code> | <code>String?</code> | Отображаемый текст |", "type": "paragraph"},
+    {"text": "| <code>style</code> | <code>TextStyle?</code> | Стиль текста |", "type": "paragraph"},
+    {"text": "| <code>textAlign</code> | <code>TextAlign?</code> | Выравнивание текста |", "type": "paragraph"},
+    {"text": "| <code>textDirection</code> | <code>TextDirection?</code> | Направление текста (LTR/RTL) |", "type": "paragraph"},
+    {"text": "| <code>maxLines</code> | <code>int?</code> | Максимальное количество строк |", "type": "paragraph"},
+    {"text": "| <code>overflow</code> | <code>TextOverflow?</code> | Поведение при переполнении |", "type": "paragraph"},
+    {"text": "| <code>softWrap</code> | <code>bool?</code> | Перенос по словам |", "type": "paragraph"},
+    {"text": "| <code>textScaler</code> | <code>TextScaler?</code> | Масштабирование шрифта |", "type": "paragraph"},
+    {"text": "| <code>semanticsLabel</code> | <code>String?</code> | Метка для доступности |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Пример использования"},
+    {"content": "const Text(
+'Привет, мир!',
+style: TextStyle(
+fontSize: 24,
+fontWeight: FontWeight.bold,
+color: Colors.black87,
+),
+textAlign: TextAlign.center,
+maxLines: 2,
+overflow: TextOverflow.ellipsis,
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "TextStyle"},
+    {"text": "<code>TextStyle</code> определяет визуальное оформление текста.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные свойства TextStyle"},
+    {"text": "| Свойство | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>fontSize</code> | <code>double?</code> | Размер шрифта (в пикселях) |", "type": "paragraph"},
+    {"text": "| <code>fontWeight</code> | <code>FontWeight?</code> | Жирность шрифта |", "type": "paragraph"},
+    {"text": "| <code>fontStyle</code> | <code>FontStyle?</code> | Обычный или курсив |", "type": "paragraph"},
+    {"text": "| <code>color</code> | <code>Color?</code> | Цвет текста |", "type": "paragraph"},
+    {"text": "| <code>fontFamily</code> | <code>String?</code> | Имя шрифта |", "type": "paragraph"},
+    {"text": "| <code>letterSpacing</code> | <code>double?</code> | Межбуквенный интервал |", "type": "paragraph"},
+    {"text": "| <code>wordSpacing</code> | <code>double?</code> | Межсловный интервал |", "type": "paragraph"},
+    {"text": "| <code>height</code> | <code>double?</code> | Межстрочный интервал (множитель) |", "type": "paragraph"},
+    {"text": "| <code>decoration</code> | <code>TextDecoration?</code> | Подчёркивание, перечёркивание |", "type": "paragraph"},
+    {"text": "| <code>decorationColor</code> | <code>Color?</code> | Цвет декорации |", "type": "paragraph"},
+    {"text": "| <code>decorationStyle</code> | <code>TextDecorationStyle?</code> | Стиль декорации |", "type": "paragraph"},
+    {"text": "| <code>background</code> | <code>Paint?</code> | Фон текста |", "type": "paragraph"},
+    {"text": "| <code>shadows</code> | <code>List<Shadow>?</code> | Тени текста |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "FontWeight"},
+    {"content": "FontWeight.w100  // Thin
+FontWeight.w200  // ExtraLight
+FontWeight.w300  // Light
+FontWeight.w400  // Normal (regular)
+FontWeight.w500  // Medium
+FontWeight.w600  // SemiBold
+FontWeight.w700  // Bold
+FontWeight.w800  // ExtraBold
+FontWeight.w900  // Black", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Примеры TextStyle"},
+    {"content": "// Обычный текст
+const Text(
+'Обычный текст',
+style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+)
+
+// Курсив
+const Text(
+'Курсив',
+style: TextStyle(
+fontStyle: FontStyle.italic,
+fontSize: 16,
+),
+)
+
+// Подчёркнутый текст
+const Text(
+'Подчёркнутый',
+style: TextStyle(
+decoration: TextDecoration.underline,
+decorationColor: Colors.blue,
+decorationStyle: TextDecorationStyle.dashed,
+),
+)
+
+// Перечёркнутый текст
+const Text(
+'Удалённый',
+style: TextStyle(
+decoration: TextDecoration.lineThrough,
+color: Colors.grey,
+),
+)
+
+// Текст с тенью
+const Text(
+'Тень',
+style: TextStyle(
+fontSize: 24,
+shadows: [
+Shadow(
+offset: Offset(2, 2),
+blurRadius: 4,
+color: Colors.black26,
+),
+],
+),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Выравнивание текста (TextAlign)"},
+    {"text": "| Значение | Описание |", "type": "paragraph"},
+    {"text": "|----------|----------|", "type": "paragraph"},
+    {"text": "| <code>TextAlign.start</code> | Выравнивание по началу строки |", "type": "paragraph"},
+    {"text": "| <code>TextAlign.end</code> | Выравнивание по концу строки |", "type": "paragraph"},
+    {"text": "| <code>TextAlign.left</code> | Выравнивание по левому краю |", "type": "paragraph"},
+    {"text": "| <code>TextAlign.right</code> | Выравнивание по правому краю |", "type": "paragraph"},
+    {"text": "| <code>TextAlign.center</code> | Центрирование |", "type": "paragraph"},
+    {"text": "| <code>TextAlign.justify</code> | Выравнивание по ширине |", "type": "paragraph"},
+    {"content": "Text(
+'Этот текст выровнен по ширине. Flutter поддерживает выравнивание по ширине для многострочного текста.',
+textAlign: TextAlign.justify,
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Переполнение текста (TextOverflow)"},
+    {"text": "| Значение | Описание |", "type": "paragraph"},
+    {"text": "|----------|----------|", "type": "paragraph"},
+    {"text": "| <code>TextOverflow.clip</code> | Обрезка текста |", "type": "paragraph"},
+    {"text": "| <code>TextOverflow.fade</code> | Плавное затухание |", "type": "paragraph"},
+    {"text": "| <code>TextOverflow.ellipsis</code> | Многоточие в конце |", "type": "paragraph"},
+    {"content": "// Обрезка
+Text(
+'Очень длинный текст, который не помещается',
+maxLines: 1,
+overflow: TextOverflow.clip,
+)
+
+// Затухание
+Text(
+'Очень длинный текст, который не помещается',
+maxLines: 1,
+overflow: TextOverflow.fade,
+)
+
+// Многоточие
+Text(
+'Очень длинный текст, который не помещается',
+maxLines: 1,
+overflow: TextOverflow.ellipsis,
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "RichText и TextSpan"},
+    {"text": "Для отображения текста с разными стилями в одной строке используется <code>RichText</code> с <code>TextSpan</code>.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основы RichText"},
+    {"content": "RichText(
+text: const TextSpan(
+text: 'Жирный и обычный',
+style: TextStyle(fontSize: 18, color: Colors.black),
+children: [
+TextSpan(
+text: ' Жирный',
+style: TextStyle(fontWeight: FontWeight.bold),
+),
+TextSpan(
+text: ' и обычный',
+style: TextStyle(fontStyle: FontStyle.italic),
+),
+],
+),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Вложенные TextSpan"},
+    {"content": "RichText(
+text: const TextSpan(
+text: 'Нажмите ',
+style: TextStyle(fontSize: 16, color: Colors.black54),
+children: [
+TextSpan(
+text: 'сюда',
+style: TextStyle(
+fontSize: 16,
+color: Colors.blue,
+decoration: TextDecoration.underline,
+),
+recognizer: TapGestureRecognizer()
+..onTap = () {
+print('Нажат!');
+},
+),
+TextSpan(text: ' для перехода'),
+],
+),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "HTML-подобное форматирование"},
+    {"content": "RichText(
+text: TextSpan(
+children: [
+TextSpan(text: 'Красный: ', style: TextStyle(color: Colors.black)),
+TextSpan(text: 'красный', style: TextStyle(color: Colors.red)),
+TextSpan(text: ', ', style: TextStyle(color: Colors.black)),
+TextSpan(text: 'зелёный', style: TextStyle(color: Colors.green)),
+TextSpan(text: ', ', style: TextStyle(color: Colors.black)),
+TextSpan(text: 'синий', style: TextStyle(color: Colors.blue)),
+],
+),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Использование Google Fonts"},
+    {"text": "Для подключения пользовательских шрифтов используйте пакет <code>google_fonts</code>:", "type": "paragraph"},
+    {"content": "# pubspec.yaml
+dependencies:
+google_fonts: ^6.1.0", "language": "yaml", "type": "code"},
+    {"content": "Text(
+'Кастомный шрифт',
+style: GoogleFonts.roboto(
+fontSize: 24,
+fontWeight: FontWeight.w700,
+color: Colors.deepPurple,
+),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"content": "Text(
+userBio,
+maxLines: 3,
+overflow: TextOverflow.ellipsis,
+)", "language": "dart", "type": "code"},
+    {"content": "Text(
+'Текст',
+textDirection: TextDirection.ltr,
+)", "language": "dart", "type": "code"},
+    {"content": "Text(
+'Одна длинная строка без переносов',
+softWrap: false,
+overflow: TextOverflow.ellipsis,
+)", "language": "dart", "type": "code"},
+    {"content": "Text(
+'Текст',
+textScaler: TextScaler.linear(2.0), // Максимум 2x масштаб
+)", "language": "dart", "type": "code"},
+    {"content": "Text(
+'Текст',
+style: Theme.of(context).textTheme.headlineMedium,
+)", "language": "dart", "type": "code"},
+    {"items": ["<strong>Используйте <code>maxLines</code> и <code>overflow</code></strong> для предотвращения неограниченного роста текста:", "<strong>Используйте <code>RichText</code></strong> только когда нужны разные стили в одном тексте. Для простых случаев используйте <code>Text</code>.", "<strong>Устанавливайте <code>textDirection</code></strong> явно, если приложение поддерживает RTL-языки:", "<strong>Используйте <code>softWrap: false</code></strong> для отключения переноса строк:", "<strong>Используйте <code>TextScaler.maxScaleFactor</code></strong> для ограничения масштабирования шрифта:", "<strong>Избегайте жёстко заданных размеров шрифтов</strong> — используйте <code>Theme.of(context).textTheme</code> для соответствия системным настройкам:"], "type": "ol"}
+  ]
+}

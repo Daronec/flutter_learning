@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "chapter-07",
+  "lessons": [
+    {
+      "id": "07-01-navigator-1",
+      "slug": "navigator-1",
+      "title": "Navigator 1.0: push, pop, named routes",
+      "order": 1,
+      "file": "content/07-01-navigator-1.md",
+      "summary": "Navigator 1.0 — это императивная система навигации в Flutter, основанная на стеке маршрутов (route stack). Это базовый и наиболее часто используемый подход к навигации в Flutter-приложениях.",
+      "tags": []
+    },
+    {
+      "id": "07-02-navigation-args",
+      "slug": "navigation-args",
+      "title": "Аргументы навигации: передача данных между экранами",
+      "order": 2,
+      "file": "content/07-02-navigation-args.md",
+      "summary": "Передача данных между экранами — одна из ключевых задач при навигации в Flutter. Различают передачу аргументов при переходе (push) и возврат значений при возврате (pop).",
+      "tags": []
+    },
+    {
+      "id": "07-03-navigator-2",
+      "slug": "navigator-2",
+      "title": "Navigator 2.0: Router, RouteInformationParser, PageRouteBuilder",
+      "order": 3,
+      "file": "content/07-03-navigator-2.md",
+      "summary": "Navigator 2.0 — это декларативная система навигации, introduced в Flutter 2.0. В отличие от императивного Navigator 1.0, Navigator 2.0 позволяет синхронизировать навигацию с состоянием приложения и URL.",
+      "tags": []
+    },
+    {
+      "id": "07-04-autoroute-gorouter",
+      "slug": "autoroute-gorouter",
+      "title": "AutoRoute и gorouter — декларативная маршрутизация",
+      "order": 4,
+      "file": "content/07-04-autoroute-gorouter.md",
+      "summary": "gorouter и AutoRoute — это популярные библиотеки для декларативной маршрутизации в Flutter. Обе абстрагируют сложность Navigator 2.0, предоставляя удобный API.",
+      "tags": []
+    },
+    {
+      "id": "07-05-bottomnav-drawer",
+      "slug": "bottomnav-drawer",
+      "title": "BottomNavigationBar, Drawer, FloatingActionButton",
+      "order": 5,
+      "file": "content/07-05-bottomnav-drawer.md",
+      "summary": "Нижняя навигация, боковые панели и плавающие кнопки действий — основные паттерны UI навигации в мобильных приложениях.",
+      "tags": []
+    },
+    {
+      "id": "07-06-transition-animations",
+      "slug": "transition-animations",
+      "title": "Анимации переходов между страницами",
+      "order": 6,
+      "file": "content/07-06-transition-animations.md",
+      "summary": "Анимации переходов улучшают пользовательский опыт, создавая плавные визуальные связи между экранами. Flutter предоставляет гибкие инструменты для кастомизации переходов.",
+      "tags": []
+    },
+    {
+      "id": "07-07-deep-links",
+      "slug": "deep-links",
+      "title": "Глубокие ссылки (Deep Links) и Universal Links",
+      "order": 7,
+      "file": "content/07-07-deep-links.md",
+      "summary": "Deep Links позволяют открывать конкретные экраны приложения напрямую из внешних источников: веб-страниц, сообщений, уведомлений и других приложений.",
+      "tags": []
+    }
+  ]
+}

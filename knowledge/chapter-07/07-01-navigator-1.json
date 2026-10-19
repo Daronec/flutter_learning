@@ -1,0 +1,239 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Navigator 1.0: push, pop, named routes"},
+    {"text": "Navigator 1.0 — это императивная система навигации в Flutter, основанная на стеке маршрутов (route stack). Это базовый и наиболее часто используемый подход к навигации в Flutter-приложениях.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Как работает стек маршрутов"},
+    {"text": "Flutter управляет навигацией с помощью стека. Каждый новый экран добавляется в верхнюю часть стека, а при возврате — удаляется.", "type": "paragraph"},
+    {"content": "┌─────────────────────┐
+│  Screen C (top)     │  ← Видимый экран
+├─────────────────────┤
+│  Screen B           │
+├─────────────────────┤
+│  Screen A (bottom)  │  ← Начальный экран
+└─────────────────────┘", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Navigator.push и pop"},
+    {"level": 3, "type": "heading", "text": "Navigator.push"},
+    {"text": "Метод <code>push</code> добавляет новый маршрут в верхнюю часть стека навигации:", "type": "paragraph"},
+    {"content": "Navigator.push(
+context,
+MaterialPageRoute(
+builder: (context) => const SecondScreen(),
+),
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Navigator.pop"},
+    {"text": "Метод <code>pop</code> удаляет верхний маршрут из стека, возвращая пользователя на предыдущий экран:", "type": "paragraph"},
+    {"content": "Navigator.pop(context);
+
+// С возвратом значения
+Navigator.pop(context, {'status': 'saved'});", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "MaterialPageRoute"},
+    {"text": "<code>MaterialPageRoute</code> создаёт маршрут, соответствующий Material Design стандартам:", "type": "paragraph"},
+    {"content": "// Базовый push
+Navigator.push(
+context,
+MaterialPageRoute(
+builder: (context) => const DetailScreen(),
+),
+);
+
+// С настройкой анимации
+Navigator.push(
+context,
+MaterialPageRoute(
+builder: (context) => const DetailScreen(),
+fullscreenDialog: true, // Полноэкранный диалог (iOS-стиль)
+),
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "CupertinoPageRoute"},
+    {"text": "<code>CupertinoPageRoute</code> создаёт маршрут в стиле iOS:", "type": "paragraph"},
+    {"content": "Navigator.push(
+context,
+CupertinoPageRoute(
+builder: (context) => const IosDetailScreen(),
+settings: const RouteSettings(name: '/ios-detail'),
+),
+);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение типов маршрутов"},
+    {"text": "| Характеристика | MaterialPageRoute | CupertinoPageRoute |", "type": "paragraph"},
+    {"text": "|---|---|---|", "type": "paragraph"},
+    {"text": "| Стиль анимации | Material (сдвиг справа) | iOS (сдвиг справа, fade) |", "type": "paragraph"},
+    {"text": "| Кнопка «Назад» | Системная стрелка | Системная стрелка |", "type": "paragraph"},
+    {"text": "| Адаптация | Android | iOS |", "type": "paragraph"},
+    {"text": "| fullscreenDialog | Да | Да |", "type": "paragraph"},
+    {"text": "| Настройка transition | Ограниченная | Ограниченная |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Named Routes"},
+    {"text": "Named routes позволяют определять маршруты по строковым именам, что упрощает навигацию и делает код более читаемым.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Объявление маршрутов"},
+    {"content": "void main() {
+runApp(
+MaterialApp(
+// Определяем маршруты
+routes: {
+'/': (context) => const HomeScreen(),
+'/about': (context) => const AboutScreen(),
+'/settings': (context) => const SettingsScreen(),
+'/profile': (context) => const ProfileScreen(),
+},
+initialRoute: '/',
+),
+);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Навигация по именам"},
+    {"content": "// Простая навигация по имени
+Navigator.pushNamed(context, '/about');
+
+// Навигация с заменой текущего экрана
+Navigator.pushReplacementNamed(context, '/settings');
+
+// Навигация с очисткой стека и переходом на начальный экран
+Navigator.pushNamedAndRemoveUntil(
+context,
+'/',
+(route) => false, // Удаляем все предыдущие маршруты
+);
+
+// Возврат к предыдущему экрану
+Navigator.pop(context);
+
+// Закрытие диалога
+Navigator.of(context).pop();", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "onGenerateRoute и onUnknownRoute"},
+    {"text": "Для динамической генерации маршрутов используются колбэки <code>onGenerateRoute</code> и <code>onUnknownRoute</code>:", "type": "paragraph"},
+    {"content": "MaterialApp(
+initialRoute: '/',
+onGenerateRoute: (settings) {
+switch (settings.name) {
+case '/':
+return MaterialPageRoute(
+builder: (_) => const HomeScreen(),
+);
+case '/product':
+return MaterialPageRoute(
+builder: (_) => ProductScreen(
+productId: settings.arguments as String,
+),
+);
+default:
+return null; // Передать onUnknownRoute
+}
+},
+onUnknownRoute: (settings) {
+return MaterialPageRoute(
+builder: (_) => const NotFoundScreen(),
+);
+},
+);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Основные методы Navigator"},
+    {"text": "| Метод | Описание | Возвращаемое значение |", "type": "paragraph"},
+    {"text": "|---|---|---|", "type": "paragraph"},
+    {"text": "| <code>push</code> | Добавляет маршрут в стек | <code>Future<T?></code> |", "type": "paragraph"},
+    {"text": "| <code>pushNamed</code> | Добавляет именованный маршрут | <code>Future<T?></code> |", "type": "paragraph"},
+    {"text": "| <code>pushReplacement</code> | Заменяет текущий маршрут | <code>Future<T?></code> |", "type": "paragraph"},
+    {"text": "| <code>pushReplacementNamed</code> | Заменяет именованный маршрут | <code>Future<T?></code> |", "type": "paragraph"},
+    {"text": "| <code>pop</code> | Удаляет верхний маршрут | void |", "type": "paragraph"},
+    {"text": "| <code>popUntil</code> | Возвращает до условия | void |", "type": "paragraph"},
+    {"text": "| <code>removeRouteBelow</code> | Удаляет маршрут под указанным | void |", "type": "paragraph"},
+    {"text": "| <code>pushNamedAndRemoveUntil</code> | Push + очистка стека | <code>Future<T?></code> |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Пример: Полная навигация между экранами"},
+    {"content": "// Главный экран приложения
+void main() {
+runApp(
+MaterialApp(
+title: 'Navigation Demo',
+initialRoute: '/',
+routes: {
+'/': (context) => const HomeScreen(),
+'/details': (context) => const DetailsScreen(),
+'/settings': (context) => const SettingsScreen(),
+},
+),
+);
+}
+
+// Экран 1: Домашний экран
+class HomeScreen extends StatelessWidget {
+const HomeScreen({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Home')),
+body: Center(
+child: Column(
+mainAxisAlignment: MainAxisAlignment.center,
+children: [
+ElevatedButton(
+onPressed: () {
+Navigator.pushNamed(context, '/details');
+},
+child: const Text('Перейти к деталям'),
+),
+const SizedBox(height: 16),
+ElevatedButton(
+onPressed: () {
+Navigator.pushNamed(context, '/settings');
+},
+child: const Text('Настройки'),
+),
+],
+),
+),
+);
+}
+}
+
+// Экран 2: Детальный экран
+class DetailsScreen extends StatelessWidget {
+const DetailsScreen({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Details')),
+body: Center(
+child: ElevatedButton(
+onPressed: () {
+// Возврат на предыдущий экран
+Navigator.pop(context);
+},
+child: const Text('Назад'),
+),
+),
+);
+}
+}
+
+// Экран 3: Настройки
+class SettingsScreen extends StatelessWidget {
+const SettingsScreen({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Settings')),
+body: Center(
+child: ElevatedButton(
+onPressed: () {
+// Возврат на главный экран с очисткой стека
+Navigator.pushNamedAndRemoveUntil(
+context,
+'/',
+(route) => false,
+);
+},
+child: const Text('На главную'),
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"content": "// Возврат к экрану HomeScreen
+Navigator.popUntil(context, (route) => route.isFirst);", "language": "dart", "type": "code"},
+    {"items": ["<strong>Используйте named routes</strong> для статических маршрутов — это упрощает тестирование и читаемость.", "<strong>Используйте <code>pushNamedAndRemoveUntil</code></strong> при авторизации — чтобы пользователь не мог вернуться на экран логина после входа.", "<strong>Устанавливайте <code>fullscreenDialog: true</code></strong> для полноэкранных диалогов — это изменяет анимацию и поведение кнопки «Назад» на iOS.", "<strong>Обрабатывайте <code>onUnknownRoute</code></strong> — для отображения экранов 404 при переходе по несуществующим маршрутам.", "<strong>Не используйте <code>Navigator.push</code> напрямую</strong> в крупных проектах — создайте обёртки (navigation helpers) для централизации логики.", "<strong>Избегайте глубокой вложенности стека</strong> — если стек становится слишком глубоким, используйте <code>pushReplacement</code> для удаления старых маршрутов.", "<strong>Используйте <code>popUntil</code></strong> для возврата к конкретному экрану в стеке:"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Когда использовать Navigator 1.0"},
+    {"text": "Navigator 1.0 подходит для большинства приложений:", "type": "paragraph"},
+    {"items": ["Простая навигация между экранами", "Не требуется синхронизация с URL", "Нет необходимости в глубоких ссылках (deep links)", "Приложение не требует сложной маршрутизации"], "type": "ul"},
+    {"text": "Для более сложных сценариев (deep links, URL-синхронизация) рассмотрите Navigator 2.0 или go_router.", "type": "paragraph"}
+  ]
+}

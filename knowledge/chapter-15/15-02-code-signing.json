@@ -1,0 +1,176 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Подписание приложения (Code Signing)"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Подписание кода (code signing) — это процесс цифровой подписи приложения, который подтверждает авторство и гарантирует целостность кода. Без правильной подписи приложение не может быть установлено на устройство или опубликовано в магазине.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Зачем нужно подписание"},
+    {"items": ["<strong>Идентификация разработчика</strong> — подтверждает, кто создал приложение", "<strong>Целостность кода</strong> — гарантирует, что код не был изменён после подписания", "<strong>Требование платформ</strong> — Android и iOS требуют подписи для установки", "<strong>Доверие пользователей</strong> — пользователи видят имя разработчика при установке"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Android — подписание приложения"},
+    {"level": 3, "type": "heading", "text": "Создание Keystore"},
+    {"text": "Keystore — это защищённый хранилище ключей, содержащий пары открытых и закрытых ключей.", "type": "paragraph"},
+    {"content": "# Создание keystore через keytool (входит в JDK)
+keytool -genkey -v -keystore ~/upload-keystore.jks \\\\
+-storetype JKS \\\\
+-keyalg RSA \\\\
+-keysize 2048 \\\\
+-validity 10000 \\\\
+-alias upload
+
+# Параметры:
+# -genkey -v : генерация нового ключа с подробным выводом
+# -keystore : путь к файлу хранилища
+# -storetype JKS : тип хранилища (JKS или PKCS12)
+# -keyalg RSA : алгоритм ключа
+# -keysize 2048 : размер ключа (минимум 2048 бит)
+# -validity 10000 : срок действия в днях (~27 лет)
+# -alias upload : псевдоним ключа", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Создание Keystore через Flutter"},
+    {"content": "# Flutter может создать keystore автоматически
+flutter build apk --release --flavor production
+
+# При первом запуске Flutter предложит создать keystore
+# Введите:
+# 1. Путь к keystore файлу (или оставьте для авто-создания)
+# 2. Пароль хранилища
+# 3. Псевдоним ключа
+# 4. Пароль ключа
+# 5. Срок действия (дни)", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Настройка Gradle для подписания"},
+    {"text": "<strong>Файл: <code>android/key.properties</code></strong>", "type": "paragraph"},
+    {"content": "storePassword=your_store_password
+keyPassword=your_key_password
+keyAlias=upload
+storeFile=/path/to/upload-keystore.jks", "language": "properties", "type": "code"},
+    {"content": "**Важно:** Добавьте `key.properties` в `.gitignore` для защиты паролей!", "type": "blockquote"},
+    {"text": "<strong>Файл: <code>android/app/build.gradle</code></strong>", "type": "paragraph"},
+    {"content": "def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+android {
+defaultConfig {
+// ...
+}
+
+signingConfigs {
+release {
+if (keystorePropertiesFile.exists()) {
+keyAlias keystoreProperties['keyAlias']
+keyPassword keystoreProperties['keyPassword']
+storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+storePassword keystoreProperties['storePassword']
+}
+}
+}
+
+buildTypes {
+release {
+signingConfig signingConfigs.release
+}
+}
+}", "language": "groovy", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Подписание через командную строку"},
+    {"content": "# Подписание APK вручную
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 \\\\
+-keystore upload-keystore.jks \\\\
+-storepass your_store_password \\\\
+-keypass your_key_password \\\\
+app-release-unsigned.apk \\\\
+upload
+
+# Выравнивание APK (обязательный шаг)
+zipalign -v 4 app-release-unsigned.apk app-release.apk
+
+# Проверка подписи
+apksigner verify --verbose app-release.apk", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "iOS — подписание приложения"},
+    {"level": 3, "type": "heading", "text": "Требования для iOS подписания"},
+    {"text": "Для подписания iOS-приложения необходимы:", "type": "paragraph"},
+    {"items": ["<strong>Apple Developer Program</strong> — подписка за $99/год", "<strong>Developer Identity</strong> — сертификат разработчика", "<strong>App ID</strong> — уникальный идентификатор приложения", "<strong>Provisioning Profile</strong> — профиль распределения", "<strong>Distribution Certificate</strong> — сертификат для публикации"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Создание сертификатов"},
+    {"text": "<strong>Через Xcode:</strong>", "type": "paragraph"},
+    {"items": ["Откройте Xcode → Preferences → Accounts", "Войдите в Apple ID", "Выберите team и нажмите <strong>Download Manual Signing Profiles</strong>"], "type": "ol"},
+    {"text": "<strong>Через командную строку:</strong>", "type": "paragraph"},
+    {"content": "# Список доступных сертификатов
+security find-identity -v -p codesigning
+
+# Создание запроса на подпись (CSR)
+openssl req -newkey rsa:2048 -nodes \\\\
+-keyout private.key \\\\
+-out CertificateSigningRequest.certSigningRequest \\\\
+-subj \"/emailAddress=you@example.com,CN=YourName,C=US\"
+
+# Проверка подписи кода
+codesign -dvvv YourApp.app", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Provisioning Profile"},
+    {"text": "Provisioning Profile связывает сертификат, App ID и устройства.", "type": "paragraph"},
+    {"text": "<strong>Типы provisioning profile:</strong>", "type": "paragraph"},
+    {"text": "| Тип | Назначение |", "type": "paragraph"},
+    {"text": "|-----|-----------|", "type": "paragraph"},
+    {"text": "| Development | Тестирование на зарегистрированных устройствах |", "type": "paragraph"},
+    {"text": "| Distribution (App Store) | Публикация в App Store |", "type": "paragraph"},
+    {"text": "| Distribution (Ad Hoc) | Распространение до 100 устройств |", "type": "paragraph"},
+    {"text": "| Distribution (Enterprise) | Внутреннее использование в компании |", "type": "paragraph"},
+    {"text": "<strong>Управление через xcodebuild:</strong>", "type": "paragraph"},
+    {"content": "# Список provisioning profiles
+security cms -D -i YourApp.mobileprovision
+
+# Автоматическое управление подписью в Xcode
+xcodebuild archive \\\\
+-scheme YourApp \\\\
+-archivePath build/YourApp.xcarchive \\\\
+-configuration Release \\\\
+-sdk iphoneos \\\\
+-derivedDataPath build/derivedData
+
+# Архивирование
+xcodebuild archive \\\\
+-workspace YourApp.xcworkspace \\\\
+-scheme YourApp \\\\
+-configuration Release \\\\
+-archivePath build/YourApp.xcarchive \\\\
+-sdk iphoneos
+
+# Экспорт архива
+xcodebuild -exportArchive \\\\
+-archivePath build/YourApp.xcarchive \\\\
+-exportPath build/exported \\\\
+-exportOptionsPlist exportOptions.plist", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "exportOptions.plist"},
+    {"text": "<strong>Файл: <code>exportOptions.plist</code></strong>", "type": "paragraph"},
+    {"content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\"
+\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+<key>method</key>
+<string>app-store</string>
+<key>uploadBitcode</key>
+<false/>
+<key>uploadSymbols</key>
+<true/>
+<key>compileBitcode</key>
+<false/>
+<key>teamID</key>
+<string>YOUR_TEAM_ID</string>
+<key>provisioningProfiles</key>
+<dict>
+<key>com.yourcompany.yourapp</key>
+<string>YourApp Distribution</string>
+</dict>
+</dict>
+</plist>", "language": "xml", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение подходов к подписанию"},
+    {"text": "| Параметр | Android | iOS |", "type": "paragraph"},
+    {"text": "|----------|---------|-----|", "type": "paragraph"},
+    {"text": "| Формат ключа | JKS / PKCS12 | P12 / CER |", "type": "paragraph"},
+    {"text": "| Хранилище | Keystore файл | Keychain (macOS) |", "type": "paragraph"},
+    {"text": "| Срок действия | Настраиваемый | 1 год (сертификат) |", "type": "paragraph"},
+    {"text": "| Стоимость | Бесплатно | $99/год |", "type": "paragraph"},
+    {"text": "| Автоматизация | Gradle | Xcode / Fastlane |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Безопасное хранение keystore</strong> — используйте защищённое хранилище, не коммитьте в Git", "<strong>Резервные копии</strong> — храните копии keystore и provisioning profile в безопасном месте", "<strong>Срок действия</strong> — обновляйте ключи до истечения срока", "<strong>CI/CD</strong> — используйте секреты для хранения паролей в пайплайнах", "<strong>Разделение ключей</strong> — используйте разные ключи для development и release", "<strong>Документирование</strong> — ведите учёт всех сертификатов и их сроков действия"], "type": "ul"}
+  ]
+}

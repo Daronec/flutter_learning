@@ -1,0 +1,198 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "2.10 Пакетная система: pubspec, зависимости, pub.dev"},
+    {"level": 2, "type": "heading", "text": "pubspec.yaml"},
+    {"level": 3, "type": "heading", "text": "Структура файла"},
+    {"content": "name: my_app                    # Имя пакета (уникальное, lowercase_with_underscores)
+description: My Flutter app     # Описание пакета
+version: 1.0.0+1                # Версия: semantic + build number
+
+# Запрещённые имена пакетов
+# flutter, dart, package, http, etc.
+
+environment:
+sdk: '>=3.0.0 <4.0.0'        # Совместимость с версией Dart SDK
+flutter: \">=3.0.0\"            # Совместимость с версией Flutter
+
+dependencies:
+flutter:
+sdk: flutter               # Flutter SDK
+cupertino_icons: ^1.0.6      # Внешняя зависимость
+http: ^1.1.0
+
+dev_dependencies:
+flutter_test:
+sdk: flutter
+lint: ^2.0.0
+build_runner: ^2.4.0
+
+flutter:
+uses-material-design: true
+assets:
+- assets/images/
+- assets/icons/
+- config/app.json
+fonts:
+- family: CustomFont
+fonts:
+- asset: assets/fonts/CustomFont-Regular.ttf
+- asset: assets/fonts/CustomFont-Bold.ttf
+weight: 700", "language": "yaml", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Зависимости"},
+    {"level": 3, "type": "heading", "text": "Типы зависимостей"},
+    {"text": "| Тип | Описание | Пример |", "type": "paragraph"},
+    {"text": "|---|---|---|", "type": "paragraph"},
+    {"text": "| <strong>SDK</strong> | Зависимость от SDK | <code>flutter</code>, <code>dart</code> |", "type": "paragraph"},
+    {"text": "| <strong>Публикованные</strong> | Пакеты с pub.dev | <code>http</code>, <code>provider</code> |", "type": "paragraph"},
+    {"text": "| <strong>Git</strong> | Из Git-репозитория | <code>url: git://...</code> |", "type": "paragraph"},
+    {"text": "| <strong>Path</strong> | Локальная зависимость | <code>path: ../shared</code> |", "type": "paragraph"},
+    {"text": "| <strong>Hosted</strong> | С произвольного сервера | <code>url: https://...</code> |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Версионирование (Semantic Versioning)"},
+    {"content": "MAJOR.MINOR.PATCH
+
+1.0.0 → 2.0.0  — Breaking changes
+1.0.0 → 1.1.0  — New features (backwards compatible)
+1.0.0 → 1.0.1  — Bug fixes", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Караты версий"},
+    {"content": "# ^ — совместимые с версией
+http: ^1.1.0     # >=1.1.0 <2.0.0
+
+# ~ — патч-совместимые
+http: ~1.1.0     # >=1.1.0 <1.2.0
+
+# >= — минимальная версия
+http: \">=1.0.0\"
+
+# = — точная версия
+http: \"=1.0.0\"", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Зависимость из Git"},
+    {"content": "dependencies:
+my_package:
+git:
+url: git://github.com/user/my_package.git
+ref: main  # branch, tag, or commit", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Локальная зависимость"},
+    {"content": "dependencies:
+shared_utils:
+path: ../shared_utils", "language": "yaml", "type": "code"},
+    {"level": 2, "type": "heading", "text": "pub.dev"},
+    {"level": 3, "type": "heading", "text": "Что такое pub.dev?"},
+    {"text": "<a href=\"https://pub.dev\" target=\"_blank\">pub.dev</a> — официальный реестр пакетов для Dart и Flutter.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Поиск и использование пакетов"},
+    {"content": "flutter pub add provider", "language": "bash", "type": "code"},
+    {"items": ["Перейти на <a href=\"https://pub.dev\" target=\"_blank\">pub.dev</a>", "Найти нужный пакет (например, <code>provider</code>)", "Скопировать команду:", "Или добавить в <code>pubspec.yaml</code> вручную"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Популярные пакеты"},
+    {"text": "| Пакет | Назначение |", "type": "paragraph"},
+    {"text": "|---|---|", "type": "paragraph"},
+    {"text": "| <code>provider</code> | Управление состоянием |", "type": "paragraph"},
+    {"text": "| <code>http</code> | HTTP запросы |", "type": "paragraph"},
+    {"text": "| <code>dio</code> | Продвинутый HTTP-клиент |", "type": "paragraph"},
+    {"text": "| <code>flutter_bloc</code> | BLoC паттерн |", "type": "paragraph"},
+    {"text": "| <code>get_it</code> | Dependency Injection |", "type": "paragraph"},
+    {"text": "| <code>sqflite</code> | SQLite база данных |", "type": "paragraph"},
+    {"text": "| <code>hive</code> | NoSQL хранилище |", "type": "paragraph"},
+    {"text": "| <code>freezed</code> | Код-генерация для data classes |", "type": "paragraph"},
+    {"text": "| <code>json_serializable</code> | JSON сериализация |", "type": "paragraph"},
+    {"text": "| <code>go_router</code> | Декларативная маршрутизация |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Команды pub"},
+    {"level": 3, "type": "heading", "text": "Основные команды"},
+    {"content": "# Установка зависимостей
+flutter pub get
+dart pub get
+
+# Обновление зависимостей
+flutter pub upgrade
+flutter pub upgrade --major-versions
+
+# Добавление зависимости
+flutter pub add provider
+flutter pub add --dev lint
+
+# Удаление зависимости
+flutter pub remove provider
+
+# Просмотр зависимостей
+flutter pub deps
+
+# Публикация пакета
+flutter pub publish
+
+# Проверка пакета перед публикацией
+flutter pub publish --dry-run
+
+# Кэш
+flutter pub cache clean
+flutter pub cache repair", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "pubspec.lock"},
+    {"level": 3, "type": "heading", "text": "Назначение"},
+    {"content": "# pubspec.lock — автоматически генерируемый файл
+# Фиксирует точные версии всех зависимостей
+
+packages:
+provider:
+dependency: \"direct main\"
+description:
+name: provider
+url: \"https://pub.dev\"
+source: hosted
+version: \"6.1.1\"
+flutter_plugin:
+dependency: \"direct dev\"
+description:
+name: flutter_plugin
+url: \"github.com\"
+source: git
+ref: main
+resolved_ref: \"abc123def456\"
+tree: ...
+url: \"https://github.com/user/flutter_plugin.git\"", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Правила"},
+    {"items": ["✅ <strong>Должен быть в git</strong> — обеспечивает воспроизводимую сборку", "❌ <strong>Не редактировать вручную</strong>", "🔄 <strong>Обновлять</strong> через <code>flutter pub upgrade</code>"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Создание собственного пакета"},
+    {"level": 3, "type": "heading", "text": "Типы пакетов"},
+    {"text": "| Тип | Описание |", "type": "paragraph"},
+    {"text": "|---|---|", "type": "paragraph"},
+    {"text": "| <strong>app</strong> | Приложение (по умолчанию) |", "type": "paragraph"},
+    {"text": "| <strong>package</strong> | Библиотека кода |", "type": "paragraph"},
+    {"text": "| <strong>plugin</strong> | Библиотека с нативным кодом |", "type": "paragraph"},
+    {"text": "| <strong>module</strong> | Модуль для встраивания в нативное приложение |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Создание пакета"},
+    {"content": "# Package (код без нативных частей)
+flutter create --template=package shared_utils
+
+# Plugin (с нативной частью)
+flutter create --template=plugin my_plugin --platforms=android,ios", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Структура пакета"},
+    {"content": "my_package/
+├── lib/
+│   ├── my_package.dart      # Главный export
+│   └── src/
+│       ├── utils.dart
+│       └── models.dart
+├── test/
+│   └── my_package_test.dart
+├── pubspec.yaml
+└── README.md", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "pubspec для пакета"},
+    {"content": "name: my_package
+description: A useful Flutter package
+version: 0.1.0
+
+environment:
+sdk: '>=3.0.0 <4.0.0'
+flutter: \">=3.0.0\"
+
+dependencies:
+flutter:
+sdk: flutter
+
+flutter:", "language": "yaml", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "Управление зависимостями"},
+    {"items": ["<strong>Используйте <code>^</code> для версий</strong> — автоматическое обновление патчей", "<strong>Регулярно обновляйте зависимости</strong> — <code>flutter pub upgrade</code>", "<strong>Проверяйте pubspec.lock</strong> — фиксируйте версии", "<strong>Используйте <code>--dry-run</code></strong> перед публикацией", "<strong>Читайте CHANGELOG</strong> при обновлении зависимостей"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Публикация"},
+    {"items": ["Напишите хороший README.md", "Добавьте примеры кода", "Напишите тесты", "Запустите <code>flutter pub publish --dry-run</code>", "Опубликуйте <code>flutter pub publish</code>"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Пакетная система Dart — мощный инструмент для управления зависимостями. pub.dev содержит тысячи пакетов, которые ускоряют разработку. Понимание версионирования и управления зависимостями — ключ к стабильной разработке.", "type": "paragraph"}
+  ]
+}

@@ -1,0 +1,294 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Аргументы навигации: передача данных между экранами"},
+    {"text": "Передача данных между экранами — одна из ключевых задач при навигации в Flutter. Различают передачу аргументов при переходе (push) и возврат значений при возврате (pop).", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Передача аргументов через push"},
+    {"level": 3, "type": "heading", "text": "Простая передача через arguments"},
+    {"text": "Свойство <code>arguments</code> маршрута позволяет передать данные любому типу:", "type": "paragraph"},
+    {"content": "// Отправка аргумента
+Navigator.pushNamed(
+context,
+'/product',
+arguments: 'product-123',
+);
+
+// Получение аргумента на целевом экране
+class ProductScreen extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+// Извлекаем аргументы из контекста
+final String productId =
+ModalRoute.of(context)!.settings.arguments as String;
+
+return Scaffold(
+appBar: AppBar(title: Text('Product: $productId')),
+body: Center(child: Text('ID товара: $productId')),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Передача через MaterialPageRoute"},
+    {"content": "// Отправка аргументов
+Navigator.push(
+context,
+MaterialPageRoute(
+builder: (context) => const ProductScreen(),
+settings: RouteSettings(
+arguments: ProductModel(id: 1, name: 'Laptop'),
+),
+),
+);
+
+// Получение аргументов
+class ProductScreen extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+final ProductModel? product =
+ModalRoute.of(context)?.settings.arguments as ProductModel?;
+
+if (product == null) {
+return const Scaffold(body: Text('Товар не найден'));
+}
+
+return Scaffold(
+appBar: AppBar(title: Text(product.name)),
+body: Center(child: Text('ID: ${product.id}')),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Передача через onGenerateRoute"},
+    {"content": "MaterialApp(
+onGenerateRoute: (settings) {
+switch (settings.name) {
+case '/product':
+final ProductModel product =
+settings.arguments as ProductModel;
+return MaterialPageRoute(
+builder: (_) => ProductDetailScreen(product: product),
+);
+case '/user':
+final UserModel user = settings.arguments as UserModel;
+return MaterialPageRoute(
+builder: (_) => UserDetailScreen(user: user),
+);
+default:
+return null;
+}
+},
+);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Generic аргументы"},
+    {"level": 3, "type": "heading", "text": "Типизированная передача аргументов"},
+    {"text": "Navigator поддерживает дженерики для безопасной передачи данных:", "type": "paragraph"},
+    {"content": "// Отправка аргумента с типом
+final result = await Navigator.push<ProductModel>(
+context,
+MaterialPageRoute(
+builder: (context) => const ProductSelectorScreen(),
+),
+);
+
+// result имеет тип ProductModel?
+if (result != null) {
+print('Выбран: ${result.name}');
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Передача сложных объектов"},
+    {"content": "// Модель данных
+class ProductModel {
+final int id;
+final String name;
+final double price;
+final String? imageUrl;
+
+const ProductModel({
+required this.id,
+required this.name,
+required this.price,
+this.imageUrl,
+});
+
+// Сериализация в JSON
+Map<String, dynamic> toJson() => {
+'id': id,
+'name': name,
+'price': price,
+'imageUrl': imageUrl,
+};
+
+// Десериализация из JSON
+factory ProductModel.fromJson(Map<String, dynamic> json) {
+return ProductModel(
+id: json['id'] as int,
+name: json['name'] as String,
+price: (json['price'] as num).toDouble(),
+imageUrl: json['imageUrl'] as String?,
+);
+}
+}
+
+// Отправка через JSON
+Navigator.pushNamed(
+context,
+'/product',
+arguments: ProductModel(
+id: 1,
+name: 'Laptop',
+price: 999.99,
+).toJson(),
+);
+
+// Получение и десериализация
+class ProductScreen extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+final Map<String, dynamic> json =
+ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+final product = ProductModel.fromJson(json);
+
+return Scaffold(
+appBar: AppBar(title: Text(product.name)),
+body: Text('Цена: \\\\$${product.price}'),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Возврат значений через pop"},
+    {"level": 3, "type": "heading", "text": "Возврат примитивных типов"},
+    {"content": "// Экран, который возвращает значение
+class ColorPickerScreen extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Выберите цвет')),
+body: Center(
+child: Column(
+mainAxisAlignment: MainAxisAlignment.center,
+children: [
+ElevatedButton(
+onPressed: () {
+Navigator.pop(context, Colors.red);
+},
+child: const Text('Красный'),
+),
+ElevatedButton(
+onPressed: () {
+Navigator.pop(context, Colors.green);
+},
+child: const Text('Зелёный'),
+),
+ElevatedButton(##
+onPressed: () {
+// Отмена — возврат без значения
+Navigator.pop(context);
+},
+child: const Text('Отмена'),
+),
+],
+),
+),
+);
+}
+}
+
+// Экран, который получает значение
+class ColorScreen extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Цветной экран')),
+body: Center(
+child: ElevatedButton(
+onPressed: () async {
+// Ожидаем результат от ColorPickerScreen
+final Color? selectedColor = await Navigator.push<Color?>(
+context,
+MaterialPageRoute(
+builder: (context) => const ColorPickerScreen(),
+),
+);
+
+if (selectedColor != null) {
+// Используем выбранный цвет
+print('Выбран цвет: $selectedColor');
+}
+},
+child: const Text('Выбрать цвет'),
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Возврат сложных объектов"},
+    {"content": "// Возврат модели данных
+class EditUserScreen extends StatelessWidget {
+final UserModel user;
+
+const EditUserScreen({super.key, required this.user});
+
+@override
+Widget build(BuildContext context) {
+final nameController = TextEditingController(text: user.name);
+final emailController = TextEditingController(text: user.email);
+
+return Scaffold(
+appBar: AppBar(title: const Text('Редактировать')),
+body: Padding(
+padding: const EdgeInsets.all(16),
+child: Column(
+children: [
+TextField(controller: nameController),
+const SizedBox(height: 8),
+TextField(controller: emailController),
+const SizedBox(height: 16),
+ElevatedButton(
+onPressed: () {
+// Создаём обновлённый объект
+final updatedUser = UserModel(
+id: user.id,
+name: nameController.text,
+email: emailController.text,
+);
+// Возвращаем обновлённый объект
+Navigator.pop(context, updatedUser);
+},
+child: const Text('Сохранить'),
+),
+],
+),
+),
+);
+}
+}
+
+// Использование результата
+final UserModel? updatedUser = await Navigator.push<UserModel?>(
+context,
+MaterialPageRoute(
+builder: (context) => EditUserScreen(user: currentUser),
+),
+);
+
+if (updatedUser != null) {
+// Обновляем данные
+currentUser = updatedUser;
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение подходов"},
+    {"text": "| Подход | Тип данных | Безопасность | Сложность |", "type": "paragraph"},
+    {"text": "|---|---|---|---|", "type": "paragraph"},
+    {"text": "| <code>arguments</code> (строка) | String | Низкая | Низкая |", "type": "paragraph"},
+    {"text": "| <code>arguments</code> (JSON) | Map<String, dynamic> | Средняя | Средняя |", "type": "paragraph"},
+    {"text": "| <code>arguments</code> (объект) | Любой тип | Высокая | Средняя |", "type": "paragraph"},
+    {"text": "| Generic <code>push<T></code> | Типизированный | Высокая | Низкая |", "type": "paragraph"},
+    {"text": "| <code>onGenerateRoute</code> | Любой тип | Высокая | Высокая |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"content": "class ProductNavigationArgs {
+final String productId;
+final bool showReviews;
+final bool showRecommendations;
+
+const ProductNavigationArgs({
+required this.productId,
+this.showReviews = false,
+this.showRecommendations = false,
+});
+}", "language": "dart", "type": "code"},
+    {"items": ["<strong>Используйте JSON-сериализацию</strong> для сложных объектов — это упрощает передачу через <code>arguments</code>.", "<strong>Всегда проверяйте null</strong> при получении аргументов — аргументы могут отсутствовать.", "<strong>Используйте дженерики</strong> <code>push<T></code> для типизированной передачи возвращаемых значений.", "<strong>Избегайте передачи больших объектов</strong> — предпочтительнее передавать идентификаторы и загружать данные по запросу.", "<strong>Создавайте модели данных</strong> с методами <code>toJson()</code> и <code>fromJson()</code> для удобной сериализации.", "<strong>Используйте <code>ModalRoute.of(context)!.settings.arguments</code></strong> для получения аргументов в любом месте экрана.", "<strong>Не передавайте через аргументы</strong> объекты с контроллерами, контекстами или ресурсами.", "<strong>Для передачи множества параметров</strong> создайте отдельный класс-обёртку:"], "type": "ol"}
+  ]
+}

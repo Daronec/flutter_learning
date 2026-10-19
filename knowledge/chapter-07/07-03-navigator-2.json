@@ -1,0 +1,255 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Navigator 2.0: Router, RouteInformationParser, PageRouteBuilder"},
+    {"text": "Navigator 2.0 — это декларативная система навигации, introduced в Flutter 2.0. В отличие от императивного Navigator 1.0, Navigator 2.0 позволяет синхронизировать навигацию с состоянием приложения и URL.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Концепция декларативной навигации"},
+    {"level": 3, "type": "heading", "text": "Императивный vs Декларативный подход"},
+    {"content": "Императивный (Navigator 1.0):
+Navigator.push(context, route);  // «Сделай это»
+
+Декларативный (Navigator 2.0):
+Router(
+routerConfig: config,
+child: app,
+);  // «Вот моё состояние, сам определи маршрут»", "language": "", "type": "code"},
+    {"text": "Navigator 2.0 основан на трёх ключевых компонентах:", "type": "paragraph"},
+    {"items": ["<strong>Router</strong> — виджет, управляющий навигацией", "<strong>RouteInformationParser</strong> — парсинг и генерация информации о маршруте", "<strong>RouteInformationReporter</strong> — отчёт об изменениях маршрута"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Router виджет"},
+    {"level": 3, "type": "heading", "text": "Базовое использование Router"},
+    {"content": "import 'package:flutter/material.dart';
+import 'package:flutter/router.dart';
+
+class MyApp extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return Router(
+routerConfig: AppRouter.config,
+child: const MyAppContent(),
+);
+}
+}
+
+class AppRouter {
+static final config = RouterConfig<String>(
+routeInformationParser: AppRouteInformationParser(),
+routeInformationProvider: _locationProvider,
+routeMatcher: const RouteMatcher(),
+);
+
+static final _locationProvider = ValueListenableProvider<String>(
+initialValue: '/',
+);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Router с состоянием"},
+    {"content": "class AppRouter {
+// Состояние навигации
+static final _navState = ValueNotifier<AppNavigationState>(
+const AppNavigationState(),
+);
+
+static final config = RouterConfig<String>(
+routeInformationParser: AppRouteInformationParser(),
+routeInformationProvider: _navState,
+navigatorBuilder: (context, child, navigator) {
+return Navigator(
+pages: [
+KeyedSubtree(
+key: ValueKey(navigator.currentRoute),
+child: child!,
+),
+],
+onPopPage: (route, result) {
+if (!route.didPop(result)) return false;
+_navState.value = _navState.value.copyWith(
+pages: _navState.value.pages.skip(1).toList(),
+);
+return true;
+},
+);
+},
+);
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "RouteInformationParser"},
+    {"level": 3, "type": "heading", "text": "Базовый парсер"},
+    {"text": "<code>RouteInformationParser</code> преобразует URL в состояние приложения и обратно:", "type": "paragraph"},
+    {"content": "class AppRouteInformationParser
+extends RouteInformationParser<String> {
+
+@override
+Future<String> parseRouteInformation(
+RouteInformation informedRoute,
+) async {
+final uri = Uri.parse(informedRoute.location ?? '/');
+
+if (uri.path == '/') {
+return '/';
+} else if (uri.path.startsWith('/product/')) {
+final productId = uri.pathSegments.last;
+return '/product/$productId';
+} else if (uri.path == '/settings') {
+return '/settings';
+} else {
+return '/404';
+}
+}
+
+@override
+RouteInformation? restoreRouteInformation(String configuredRoute) {
+return RouteInformation(location: configuredRoute);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Типизированный парсер"},
+    {"content": "enum AppRoute { home, product, settings, notFound }
+
+class TypedRouteParser
+extends RouteInformationParser<AppRoute> {
+
+@override
+Future<AppRoute> parseRouteInformation(
+RouteInformation informedRoute,
+) async {
+final uri = Uri.parse(informedRoute.location ?? '/');
+
+if (uri.path == '/') {
+return AppRoute.home;
+} else if (uri.path.startsWith('/product/')) {
+return AppRoute.product;
+} else if (uri.path == '/settings') {
+return AppRoute.settings;
+} else {
+return AppRoute.notFound;
+}
+}
+
+@override
+RouteInformation? restoreRouteInformation(AppRoute route) {
+switch (route) {
+case AppRoute.home:
+return const RouteInformation(location: '/');
+case AppRoute.product:
+return const RouteInformation(location: '/product/1');
+case AppRoute.settings:
+return const RouteInformation(location: '/settings');
+case AppRoute.notFound:
+return const RouteInformation(location: '/404');
+}
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "RouteInformationReporter"},
+    {"text": "<code>RouteInformationReporter</code> позволяет приложению сообщать об изменениях маршрута:", "type": "paragraph"},
+    {"content": "class AppRouter {
+static final _reporter = ValueNotifier<RouteInformation>(
+const RouteInformation(location: '/'),
+);
+
+static void navigateTo(String path) {
+_reporter.value = RouteInformation(location: path);
+}
+}
+
+// Использование
+AppRouter.navigateTo('/product/42');", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Declarative Navigator с Page API"},
+    {"level": 3, "type": "heading", "text": "Базовый пример с Page API"},
+    {"content": "class NavigationState {
+final List<Page> pages;
+
+const NavigationState({required this.pages});
+
+NavigationState copyWith({List<Page>? pages}) {
+return NavigationState(pages: pages ?? this.pages);
+}
+}
+
+class MyApp extends StatefulWidget {
+@override
+State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+NavigationState _state = const NavigationState(pages: [
+HomePagePage(),
+]);
+
+@override
+Widget build(BuildContext context) {
+return MaterialApp.router(
+routerConfig: RouterConfig(
+routeInformationParser: TypedRouteParser(),
+routeInformationProvider:
+ValueListenableProvider<NavigationState>(_state),
+navigatorBuilder: (context, child, navigator) {
+return Navigator(
+pages: _state.pages,
+onPopPage: (route, result) {
+if (!route.didPop(result)) return false;
+setState(() {
+_state = _state.copyWith(
+pages: _state.pages.skip(1).toList(),
+);
+});
+return true;
+},
+);
+},
+),
+);
+}
+}
+
+// Кастомная Page
+class HomePagePage extends Page {
+const HomePagePage();
+
+@override
+Route createRoute(BuildContext context) {
+return MaterialPageRoute(
+builder: (context) => const HomePage(),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Page с аргументами"},
+    {"content": "class ProductPage extends Page {
+final String productId;
+
+const ProductPage({required this.productId});
+
+@override
+Route createRoute(BuildContext context) {
+return MaterialPageRoute(
+builder: (context) => ProductScreen(productId: productId),
+settings: RouteSettings(
+arguments: ProductModel.fromJson({
+'id': productId,
+'name': 'Product',
+'price': 99.99,
+}),
+),
+);
+}
+}
+
+// Добавление страницы в стек
+void navigateToProduct(String productId) {
+setState(() {
+_state = NavigationState(
+pages: [
+const HomePagePage(),
+ProductPage(productId: productId),
+],
+);
+});
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Используйте MaterialApp.router</strong> — это самый простой способ подключить Router 2.0.", "<strong>Синхронизируйте состояние с URL</strong> — каждый change навигации должен отражаться в URL.", "<strong>Используйте кастомные Page классы</strong> для переиспользуемой логики маршрутов.", "<strong>Избегайте прямой манипуляции стека</strong> — управляйте через состояние.", "<strong>Используйте go_router для production</strong> — он абстрагирует сложность Navigator 2.0.", "<strong>Тестируйте парсер маршрутов</strong> — убедитесь, что <code>parseRouteInformation</code> и <code>restoreRouteInformation</code> работают корректно."], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Когда использовать Navigator 2.0"},
+    {"text": "| Сценарий | Подход |", "type": "paragraph"},
+    {"text": "|---|---|", "type": "paragraph"},
+    {"text": "| Простая навигация | Navigator 1.0 |", "type": "paragraph"},
+    {"text": "| Deep links | Navigator 2.0 / go_router |", "type": "paragraph"},
+    {"text": "| URL-синхронизация | Navigator 2.0 / go_router |", "type": "paragraph"},
+    {"text": "| Сложная маршрутизация | go_router (рекомендуется) |", "type": "paragraph"},
+    {"text": "| Гибкая кастомизация | Navigator 2.0 |", "type": "paragraph"},
+    {"text": "Navigator 2.0 даёт полный контроль, но требует значительных усилий. Для большинства проектов рекомендуется использовать <strong>go_router</strong>, который предоставляет декларативный API поверх Navigator 2.0.", "type": "paragraph"}
+  ]
+}

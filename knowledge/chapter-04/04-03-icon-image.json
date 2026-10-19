@@ -1,0 +1,209 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Icon, Image — иконки и изображения"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Иконки и изображения — неотъемлемая часть любого пользовательского интерфейса. Flutter предоставляет удобные виджеты для работы с обоими типами контента.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Icon"},
+    {"text": "Виджет <code>Icon</code> отображает иконки из заданного шрифта.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные свойства Icon"},
+    {"text": "| Свойство | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>icon</code> | <code>IconData</code> | Иконка для отображения |", "type": "paragraph"},
+    {"text": "| <code>size</code> | <code>double?</code> | Размер иконки |", "type": "paragraph"},
+    {"text": "| <code>color</code> | <code>Color?</code> | Цвет иконки |", "type": "paragraph"},
+    {"text": "| <code>semanticLabel</code> | <code>String?</code> | Метка для доступности |", "type": "paragraph"},
+    {"text": "| <code>textDirection</code> | <code>TextDirection?</code> | Направление текста |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Класс Icons"},
+    {"text": "Класс <code>Icons</code> содержит тысячи иконок из Google Material Icons:", "type": "paragraph"},
+    {"content": "// Основные иконки
+Icon(Icons.home)
+Icon(Icons.search)
+Icon(Icons.settings)
+Icon(Icons.favorite)
+Icon(Icons.arrow_back)
+Icon(Icons.add)
+Icon(Icons.delete)
+Icon(Icons.edit)
+Icon(Icons.check)
+Icon(Icons.close)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Примеры использования Icon"},
+    {"content": "// Простая иконка
+const Icon(Icons.star, size: 32)
+
+// Иконка с цветом
+const Icon(Icons.favorite, color: Colors.red, size: 24)
+
+// Иконка в строке заголовка
+Row(
+children: [
+const Icon(Icons.menu),
+const SizedBox(width: 8),
+const Text('Меню'),
+],
+)
+
+// Иконка с меткой для доступности
+Icon(
+Icons.close,
+semanticLabel: 'Закрыть',
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Поиск иконок"},
+    {"text": "Все иконки доступны через <code>Icons</code> класс. Список можно найти в <a href=\"https://fonts.google.com/icons\" target=\"_blank\">Material Icons</a>.", "type": "paragraph"},
+    {"content": "// Популярные группы иконок
+// Навигация: menu, arrow_back, arrow_forward, chevron_left
+// Действия: add, delete, edit, share, download, upload
+// Сообщения: chat, mail, notification_important
+// Соцсети: facebook, twitter, instagram, youtube
+// Природа: nature, thunderstorm,wb_sunny", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Image"},
+    {"text": "Виджет <code>Image</code> отображает изображения из различных источников.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Источники изображений"},
+    {"text": "| Конструктор | Источник |", "type": "paragraph"},
+    {"text": "|-------------|----------|", "type": "paragraph"},
+    {"text": "| <code>Image.asset()</code> | Ресурсы приложения |", "type": "paragraph"},
+    {"text": "| <code>Image.network()</code> | URL в интернете |", "type": "paragraph"},
+    {"text": "| <code>Image.memory()</code> | Байтовый массив |", "type": "paragraph"},
+    {"text": "| <code>Image.file()</code> | Файл на устройстве |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Image.asset — Ресурсы приложения"},
+    {"text": "Для использования изображений из ресурсов нужно:", "type": "paragraph"},
+    {"content": "flutter:
+assets:
+- assets/images/", "language": "yaml", "type": "code"},
+    {"content": "// Базовое изображение из ресурсов
+Image.asset('assets/images/logo.png')
+
+// С размером
+Image.asset(
+'assets/images/photo.jpg',
+width: 200,
+height: 200,
+)
+
+// С обработкой ошибок
+Image.asset(
+'assets/images/logo.png',
+errorBuilder: (context, error, stackTrace) {
+return const Icon(Icons.broken_image, size: 48);
+},
+)", "language": "dart", "type": "code"},
+    {"items": ["Создать папку <code>assets/images/</code> в корне проекта", "Добавить в <code>pubspec.yaml</code>:"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Image.network — Изображения из интернета"},
+    {"content": "Image.network(
+'https://example.com/photo.jpg',
+width: 300,
+height: 200,
+fit: BoxFit.cover,
+// Заголовок для кэширования
+headers: {'Authorization': 'Bearer token'},
+// Обработчик ошибок
+errorBuilder: (context, error, stackTrace) {
+return const Icon(Icons.error, size: 48);
+},
+// Прогресс-бар
+loadingBuilder: (context, child, loadingProgress) {
+if (loadingProgress == null) return child;
+return Center(
+child: CircularProgressIndicator(
+value: loadingProgress.expectedTotalBytes != null
+? loadingProgress.cumulativeBytesLoaded /
+loadingProgress.expectedTotalBytes!
+: null,
+),
+);
+},
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Image.memory — Байтовый массив"},
+    {"content": "// Загрузка изображения из Uint8List
+FutureBuilder<Uint8List>(
+future: loadImageBytes(),
+builder: (context, snapshot) {
+if (snapshot.hasData) {
+return Image.memory(snapshot.data!);
+}
+return const CircularProgressIndicator();
+},
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Image.file — Файл на устройстве"},
+    {"content": "// Загрузка изображения из файла
+FutureBuilder<File?>(
+future: pickImageFile(),
+builder: (context, snapshot) {
+if (snapshot.hasData && snapshot.data != null) {
+return Image.file(snapshot.data!);
+}
+return const Text('Нет изображения');
+},
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "BoxFit — Масштабирование изображений"},
+    {"text": "Свойство <code>fit</code> определяет, как изображение вписывается в заданные размеры.", "type": "paragraph"},
+    {"text": "| Значение | Описание |", "type": "paragraph"},
+    {"text": "|----------|----------|", "type": "paragraph"},
+    {"text": "| <code>BoxFit.fill</code> | Растянуть на всю область |", "type": "paragraph"},
+    {"text": "| <code>BoxFit.contain</code> | Вписать целиком (с пустыми областями) |", "type": "paragraph"},
+    {"text": "| <code>BoxFit.cover</code> | Заполнить целиком (с обрезкой) |", "type": "paragraph"},
+    {"text": "| <code>BoxFit.fitWidth</code> | По ширине |", "type": "paragraph"},
+    {"text": "| <code>BoxFit.fitHeight</code> | По высоте |", "type": "paragraph"},
+    {"text": "| <code>BoxFit.none</code> | Без масштабирования |", "type": "paragraph"},
+    {"text": "| <code>BoxFit.scaleDown</code> | Уменьшить, если больше контейнера |", "type": "paragraph"},
+    {"content": "// Заполнение с обрезкой (для фоновых изображений)
+Image.asset(
+'assets/images/hero.jpg',
+width: double.infinity,
+height: 200,
+fit: BoxFit.cover,
+)
+
+// Вписать целиком (для аватаров)
+Image.asset(
+'assets/images/avatar.png',
+width: 80,
+height: 80,
+fit: BoxFit.contain,
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "CachedNetworkImage"},
+    {"text": "Для загрузки изображений из сети с кэшированием используется пакет <code>cached_network_image</code>:", "type": "paragraph"},
+    {"content": "# pubspec.yaml
+dependencies:
+cached_network_image: ^3.3.1", "language": "yaml", "type": "code"},
+    {"content": "import 'package:cached_network_image/cached_network_image.dart';
+
+CachedNetworkImage(
+imageUrl: 'https://example.com/photo.jpg',
+width: 300,
+height: 200,
+fit: BoxFit.cover,
+// Плейсхолдер при загрузке
+placeholder: (context, url) => const Center(
+child: CircularProgressIndicator(),
+),
+// Обработчик ошибок
+errorWidget: (context, url, error) => const Icon(Icons.error),
+// Кэш мемори
+memCacheWidth: 400,
+memCacheHeight: 300,
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Преимущества CachedNetworkImage"},
+    {"items": ["Автоматическое кэширование в память и на диск", "Управление размером кэша (<code>memCacheWidth/Height</code>)", "Простая настройка плейсхолдеров и ошибок", "Поддержка параллельных загрузок"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"content": "Image.asset(
+'assets/images/photo.jpg',
+width: 200,
+height: 150,
+)", "language": "dart", "type": "code"},
+    {"content": "Image.network(
+url,
+errorBuilder: (context, error, stackTrace) {
+return const Icon(Icons.broken_image);
+},
+)", "language": "dart", "type": "code"},
+    {"content": "precacheImage(
+const AssetImage('assets/images/logo.png'),
+context,
+)", "language": "dart", "type": "code"},
+    {"content": "ImageFiltered(
+imageFilter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+child: Image.asset('assets/images/background.jpg'),
+)", "language": "dart", "type": "code"},
+    {"items": ["<strong>Всегда указывайте размеры</strong> для изображений, если это возможно — это помогает Flutter оптимизировать рендеринг:", "<strong>Используйте <code>BoxFit.cover</code></strong> для изображений, которые должны заполнить область, и <code>BoxFit.contain</code> — для тех, что должны быть видны целиком.", "<strong>Всегда добавляйте <code>errorBuilder</code></strong> для сетевых изображений:", "<strong>Используйте <code>CachedNetworkImage</code></strong> для всех сетевых изображений в списках — это значительно улучшает производительность.", "<strong>Оптимизируйте размеры изображений</strong> — используйте сжатые форматы (WebP) и соответствующее разрешение для целевых экранов.", "<strong>Используйте <code>preload</code></strong> для критически важных изображений:", "<strong>Используйте <code>ImageFiltered</code></strong> для эффектов (размытие, инверсия и т.д.):"], "type": "ol"}
+  ]
+}

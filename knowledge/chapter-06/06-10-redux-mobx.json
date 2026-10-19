@@ -1,0 +1,291 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Redux и MobX — альтернативные подходы"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Помимо Provider, Riverpod и BLoC, в Flutter существуют и другие подходы к управлению состоянием. <strong>Redux</strong> — это паттерн, заимствованный из мира JavaScript, а <strong>MobX</strong> — реактивная библиотека с автоматическим отслеживанием изменений.", "type": "paragraph"},
+    {"content": "**Ключевая идея:** Redux обеспечивает предсказуемость через однонаправленный поток данных, а MobX — автоматическую реактивность.", "type": "blockquote"},
+    {"level": 2, "type": "heading", "text": "Redux"},
+    {"level": 3, "type": "heading", "text": "Основные концепции"},
+    {"text": "Redux основан на трёх принципах:", "type": "paragraph"},
+    {"items": ["<strong>Единый источник истины</strong> — всё состояние хранится в одном объекте", "<strong>State read-only</strong> — состояние можно только читать, не изменять напрямую", "<strong>Изменения через чистые функции</strong> — редюсеры описывают, как состояние меняется"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Архитектура Redux"},
+    {"content": "┌─────────────────────────────────────────────────────────┐
+│                    UI Layer (Widgets)                     │
+│  - Отображает состояние                                  │
+│  - Dispatches действия (actions)                         │
+└─────────────────────────────────────────────────────────┘
+↓ Action
+┌─────────────────────────────────────────────────────────┐
+│                   Reducer                                 │
+│  - Чистая функция                                        │
+│  - (state, action) → newState                            │
+│  - Не имеет побочных эффектов                            │
+└─────────────────────────────────────────────────────────┘
+↓ New State
+┌─────────────────────────────────────────────────────────┐
+│                     Store                                 │
+│  - Хранит всё состояние                                   │
+│  - Предоставляет доступ к состоянию                       │
+│  - Уведомляет слушателей при изменении                    │
+└─────────────────────────────────────────────────────────┘", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Установка"},
+    {"content": "# pubspec.yaml
+dependencies:
+flutter:
+sdk: flutter
+flutter_redux: ^0.10.0
+redux: ^5.0.0", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример: Redux Counter"},
+    {"content": "import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:redux/redux.dart';
+
+// 1. Определяем состояние
+class CounterState {
+final int count;
+
+CounterState(this.count);
+
+CounterState copyWith({int? count}) {
+return CounterState(count ?? this.count);
+}
+}
+
+// 2. Определяем действия
+abstract class CounterAction {}
+class IncrementAction extends CounterAction {}
+class DecrementAction extends CounterAction {}
+class ResetAction extends CounterAction {}
+
+// 3. Определяем редюсер
+CounterState counterReducer(CounterState state, dynamic action) {
+if (action is IncrementAction) {
+return CounterState(state.count + 1);
+}
+if (action is DecrementAction) {
+return CounterState(state.count - 1);
+}
+if (action is ResetAction) {
+return CounterState(0);
+}
+return state;
+}
+
+// 4. Создаём Store
+final store = Store<CounterState>(
+counterReducer,
+initialState: CounterState(0),
+);
+
+// 5. Используем в UI
+void main() {
+runApp(
+StoreProvider<CounterState>(
+store: store,
+child: const MyApp(),
+),
+);
+}
+
+class MyApp extends StatelessWidget {
+const MyApp({super.key});
+
+@override
+Widget build(BuildContext context) {
+return MaterialApp(
+title: 'Redux Demo',
+home: Scaffold(
+appBar: AppBar(title: const Text('Redux Counter')),
+body: Center(
+child: StoreConnector<CounterState, int>(
+converter: (store) => store.state.count,
+builder: (context, count) {
+return Text(
+'Счётчик: $count',
+style: const TextStyle(fontSize: 48),
+);
+},
+),
+),
+floatingActionButton: Column(
+crossAxisAlignment: CrossAxisAlignment.end,
+mainAxisAlignment: MainAxisAlignment.end,
+children: [
+FloatingActionButton(
+onPressed: () => store.dispatch(IncrementAction()),
+child: const Icon(Icons.add),
+),
+const SizedBox(height: 8),
+FloatingActionButton(
+onPressed: () => store.dispatch(DecrementAction()),
+child: const Icon(Icons.remove),
+),
+],
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Преимущества и недостатки Redux"},
+    {"text": "| Преимущества | Недостатки |", "type": "paragraph"},
+    {"text": "|---|---|", "type": "paragraph"},
+    {"text": "| Предсказуемость | Много шаблонного кода |", "type": "paragraph"},
+    {"text": "| Простое тестирование | Сложность для начинающих |", "type": "paragraph"},
+    {"text": "| DevTools для отладки | Вертикальное увеличение |", "type": "paragraph"},
+    {"text": "| Time-travel debugging | Не подходит для простых приложений |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "MobX"},
+    {"level": 3, "type": "heading", "text": "Основные концепции"},
+    {"text": "MobX использует реактивное программирование с автоматическим отслеживанием зависимостей:", "type": "paragraph"},
+    {"items": ["<strong>State</strong> — наблюдаемые данные (<code>@observable</code>)", "<strong>Actions</strong> — изменения состояния (<code>@action</code>)", "<strong>Computed values</strong> — вычисляемые значения (<code>@computed</code>)", "<strong>Reactions</strong> — побочные эффекты (<code>@effect</code>, <code>observer</code>)"], "type": "ol"},
+    {"level": 3, "type": "heading", "text": "Установка"},
+    {"content": "# pubspec.yaml
+dependencies:
+flutter:
+sdk: flutter
+mobx: ^2.2.0
+flutter_mobx: ^2.1.0
+
+dev_dependencies:
+build_runner: ^2.4.0
+mobx_codegen: ^2.4.0", "language": "yaml", "type": "code"},
+    {"content": "flutter pub get
+flutter pub run build_runner build", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример: MobX Counter"},
+    {"content": "import 'package:mobx/mobx.dart';
+
+// Создаём store
+class CounterStore = _CounterStore with _$CounterStore;
+
+abstract class _CounterStore with Store {
+@observable
+int count = 0;
+
+@action
+void increment() {
+count++;
+}
+
+@action
+void decrement() {
+count--;
+}
+
+@computed
+String get countMessage => 'Счётчик: $count';
+
+@action
+void reset() {
+count = 0;
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Использование в UI"},
+    {"content": "import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+
+class CounterPage extends StatelessWidget {
+final CounterStore _store = CounterStore();
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('MobX Counter')),
+body: Observer(
+builder: (_) {
+return Center(
+child: Text(
+_store.countMessage,
+style: const TextStyle(fontSize: 48),
+),
+);
+},
+),
+floatingActionButton: FloatingActionButton(
+onPressed: _store.increment,
+child: const Icon(Icons.add),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример: MobX с данными"},
+    {"content": "class TodoStore = _TodoStore with _$TodoStore;
+
+abstract class _TodoStore with Store {
+@observable
+ObservableList<TodoItem> todos = ObservableList.of([]);
+
+@observable
+bool isLoading = false;
+
+@observable
+String? error;
+
+@computed
+int get completedCount => todos.where((t) => t.isCompleted).length;
+
+@computed
+int get remainingCount => todos.where((t) => !t.isCompleted).length;
+
+@action
+Future<void> fetchTodos() async {
+isLoading = true;
+try {
+todos.clear();
+// Загрузка данных
+todos.addAll(await api.getTodos());
+} catch (e) {
+error = e.toString();
+} finally {
+isLoading = false;
+}
+}
+
+@action
+void addTodo(String title) {
+todos.add(TodoItem(title: title, isCompleted: false));
+}
+
+@action
+void toggleTodo(int index) {
+todos[index] = TodoItem(
+title: todos[index].title,
+isCompleted: !todos[index].isCompleted,
+);
+}
+}
+
+class TodoItem {
+final String title;
+final bool isCompleted;
+
+TodoItem({required this.title, required this.isCompleted});
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравподход управления состоянием"},
+    {"text": "| Характеристика | Provider | Riverpod | BLoC | Redux | MobX |", "type": "paragraph"},
+    {"text": "|---|---|---|---|---|---|", "type": "paragraph"},
+    {"text": "| <strong>Сложность</strong> | Низкая | Средняя | Высокая | Высокая | Средняя |", "type": "paragraph"},
+    {"text": "| <strong>Тестируемость</strong> | Средняя | Высокая | Высокая | Высокая | Средняя |", "type": "paragraph"},
+    {"text": "| <strong>Шаблоны</strong> | Мало | Мало | Много | Много | Мало |", "type": "paragraph"},
+    {"text": "| <strong>Производительность</strong> | Высокая | Высокая | Средняя | Средняя | Высокая |", "type": "paragraph"},
+    {"text": "| <strong>Сообщество</strong> | Большое | Растущее | Большое | Умеренное | Умеренное |", "type": "paragraph"},
+    {"text": "| <strong>Flutter-first</strong> | Да | Да | Да | Нет | Нет |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Когда использовать каждый подход"},
+    {"level": 3, "type": "heading", "text": "Используйте Provider, когда:"},
+    {"items": ["Приложение среднего размера", "Нужно простое решение", "Команда знакома с паттерном Observer"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Используйте Riverpod, когда:"},
+    {"items": ["Нужна безопасность типов", "Нужно тестировать без Flutter", "Вы хотите современное решение"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Используйте BLoC, когда:"},
+    {"items": ["Приложение большого размера", "Нужна чёткая архитектура", "Команда знакома с паттерном"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Используйте Redux, когда:"},
+    {"items": ["Команда знает Redux из других проектов", "Нужна максимальная предсказуемость", "Нужен time-travel debugging"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Используйте MobX, когда:"},
+    {"items": ["Нужно автоматическое отслеживание зависимостей", "Приложение имеет сложную реактивность", "Команда хочет меньше шаблонного кода"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"level": 3, "type": "heading", "text": "✅ Делайте"},
+    {"items": ["Выбирайте подход по размеру проекта", "Не переусложняйте архитектуру для простых задач", "Тестируйте бизнес-логику отдельно от UI", "Документируйте архитектуру приложения"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "❌ Не делайте"},
+    {"items": ["Не используйте Redux для простых приложений", "Не смешивайте несколько подходов в одном проекте", "Не создавайте слишком много слоёв абстракции", "Не игнорируйте производительность"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Каждый подход к управлению состоянием имеет свои преимущества и недостатки. Выбор зависит от размера проекта, опыта команды и требований приложения.", "type": "paragraph"},
+    {"content": "**Правило:** Начните с простого решения (setState, Provider) и усложняйте только при необходимости.", "type": "blockquote"}
+  ]
+}

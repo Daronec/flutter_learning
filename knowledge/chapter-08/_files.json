@@ -1,0 +1,40 @@
+﻿{
+    "files":  [
+                  {
+                      "name":  "08-01-form-formkey.md",
+                      "path":  "chapter-08/08-01-form-formkey.md",
+                      "size":  14381
+                  },
+                  {
+                      "name":  "08-02-textfieldtypes.md",
+                      "path":  "chapter-08/08-02-textfieldtypes.md",
+                      "size":  13356
+                  },
+                  {
+                      "name":  "08-03-validators.md",
+                      "path":  "chapter-08/08-03-validators.md",
+                      "size":  11854
+                  },
+                  {
+                      "name":  "08-04-autovalidate.md",
+                      "path":  "chapter-08/08-04-autovalidate.md",
+                      "size":  13122
+                  },
+                  {
+                      "name":  "08-05-input-formatting.md",
+                      "path":  "chapter-08/08-05-input-formatting.md",
+                      "size":  13328
+                  },
+                  {
+                      "name":  "08-06-datepicker-timepicker.md",
+                      "path":  "chapter-08/08-06-datepicker-timepicker.md",
+                      "size":  14643
+                  },
+                  {
+                      "name":  "08-07-form-submit.md",
+                      "path":  "chapter-08/08-07-form-submit.md",
+                      "size":  21065
+                  }
+              ],
+    "chapter":  "chapter-08"
+}

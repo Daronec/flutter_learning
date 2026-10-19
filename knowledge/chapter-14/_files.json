@@ -1,0 +1,55 @@
+﻿{
+    "files":  [
+                  {
+                      "name":  "14-01-performance-toolkit.md",
+                      "path":  "chapter-14/14-01-performance-toolkit.md",
+                      "size":  11697
+                  },
+                  {
+                      "name":  "14-02-widget-optimization.md",
+                      "path":  "chapter-14/14-02-widget-optimization.md",
+                      "size":  15398
+                  },
+                  {
+                      "name":  "14-03-avoid-rebuilds.md",
+                      "path":  "chapter-14/14-03-avoid-rebuilds.md",
+                      "size":  15613
+                  },
+                  {
+                      "name":  "14-04-lazy-loading.md",
+                      "path":  "chapter-14/14-04-lazy-loading.md",
+                      "size":  14314
+                  },
+                  {
+                      "name":  "14-05-image-optimization.md",
+                      "path":  "chapter-14/14-05-image-optimization.md",
+                      "size":  13013
+                  },
+                  {
+                      "name":  "14-06-isolates.md",
+                      "path":  "chapter-14/14-06-isolates.md",
+                      "size":  13312
+                  },
+                  {
+                      "name":  "14-07-shader-compilation.md",
+                      "path":  "chapter-14/14-07-shader-compilation.md",
+                      "size":  11530
+                  },
+                  {
+                      "name":  "14-08-memory-management.md",
+                      "path":  "chapter-14/14-08-memory-management.md",
+                      "size":  12181
+                  },
+                  {
+                      "name":  "14-09-app-size.md",
+                      "path":  "chapter-14/14-09-app-size.md",
+                      "size":  12687
+                  },
+                  {
+                      "name":  "14-10-profiling-tracing.md",
+                      "path":  "chapter-14/14-10-profiling-tracing.md",
+                      "size":  14108
+                  }
+              ],
+    "chapter":  "chapter-14"
+}

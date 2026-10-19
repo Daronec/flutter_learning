@@ -1,0 +1,277 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Row, Column, Stack — основные лейауты"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "<code>Row</code>, <code>Column</code> и <code>Stack</code> — три основных виджета-лейаута в Flutter. Понимание их работы — основа для создания любого пользовательского интерфейса.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Row"},
+    {"text": "Виджет <code>Row</code> размещает дочерние виджеты горизонтально (слева направо).", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные свойства Row"},
+    {"text": "| Свойство | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>mainAxisAlignment</code> | <code>MainAxisAlignment</code> | Распределение по главной оси (горизонталь) |", "type": "paragraph"},
+    {"text": "| <code>crossAxisAlignment</code> | <code>CrossAxisAlignment</code> | Распределение по поперечной оси (вертикаль) |", "type": "paragraph"},
+    {"text": "| <code>mainAxisSize</code> | <code>MainAxisSize</code> | Размер по главной оси |", "type": "paragraph"},
+    {"text": "| <code>textDirection</code> | <code>TextDirection?</code> | Направление текста |", "type": "paragraph"},
+    {"text": "| <code>verticalDirection</code> | <code>VerticalDirection</code> | Порядок размещения по вертикали |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "MainAxisAlignment"},
+    {"text": "| Значение | Описание |", "type": "paragraph"},
+    {"text": "|----------|----------|", "type": "paragraph"},
+    {"text": "| <code>start</code> | Все элементы в начале |", "type": "paragraph"},
+    {"text": "| <code>end</code> | Все элементы в конце |", "type": "paragraph"},
+    {"text": "| <code>center</code> | Центрирование |", "type": "paragraph"},
+    {"text": "| <code>spaceBetween</code> | Равные промежутки между элементами |", "type": "paragraph"},
+    {"text": "| <code>spaceAround</code> | Равные промежутки вокруг элементов |", "type": "paragraph"},
+    {"text": "| <code>spaceEvenly</code> | Равные промежутки везде |", "type": "paragraph"},
+    {"content": "Row(
+mainAxisAlignment: MainAxisAlignment.spaceBetween,
+children: const [
+Text('Левый'),
+Text('Правый'),
+],
+)
+
+Row(
+mainAxisAlignment: MainAxisAlignment.center,
+children: const [
+Text('Центр'),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "CrossAxisAlignment"},
+    {"text": "| Значение | Описание |", "type": "paragraph"},
+    {"text": "|----------|----------|", "type": "paragraph"},
+    {"text": "| <code>start</code> | Выравнивание по началу (сверху) |", "type": "paragraph"},
+    {"text": "| <code>end</code> | Выравнивание по концу (снизу) |", "type": "paragraph"},
+    {"text": "| <code>center</code> | Центрирование по вертикали |", "type": "paragraph"},
+    {"text": "| <code>stretch</code> | Растянуть на всю высоту |", "type": "paragraph"},
+    {"text": "| <code>baseline</code> | Выравнивание по базовой линии текста |", "type": "paragraph"},
+    {"content": "Row(
+crossAxisAlignment: CrossAxisAlignment.center,
+children: const [
+Icon(Icons.star, size: 40),
+SizedBox(width: 8),
+Text('Большая иконка'),
+],
+)
+
+Row(
+crossAxisAlignment: CrossAxisAlignment.stretch,
+children: const [
+Icon(Icons.star),
+Text('Растянутый'),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "MainAxisSize"},
+    {"text": "| Значение | Описание |", "type": "paragraph"},
+    {"text": "|----------|----------|", "type": "paragraph"},
+    {"text": "| <code>max</code> | Row занимает всю доступную ширину (по умолчанию) |", "type": "paragraph"},
+    {"text": "| <code>min</code> | Row занимает только пространство, необходимое детям |", "type": "paragraph"},
+    {"content": "// Row занимает всю ширину (children выровнены по центру)
+Row(
+mainAxisSize: MainAxisSize.max,
+mainAxisAlignment: MainAxisAlignment.center,
+children: const [Text('Центр')],
+)
+
+// Row занимает только пространство детей
+Row(
+mainAxisSize: MainAxisSize.min,
+children: const [Text('Минимальная ширина')],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Column"},
+    {"text": "Виджет <code>Column</code> размещает дочерние виджеты вертикально (сверху вниз). Использует те же свойства, что и <code>Row</code>, но оси поменяны местами.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные свойства Column"},
+    {"text": "| Свойство | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>mainAxisAlignment</code> | <code>MainAxisAlignment</code> | Распределение по главной оси (вертикаль) |", "type": "paragraph"},
+    {"text": "| <code>crossAxisAlignment</code> | <code>CrossAxisAlignment</code> | Распределение по поперечной оси (горизонталь) |", "type": "paragraph"},
+    {"text": "| <code>mainAxisSize</code> | <code>MainAxisSize</code> | Размер по главной оси |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Пример Column"},
+    {"content": "Column(
+mainAxisAlignment: MainAxisAlignment.center,
+crossAxisAlignment: CrossAxisAlignment.center,
+children: const [
+Icon(Icons.home, size: 48),
+SizedBox(height: 8),
+Text('Главная страница', style: TextStyle(fontSize: 18)),
+SizedBox(height: 4),
+Text('Добро пожаловать', style: TextStyle(color: Colors.grey)),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "VerticalDirection"},
+    {"text": "| Значение | Описание |", "type": "paragraph"},
+    {"text": "|----------|----------|", "type": "paragraph"},
+    {"text": "| <code>down</code> | Размещение сверху вниз (по умолчанию) |", "type": "paragraph"},
+    {"text": "| <code>up</code> | Размещение снизу вверх |", "type": "paragraph"},
+    {"content": "Column(
+verticalDirection: VerticalDirection.up,
+crossAxisAlignment: CrossAxisAlignment.stretch,
+children: const [
+Text('Первый внизу'),
+Text('Второй выше'),
+Text('Третий наверху'),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Stack"},
+    {"text": "Виджет <code>Stack</code> размещает дочерние виджеты друг поверх друга (слоями).", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные свойства Stack"},
+    {"text": "| Свойство | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>alignment</code> | <code>AlignmentGeometry</code> | Выравнивание дочерних виджетов |", "type": "paragraph"},
+    {"text": "| <code>textDirection</code> | <code>TextDirection?</code> | Направление текста |", "type": "paragraph"},
+    {"text": "| <code>fit</code> | <code>StackFit</code> | Размер дочерних виджетов |", "type": "paragraph"},
+    {"text": "| <code>overflow</code> | <code>StackOverflow</code> | Поведение при переполнении |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "StackFit"},
+    {"text": "| Значение | Описание |", "type": "paragraph"},
+    {"text": "|----------|----------|", "type": "paragraph"},
+    {"text": "| <code>loose</code> | Дочерние виджеты сохраняют свои размеры |", "type": "paragraph"},
+    {"text": "| <code>expand</code> | Дочерние виджеты растягиваются до размера Stack |", "type": "paragraph"},
+    {"text": "| <code>passthrough</code> | Размер Stack определяется детьми |", "type": "paragraph"},
+    {"content": "Stack(
+fit: StackFit.loose,
+children: const [
+Text('Первый слой'),
+Text('Второй слой'),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Alignment в Stack"},
+    {"content": "// Выравнивание по левому верхнему углу (по умолчанию)
+Stack(
+alignment: Alignment.topLeft,
+children: [
+Container(width: 200, height: 200, color: Colors.blue),
+const Icon(Icons.star, size: 32, color: Colors.yellow),
+],
+)
+
+// Выравнивание по центру
+Stack(
+alignment: Alignment.center,
+children: [
+Container(width: 200, height: 200, color: Colors.blue),
+const Icon(Icons.star, size: 32, color: Colors.yellow),
+],
+)
+
+// Выравнивание по правому нижнему углу
+Stack(
+alignment: Alignment.bottomRight,
+children: [
+Container(width: 200, height: 200, color: Colors.blue),
+const Icon(Icons.favorite, size: 24, color: Colors.red),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Positioned — позиционирование в Stack"},
+    {"text": "Виджет <code>Positioned</code> позволяет точно разместить дочерний элемент внутри <code>Stack</code>:", "type": "paragraph"},
+    {"content": "Stack(
+children: [
+Container(
+width: 200,
+height: 200,
+color: Colors.blue,
+),
+Positioned(
+top: 10,
+left: 10,
+child: const Icon(Icons.star, size: 32, color: Colors.yellow),
+),
+Positioned(
+bottom: 10,
+right: 10,
+child: Container(
+padding: const EdgeInsets.all(4),
+decoration: BoxDecoration(
+color: Colors.red,
+borderRadius: BorderRadius.circular(8),
+),
+child: const Text(
+'3',
+style: TextStyle(color: Colors.white, fontSize: 12),
+),
+),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Примеры комбинирования"},
+    {"level": 3, "type": "heading", "text": "Карточка товара"},
+    {"content": "Container(
+decoration: BoxDecoration(
+color: Colors.white,
+borderRadius: BorderRadius.circular(12),
+boxShadow: [
+BoxShadow(
+color: Colors.black.withOpacity(0.1),
+blurRadius: 8,
+),
+],
+),
+child: Column(
+crossAxisAlignment: CrossAxisAlignment.start,
+children: [
+Stack(
+children: [
+Image.asset(
+'assets/images/product.jpg',
+height: 160,
+width: double.infinity,
+fit: BoxFit.cover,
+),
+Positioned(
+top: 8,
+right: 8,
+child: Container(
+padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+decoration: BoxDecoration(
+color: Colors.red,
+borderRadius: BorderRadius.circular(4),
+),
+child: const Text(
+'-20%',
+style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+),
+),
+),
+],
+),
+Padding(
+padding: const EdgeInsets.all(12),
+child: Column(
+crossAxisAlignment: CrossAxisAlignment.start,
+children: [
+const Text(
+'Название товара',
+style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+),
+const SizedBox(height: 4),
+Row(
+mainAxisAlignment: MainAxisAlignment.spaceBetween,
+children: [
+const Text(
+'1 200 ₽',
+style: TextStyle(fontSize: 18, color: Colors.blue),
+),
+const Icon(Icons.favorite_border, color: Colors.grey),
+],
+),
+],
+),
+),
+],
+),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"content": "Wrap(
+spacing: 8,
+runSpacing: 4,
+children: List.generate(20, (i) => Chip(label: Text('$i'))),
+)", "language": "dart", "type": "code"},
+    {"content": "LayoutBuilder(
+builder: (context, constraints) {
+if (constraints.maxWidth > 600) {
+return Row(children: [...]);
+}
+return Column(children: [...]);
+},
+)", "language": "dart", "type": "code"},
+    {"items": ["<strong>Используйте <code>Expanded</code> внутри <code>Row</code>/<code>Column</code></strong> для распределения свободного пространства.", "<strong>Используйте <code>mainAxisSize: MainAxisSize.min</code></strong> для <code>Row</code>/<code>Column</code>, когда хотите, чтобы они занимали только пространство детей.", "<strong>Используйте <code>Stack</code> с <code>Positioned</code></strong> для точного позиционирования элементов поверх друг друга.", "<strong>Избегайте вложенных <code>Row</code>/<code>Column</code></strong> — используйте <code>Stack</code> или <code>CustomMultiChildLayout</code> для сложных лейаутов.", "<strong>Используйте <code>wrap</code>-виджеты</strong> (<code>Wrap</code>, <code>FlexWrap</code>) для автоматического переноса элементов:", "<strong>Используйте <code>LayoutBuilder</code></strong> для адаптивных лейаутов:"], "type": "ol"}
+  ]
+}

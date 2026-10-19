@@ -1,0 +1,55 @@
+﻿{
+    "files":  [
+                  {
+                      "name":  "13-01-test-types.md",
+                      "path":  "chapter-13/13-01-test-types.md",
+                      "size":  13394
+                  },
+                  {
+                      "name":  "13-02-test-package.md",
+                      "path":  "chapter-13/13-02-test-package.md",
+                      "size":  15256
+                  },
+                  {
+                      "name":  "13-03-flutter-test.md",
+                      "path":  "chapter-13/13-03-flutter-test.md",
+                      "size":  18673
+                  },
+                  {
+                      "name":  "13-04-matchers.md",
+                      "path":  "chapter-13/13-04-matchers.md",
+                      "size":  15911
+                  },
+                  {
+                      "name":  "13-05-mock-objects.md",
+                      "path":  "chapter-13/13-05-mock-objects.md",
+                      "size":  14690
+                  },
+                  {
+                      "name":  "13-06-test-bloc.md",
+                      "path":  "chapter-13/13-06-test-bloc.md",
+                      "size":  17109
+                  },
+                  {
+                      "name":  "13-07-widget-testing.md",
+                      "path":  "chapter-13/13-07-widget-testing.md",
+                      "size":  18439
+                  },
+                  {
+                      "name":  "13-08-golden-tests.md",
+                      "path":  "chapter-13/13-08-golden-tests.md",
+                      "size":  17488
+                  },
+                  {
+                      "name":  "13-09-integration-tests.md",
+                      "path":  "chapter-13/13-09-integration-tests.md",
+                      "size":  19161
+                  },
+                  {
+                      "name":  "13-10-cicd-testing.md",
+                      "path":  "chapter-13/13-10-cicd-testing.md",
+                      "size":  15690
+                  }
+              ],
+    "chapter":  "chapter-13"
+}

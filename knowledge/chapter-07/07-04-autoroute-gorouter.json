@@ -1,0 +1,369 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "AutoRoute и go_router — декларативная маршрутизация"},
+    {"text": "go_router и AutoRoute — это популярные библиотеки для декларативной маршрутизации в Flutter. Обе абстрагируют сложность Navigator 2.0, предоставляя удобный API.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "go_router: основы"},
+    {"level": 3, "type": "heading", "text": "Установка"},
+    {"content": "# pubspec.yaml
+dependencies:
+flutter:
+sdk: flutter
+go_router: ^14.0.0", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Базовая конфигурация"},
+    {"content": "import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+// Экраны
+class HomeScreen extends StatelessWidget {
+const HomeScreen({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Home')),
+body: Center(
+child: Column(
+mainAxisAlignment: MainAxisAlignment.center,
+children: [
+ElevatedButton(
+onPressed: () => context.go('/details/42'),
+child: const Text('Перейти к деталям'),
+),
+ElevatedButton(
+onPressed: () => context.push('/settings'),
+child: const Text('Настройки'),
+),
+],
+),
+),
+);
+}
+}
+
+class DetailsScreen extends StatelessWidget {
+final int productId;
+
+const DetailsScreen({super.key, required this.productId});
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: Text('Product #$productId')),
+body: Center(child: Text('Товар ID: $productId')),
+);
+}
+}
+
+class SettingsScreen extends StatelessWidget {
+const SettingsScreen({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Settings')),
+body: const Center(child: Text('Настройки')),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Конфигурация Router"},
+    {"content": "final _navigatorKey = GlobalKey<NavigatorState>();
+
+final GoRouter router = GoRouter(
+// Начальный маршрут
+initialLocation: '/',
+
+// Ключ навигатора для доступа извне
+navigatorKey: _navigatorKey,
+
+// Маршруты
+routes: [
+// Главный маршрут
+GoRoute(
+path: '/',
+name: 'home',
+builder: (context, state) => const HomeScreen(),
+routes: [
+// Вложенный маршрут
+GoRoute(
+path: 'details/:productId',
+name: 'details',
+builder: (context, state) {
+final productId = int.parse(
+state.pathParameters['productId']!,
+);
+return DetailsScreen(productId: productId);
+},
+),
+],
+),
+
+// Отдельный маршрут
+GoRoute(
+path: '/settings',
+name: 'settings',
+builder: (context, state) => const SettingsScreen(),
+),
+],
+
+// Обработка несуществующих маршрутов
+errorBuilder: (context, state) => Scaffold(
+body: Center(
+child: Column(
+mainAxisAlignment: MainAxisAlignment.center,
+children: [
+const Text('404', style: TextStyle(fontSize: 48)),
+const Text('Страница не найдена'),
+ElevatedButton(
+onPressed: () => context.go('/'),
+child: const Text('На главную'),
+),
+],
+),
+),
+),
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Подключение к приложению"},
+    {"content": "void main() {
+runApp(
+MaterialApp.router(
+title: 'GoRouter Demo',
+routerConfig: router,
+// Важно для работы go_router
+debugShowCheckedModeBanner: false,
+),
+);
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "go_router: конфигурация"},
+    {"level": 3, "type": "heading", "text": "Навигация через context"},
+    {"content": "// Переход на маршрут (заменяет текущий)
+context.go('/settings');
+
+// Push нового маршрута в стек
+context.push('/details/42');
+
+// PushReplacement
+context.pushReplacement('/settings');
+
+// Навигация по имени
+context.goNamed('home');
+context.pushNamed('details', pathParameters: {'productId': '42'});
+
+// Проверка текущего маршрута
+print(context.currentLocation); // '/details/42'
+print(context.currentRouteName); // 'details'
+
+// Проверка параметров
+final state = GoRouterState.of(context);
+final productId = state.pathParameters['productId'];
+final extra = state.extra as ProductModel?;", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Shell routes для вложенной навигации"},
+    {"content": "GoRoute(
+path: '/',
+redirect: (context, state) {
+// Перенаправление если не авторизован
+if (!isAuthenticated && state.matchedLocation != '/login') {
+return '/login';
+}
+return null;
+},
+routes: [
+ShellRoute(
+builder: (context, state, child) {
+return MainNavigation(child: child);
+},
+routes: [
+GoRoute(
+path: 'home',
+name: 'home',
+builder: (context, state) => const HomeScreen(),
+),
+GoRoute(
+path: 'profile/:id',
+name: 'profile',
+builder: (context, state) {
+return ProfileScreen(
+userId: state.pathParameters['id']!,
+);
+},
+),
+],
+),
+],
+),
+
+// MainNavigation — общий виджет для shell
+class MainNavigation extends StatelessWidget {
+final Widget child;
+
+const MainNavigation({super.key, required this.child});
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+body: child,
+bottomNavigationBar: BottomNavigationBar(
+currentIndex: _getCurrentIndex(context),
+items: const [
+BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+],
+onTap: (index) {
+if (index == 0) context.go('/home');
+if (index == 1) context.go('/profile/123');
+},
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Extra — передача дополнительных данных"},
+    {"content": "// Push с extra данными
+context.push(
+'/details/42',
+extra: ProductModel(id: 42, name: 'Laptop'),
+);
+
+// Получение extra на целевом экране
+class DetailsScreen extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+final ProductModel? product =
+GoRouterState.of(context).extra as ProductModel?;
+
+return Scaffold(
+appBar: AppBar(title: Text(product?.name ?? 'Unknown')),
+body: Center(child: Text('Цена: \\\\$${product?.price ?? 0}')),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Deep Links"},
+    {"content": "final GoRouter router = GoRouter(
+initialLocation: '/',
+routes: [
+GoRoute(
+path: '/product/:id',
+redirect: (context, state) {
+// Проверка deep link извне
+if (state.uri.queryParameters.containsKey('source')) {
+print('Deep link from: ${state.uri.queryParameters['source']}');
+}
+return null;
+},
+builder: (context, state) => ProductScreen(
+productId: state.pathParameters['id']!,
+),
+),
+],
+);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "AutoRoute: основы"},
+    {"level": 3, "type": "heading", "text": "Установка"},
+    {"content": "# pubspec.yaml
+dependencies:
+auto_route: ^8.0.0
+
+dev_dependencies:
+auto_route_generator: ^8.0.0
+build_runner: ^2.4.0", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Определение маршрутов (annotations)"},
+    {"content": "// routes.dart
+import 'package:auto_route/auto_route.dart';
+
+@AutoRouterConfig(replaceInRouteName: 'Screen,Route')
+class AppRouter extends $AppRouter {
+@override
+List<AutoRoute> get routes => [
+// Главный маршрут
+AutoRoute(
+page: home,
+path: '/',
+initial: true,
+),
+// Детали продукта
+AutoRoute(
+page: productRoute,
+path: '/product/:productId',
+),
+// Настройки
+AutoRoute(
+page: settingsRoute,
+path: '/settings',
+),
+// 404
+AutoRoute(
+page: notFoundRoute,
+path: '/404',
+),
+];
+}
+
+// Генерация:
+// flutter pub run build_runner build", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Использование сгенерированного роутера"},
+    {"content": "void main() {
+runApp(
+MaterialApp(
+navigatorKey: AppRouter.navigatorKey,
+home: const MyHomePage(),
+),
+);
+}
+
+class MyHomePage extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+final router = AppRouter.of(context);
+
+return Scaffold(
+body: Center(
+child: Column(
+mainAxisAlignment: MainAxisAlignment.center,
+children: [
+ElevatedButton(
+onPressed: () => router.pushProductRoute(productId: '42'),
+child: const Text('Детали'),
+),
+ElevatedButton(
+onPressed: () => router.pushSettingsRoute(),
+child: const Text('Настройки'),
+),
+],
+),
+),
+);
+}
+}
+
+// Навигация в экранах
+class ProductScreen extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+final router = AppRouter.of(context);
+final productId = router.currentConfiguration.pathParameters['productId'];
+
+return Scaffold(
+appBar: AppBar(
+title: Text('Product #$productId'),
+leading: IconButton(
+icon: const Icon(Icons.arrow_back),
+onPressed: () => router.pop(),
+),
+),
+body: Center(child: Text('ID: $productId')),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение go_router и AutoRoute"},
+    {"text": "| Характеристика | go_router | AutoRoute |", "type": "paragraph"},
+    {"text": "|---|---|---|", "type": "paragraph"},
+    {"text": "| Автор | Flutter team | Community |", "type": "paragraph"},
+    {"text": "| Конфигурация | Код | Annotations |", "type": "paragraph"},
+    {"text": "| Deep links | Встроенная | Встроенная |", "type": "paragraph"},
+    {"text": "| Shell routes | Да | Да |", "type": "paragraph"},
+    {"text": "| Генерация кода | Нет | Да (build_runner) |", "type": "paragraph"},
+    {"text": "| Флаги | Да | Да |", "type": "paragraph"},
+    {"text": "| Анимации | Встроенные | Встроенные |", "type": "paragraph"},
+    {"text": "| Обслуживание | Активное | Активное |", "type": "paragraph"},
+    {"text": "| Размер | Меньше | Больше (генерация) |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Используйте go_router для новых проектов</strong> — он поддерживается Flutter team и не требует генерации кода.", "<strong>Используйте ShellRoute</strong> для вложенных навигаций с общим UI (BottomNavigationBar).", "<strong>Используйте <code>redirect</code></strong> для авторизации и перенаправлений.", "<strong>Используйте <code>errorBuilder</code></strong> для обработки 404 страниц.", "<strong>Используйте <code>extra</code></strong> для передачи дополнительных данных вместо аргументов.", "<strong>Избегайте глубокой вложенности</strong> маршрутов — это усложняет отладку.", "<strong>Используйте именованные маршруты</strong> для лучшей читаемости и тестирования.", "<strong>Для AutoRoute</strong> — используйте <code>replaceInRouteName</code> для удобных имён страниц."], "type": "ol"}
+  ]
+}

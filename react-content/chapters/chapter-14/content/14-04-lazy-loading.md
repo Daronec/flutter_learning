@@ -1,0 +1,493 @@
+# 14-04. Lazy Loading — Ленивая загрузка данных
+
+## Введение
+
+Lazy Loading (ленивая загрузка) — это техника, при которой данные или виджеты загружаются только тогда, когда они нужны пользователю. В Flutter это особенно важно для списков с большим количеством элементов, так как позволяет значительно уменьшить потребление памяти и улучшить производительность.
+
+## ListView.builder
+
+### Что такое ListView.builder
+
+`ListView.builder` — это конструктор, который создаёт виджеты лениво, только для видимых элементов. Это означает, что если список содержит 1000 элементов, но на экране видно только 10, то будет создано только около 10 виджетов.
+
+### Синтаксис ListView.builder
+
+```dart
+ListView.builder({
+  Key? key,
+  ScrollPhysics? physics,
+  ScrollController? controller,
+  AxisDirection axisDirection = AxisDirection.down,
+  bool reverse = false,
+  ScrollBehavior? scrollBehavior,
+  bool primary,
+  ScrollDragStart dragStartBehavior = DragStartBehavior.start,
+  bool keyboardDismissBehavior = ScrollKeyboardDismissBehavior.manual,
+  bool cacheExtent,
+  int? semanticChildCount,
+  double? itemExtent,
+  bool addAutomaticKeepAlives = true,
+  bool addRepaintBoundaries = true,
+  bool addSemanticIndexes = true,
+  bool shrinkWrap = false,
+  double? padding,
+  // Required
+  IndexedWidgetBuilder itemBuilder,
+  int? itemCount,
+})
+```
+
+### Базовый пример
+
+```dart
+class SimpleListView extends StatelessWidget {
+  final List<String> items = List.generate(1000, (index) => 'Item $index');
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(items[index]),
+        );
+      },
+    );
+  }
+}
+```
+
+### Оптимизация itemBuilder
+
+```dart
+class OptimizedListView extends StatelessWidget {
+  final List<User> users;
+
+  const OptimizedListView({super.key, required this.users});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: users.length,
+      // itemBuilder вызывается только для видимых элементов
+      itemBuilder: (context, index) {
+        return _UserTile(user: users[index]);
+      },
+    );
+  }
+}
+
+class _UserTile extends StatelessWidget {
+  final User user;
+
+  const _UserTile({required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundImage: NetworkImage(user.avatarUrl),
+      ),
+      title: Text(user.name),
+      subtitle: Text(user.email),
+    );
+  }
+}
+
+class User {
+  final String name;
+  final String email;
+  final String avatarUrl;
+
+  const User({
+    required this.name,
+    required this.email,
+    required this.avatarUrl,
+  });
+}
+```
+
+### Параметр itemExtent
+
+`itemExtent` задаёт фиксированную высоту элемента, что позволяет Flutter пропустить фазу layout:
+
+```dart
+class FixedHeightListView extends StatelessWidget {
+  final List<String> items = List.generate(1000, (index) => 'Item $index');
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: items.length,
+      // Фиксированная высота — Flutter пропускает layout для каждого элемента
+      itemExtent: 50,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(items[index]),
+        );
+      },
+    );
+}
+```
+
+### Сравнение: ListView vs ListView.builder
+
+| Характеристика | ListView | ListView.builder |
+|---------------|----------|-----------------|
+| Создание элементов | Все сразу | Только видимые |
+| Память | O(n) | O(видимых) |
+| Начальная загрузка | Медленная | Быстрая |
+| Прокрутка длинного списка | Плохая | Отличная |
+| Использование | < 100 элементов | 100+ элементов |
+
+```dart
+// Плохо — создаёт все элементы сразу
+ListView(
+  children: List.generate(10000, (index) {
+    return ListTile(title: Text('Item $index'));
+  }),
+);
+
+// Хорошо — создаёт элементы лениво
+ListView.builder(
+  itemCount: 10000,
+  itemBuilder: (context, index) {
+    return ListTile(title: Text('Item $index'));
+  },
+);
+```
+
+## GridView.builder
+
+### Базовое использование
+
+```dart
+class ProductGrid extends StatelessWidget {
+  final List<Product> products;
+
+  const ProductGrid({super.key, required this.products});
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      padding: const EdgeInsets.all(8),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,  // 2 колонки
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+        childAspectRatio: 0.75,
+      ),
+      itemCount: products.length,
+      itemBuilder: (context, index) {
+        return ProductCard(product: products[index]);
+      },
+    );
+  }
+}
+
+class ProductCard extends StatelessWidget {
+  final Product product;
+
+  const ProductCard({super.key, required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.network(product.imageUrl),
+          const SizedBox(height: 8),
+          Text(product.name),
+          Text('\$${product.price}'),
+        ],
+      ),
+    );
+  }
+}
+
+class Product {
+  final String name;
+  final double price;
+  final String imageUrl;
+
+  const Product({
+    required this.name,
+    required this.price,
+    required this.imageUrl,
+  });
+}
+```
+
+### SliverGridDelegateWithMaxCrossAxisExtent
+
+```dart
+class ResponsiveGrid extends StatelessWidget {
+  final List<String> items;
+
+  const ResponsiveGrid({super.key, required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 200,  // Максимальная ширина элемента
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+        childAspectRatio: 1,
+      ),
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        return Container(
+          color: Colors.primaries[index % Colors.primaries.length],
+          child: Center(child: Text(items[index])),
+        );
+      },
+    );
+  }
+}
+```
+
+## PaginatedDataTable
+
+### Использование PaginatedDataTable
+
+`PaginatedDataTable` — это виджет для отображения табличных данных с пагинацией:
+
+```dart
+class UserTable extends StatefulWidget {
+  final List<User> users;
+
+  const UserTable({super.key, required this.users});
+
+  @override
+  State<UserTable> createState() => _UserTableState();
+}
+
+class _UserTableState extends State<UserTable> {
+  late PageController _pageController;
+  int _rowsPerPage = RowsPerPage.defaultRow;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(
+      initialPage: _currentPage,
+      pageCount: (widget.users.length / _rowsPerPage).ceil(),
+    );
+  }
+
+  List<User> get _paginatedUsers {
+    final start = _currentPage * _rowsPerPage;
+    final end = (start + _rowsPerPage).clamp(0, widget.users.length);
+    return widget.users.sublist(start, end);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PaginatedDataTable(
+      header: const Text('Users'),
+      rowsPerPage: _rowsPerPage,
+      onRowsPerPageChanged: (value) {
+        setState(() {
+          _rowsPerPage = value ?? RowsPerPage.defaultRow;
+        });
+      },
+      columns: const [
+        DataColumn(label: Text('Name')),
+        DataColumn(label: Text('Email')),
+        DataColumn(label: Text('Role')),
+      ],
+      source: _UserDataTableSource(
+        users: _paginatedUsers,
+      ),
+    );
+  }
+}
+
+class _UserDataTableSource extends DataTableSource {
+  final List<User> users;
+
+  _UserDataTableSource({required this.users});
+
+  @override
+  DataRow? getRow(int index) {
+    if (index >= users.length) return null;
+    final user = users[index];
+    return DataRow.byIndex(
+      index: index,
+      cells: [
+        DataCell(Text(user.name)),
+        DataCell(Text(user.email)),
+        DataCell(Text(user.role)),
+      ],
+    );
+  }
+
+  @override
+  int get rowCount => users.length;
+
+  @override
+  bool get isRowCountApproximate => false;
+}
+```
+
+## Infinite Scroll (Бесконечная прокрутка)
+
+### Реализация подгрузки при скролле
+
+```dart
+class InfiniteScrollList extends StatefulWidget {
+  const InfiniteScrollList({super.key});
+
+  @override
+  State<InfiniteScrollList> createState() => _InfiniteScrollListState();
+}
+
+class _InfiniteScrollListState extends State<InfiniteScrollList> {
+  final List<String> _items = [];
+  final ScrollController _controller = ScrollController();
+  bool _isLoading = false;
+  int _currentPage = 0;
+  final int _pageSize = 20;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMoreItems();
+    _controller.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_onScroll);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_controller.position.pixels >=
+        _controller.position.maxScrollExtent * 0.8) {
+      _loadMoreItems();
+    }
+  }
+
+  Future<void> _loadMoreItems() async {
+    if (_isLoading) return;
+
+    setState(() => _isLoading = true);
+
+    // Имитация загрузки с сервера
+    await Future.delayed(const Duration(seconds: 1));
+
+    final newItems = List.generate(
+      _pageSize,
+      (index) => 'Item ${_currentPage * _pageSize + index}',
+    );
+
+    setState(() {
+      _items.addAll(newItems);
+      _currentPage++;
+      _isLoading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Infinite Scroll')),
+      body: ListView.builder(
+        controller: _controller,
+        itemCount: _isLoading ? _items.length + 1 : _items.length,
+        itemBuilder: (context, index) {
+          if (index >= _items.length) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+          return ListTile(
+            title: Text(_items[index]),
+          );
+        },
+      ),
+    );
+  }
+}
+```
+
+### Использование pull_to_refresh
+
+```dart
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+class RefreshableList extends StatefulWidget {
+  const RefreshableList({super.key});
+
+  @override
+  State<RefreshableList> createState() => _RefreshableListState();
+}
+
+class _RefreshableListState extends State<RefreshableList> {
+  final List<String> _items = List.generate(50, (i) => 'Item $i');
+  final RefreshController _refreshController = RefreshController();
+
+  Future<void> _onRefresh() async {
+    await Future.delayed(const Duration(seconds: 2));
+    setState(() {
+      _items.insert(0, 'New Item');
+    });
+    _refreshController.refreshCompleted();
+  }
+
+  Future<void> _onLoading() async {
+    await Future.delayed(const Duration(seconds: 1));
+    setState(() {
+      _items.addAll(List.generate(20, (i) => 'New Item ${_items.length + i}'));
+    });
+    _refreshController.loadComplete();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SmartRefresher(
+      controller: _refreshController,
+      onRefresh: _onRefresh,
+      onLoading: _onLoading,
+      child: ListView.builder(
+        itemCount: _items.length,
+        itemBuilder: (context, index) {
+          return ListTile(title: Text(_items[index]));
+        },
+      ),
+    );
+  }
+}
+```
+
+## Best Practices
+
+### Рекомендации по ленивой загрузке
+
+1. **Всегда используйте `ListView.builder` для списков > 100 элементов**
+2. **Используйте `itemExtent` для фиксированной высоты** — это пропускает фазу layout
+3. **Кэшируйте изображения** — используйте `cached_network_image`
+4. **Реализуйте бесконечную прокрутку** для больших наборов данных
+5. **Используйте `shrinkWrap: false`** (по умолчанию) — `shrinkWrap: true` отключает оптимизацию
+6. **Избегайте вложенных ListView** — это ломает ленивую загрузку
+
+### Чек-лист оптимизации списков
+
+- [ ] Используется `ListView.builder` вместо `ListView`
+- [ ] Элементы не содержат тяжёлых изображений без кэширования
+- [ ] Реализована бесконечная прокрутка для больших списков
+- [ ] `itemExtent` используется для фиксированной высоты
+- [ ] Нет вложенных `ListView`
+- [ ] `shrinkWrap` не используется без необходимости
+
+## Заключение
+
+Lazy Loading — это критически важная техника для создания производительных приложений с большими списками. `ListView.builder` и `GridView.builder` позволяют загружать элементы только по мере необходимости, что значительно снижает потребление памяти и улучшает начальную загрузку.

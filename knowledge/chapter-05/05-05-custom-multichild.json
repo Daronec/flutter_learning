@@ -1,0 +1,286 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "CustomMultiChildLayout — кастомные лейауты"},
+    {"text": "<code>CustomMultiChildLayout</code> позволяет создавать полностью кастомные макеты с помощью <code>LayoutDelegate</code>. Это самый гибкий инструмент для управления расположением дочерних элементов в Flutter.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Что такое CustomMultiChildLayout"},
+    {"text": "<code>CustomMultiChildLayout</code> — это виджет, который размещает нескольких дочерних элементов, используя пользовательскую логику позиционирования, определяемую <code>LayoutDelegate</code>.", "type": "paragraph"},
+    {"content": "CustomMultiChildLayout(
+delegate: MyLayoutDelegate(),
+children: [
+LayoutId(id: 'header', child: Container(color: Colors.red)),
+LayoutId(id: 'body', child: Container(color: Colors.green)),
+LayoutId(id: 'footer', child: Container(color: Colors.blue)),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "LayoutId — идентификация дочерних элементов"},
+    {"text": "Каждый child в <code>CustomMultiChildLayout</code> должен быть обернут в <code>LayoutId</code>, который присваивает ему уникальный идентификатор:", "type": "paragraph"},
+    {"content": "LayoutId({
+required this.id,
+required Widget child,
+this.optional = false,
+})", "language": "dart", "type": "code"},
+    {"text": "| Параметр | Описание |", "type": "paragraph"},
+    {"text": "|----------|----------|", "type": "paragraph"},
+    {"text": "| <code>id</code> | Уникальный идентификатор для поиска в <code>LayoutDelegate</code> |", "type": "paragraph"},
+    {"text": "| <code>child</code> | Размещаемый виджет |", "type": "paragraph"},
+    {"text": "| <code>optional</code> | Если true, child не вызовет ошибку при отсутствии в delegate |", "type": "paragraph"},
+    {"content": "CustomMultiChildLayout(
+delegate: MyLayoutDelegate(),
+children: [
+LayoutId(
+id: 'background',
+child: Container(color: Colors.grey.shade200),
+),
+LayoutId(
+id: 'title',
+child: const Text('Заголовок'),
+),
+LayoutId(
+id: 'content',
+child: const Text('Содержимое'),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "LayoutDelegate — логика размещения"},
+    {"text": "<code>LayoutDelegate</code> — это абстрактный класс, который определяет, как размещаются дочерние элементы:", "type": "paragraph"},
+    {"content": "class MyLayoutDelegate extends MultiChildLayoutDelegate {
+@override
+void performLayout(Size size) {
+// size — доступный размер для всего макета
+// LayoutId('id') — получение child по идентификатору
+// childSize['id'] — размер child после layout
+// placeChild('id', Offset(x, y)) — размещение child
+}
+
+@override
+bool shouldRelayout(covariant MultiChildLayoutDelegate oldDelegate) {
+// Возвращает true, если delegate изменился и layout нужно пересчитать
+return false;
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Методы LayoutDelegate"},
+    {"text": "| Метод | Описание |", "type": "paragraph"},
+    {"text": "|-------|----------|", "type": "paragraph"},
+    {"text": "| <code>hasChild(String id)</code> | Проверка наличия child с данным id |", "type": "paragraph"},
+    {"text": "| <code>childSize(String id)</code> | Получение размера child |", "type": "paragraph"},
+    {"text": "| <code>placeChild(String id, Offset location)</code> | Размещение child в точке location |", "type": "paragraph"},
+    {"text": "| <code>size</code> | Доступный размер для layout |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Пример: простой delegate"},
+    {"content": "class SimpleLayoutDelegate extends MultiChildLayoutDelegate {
+@override
+void performLayout(Size size) {
+// Размещаем child 'top' вверху по центру
+if (hasChild('top')) {
+final topSize = layoutChild(
+'top',
+BoxConstraints.loose(size),
+);
+placeChild(
+'top',
+Offset(
+(size.width - topSize.width) / 2,
+0,
+),
+);
+}
+
+// Размещаем child 'bottom' внизу по центру
+if (hasChild('bottom')) {
+final bottomSize = layoutChild(
+'bottom',
+BoxConstraints.loose(size),
+);
+placeChild(
+'bottom',
+Offset(
+(size.width - bottomSize.width) / 2,
+size.height - bottomSize.height,
+),
+);
+}
+}
+
+@override
+bool shouldRelayout(covariant MultiChildLayoutDelegate oldDelegate) => false;
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Практический пример: карточка с заголовком и контентом"},
+    {"content": "class CardLayoutDelegate extends MultiChildLayoutDelegate {
+final double headerHeight;
+final double padding;
+
+CardLayoutDelegate({
+this.headerHeight = 60,
+this.padding = 16,
+});
+
+@override
+void performLayout(Size size) {
+// Layout заголовка
+if (hasChild('header')) {
+final headerSize = layoutChild(
+'header',
+BoxConstraints(
+maxWidth: size.width,
+maxHeight: headerHeight,
+),
+);
+placeChild('header', Offset.zero);
+}
+
+// Layout контента
+if (hasChild('content')) {
+final contentSize = layoutChild(
+'content',
+BoxConstraints(
+maxWidth: size.width - padding * 2,
+maxHeight: size.height - headerHeight - padding,
+),
+);
+placeChild(
+'content',
+Offset(
+padding,
+headerHeight + padding,
+),
+);
+}
+}
+
+@override
+bool shouldRelayout(covariant MultiChildLayoutDelegate oldDelegate) {
+return oldDelegate is! CardLayoutDelegate ||
+oldDelegate.headerHeight != headerHeight ||
+oldDelegate.padding != padding;
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Использование"},
+    {"content": "CustomMultiChildLayout(
+delegate: CardLayoutDelegate(headerHeight: 80, padding: 20),
+children: [
+LayoutId(
+id: 'header',
+child: Container(
+color: Colors.blue,
+child: const Center(
+child: Text(
+'Заголовок карточки',
+style: TextStyle(color: Colors.white, fontSize: 20),
+),
+),
+),
+),
+LayoutId(
+id: 'content',
+child: Container(
+color: Colors.white,
+child: const Padding(
+padding: EdgeInsets.all(8.0),
+child: Text('Основной контент карточки...'),
+),
+),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Пример: кастомная сетка"},
+    {"content": "class GridLayoutDelegate extends MultiChildLayoutDelegate {
+final int crossAxisCount;
+final double crossAxisSpacing;
+final double mainAxisSpacing;
+
+GridLayoutDelegate({
+this.crossAxisCount = 2,
+this.crossAxisSpacing = 8,
+this.mainAxisSpacing = 8,
+});
+
+@override
+void performLayout(Size size) {
+// Вычисляем размер одной ячейки
+final cellWidth = (size.width - (crossAxisCount - 1) * crossAxisSpacing) / crossAxisCount;
+final cellConstraints = BoxConstraints(maxWidth: cellWidth);
+
+int index = 0;
+int row = 0;
+int col = 0;
+
+for (final childId in _childIds) {
+final childSize = layoutChild(childId, cellConstraints);
+
+final x = col * (cellWidth + crossAxisSpacing);
+final y = row * (childSize.height + mainAxisSpacing);
+
+placeChild(childId, Offset(x, y));
+
+col++;
+if (col >= crossAxisCount) {
+col = 0;
+row++;
+}
+index++;
+}
+}
+
+List<String> get _childIds => [
+for (int i = 0; i < 6; i++) 'item_$i',
+];
+
+@override
+bool shouldRelayout(covariant MultiChildLayoutDelegate oldDelegate) {
+return oldDelegate is! GridLayoutDelegate ||
+oldDelegate.crossAxisCount != crossAxisCount ||
+oldDelegate.crossAxisSpacing != crossAxisSpacing ||
+oldDelegate.mainAxisSpacing != mainAxisSpacing;
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Пример: диаграмма с линиями (Canvas)"},
+    {"content": "class DiagramLayoutDelegate extends MultiChildLayoutDelegate {
+final Size canvasSize;
+
+DiagramLayoutDelegate(this.canvasSize);
+
+@override
+void performLayout(Size size) {
+// Layout элементов диаграммы
+if (hasChild('node1')) {
+layoutChild('node1', BoxConstraints.tight(const Size(80, 40)));
+placeChild('node1', Offset(10, 10));
+}
+
+if (hasChild('node2')) {
+layoutChild('node2', BoxConstraints.tight(const Size(80, 40)));
+placeChild('node2', Offset(200, 10));
+}
+
+if (hasChild('node3')) {
+layoutChild('node3', BoxConstraints.tight(const Size(80, 40)));
+placeChild('node3', Offset(100, 100));
+}
+}
+
+@override
+bool shouldRelayout(covariant MultiChildLayoutDelegate oldDelegate) => false;
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "LayoutStrategy — упрощённые стратегии"},
+    {"text": "Для простых случаев можно использовать готовые стратегии через <code>CustomMultiChildLayout</code> с <code>ListBody</code>:", "type": "paragraph"},
+    {"content": "// Вертикальный список
+ListBody(
+children: [
+Text('Первый'),
+Text('Второй'),
+Text('Третий'),
+],
+)
+
+// Горизонтальный список
+ListBody(
+direction: Axis.horizontal,
+children: [
+Text('Первый'),
+Text('Второй'),
+Text('Третий'),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<code>CustomMultiChildLayout</code> — мощный, но сложный инструмент; используйте его только когда стандартные виджеты не подходят", "Всегда реализуйте <code>shouldRelayout</code> корректно — возвращайте <code>true</code> при изменении параметров delegate", "Используйте <code>hasChild()</code> для проверки наличия child перед его layout", "<code>layoutChild()</code> возвращает размер child — используйте его для расчёта позиций", "Храните параметры delegate в полях класса для корректной реализации <code>shouldRelayout</code>", "Для простых макетов предпочитайте <code>Stack</code>, <code>Row</code>, <code>Column</code> вместо <code>CustomMultiChildLayout</code>", "Комбинируйте <code>CustomMultiChildLayout</code> с <code>LayoutBuilder</code> для адаптивных кастомных макетов", "Используйте <code>ClipRect</code> для предотвращения выхода child за пределы layout"], "type": "ul"}
+  ]
+}

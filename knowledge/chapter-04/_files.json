@@ -1,0 +1,55 @@
+﻿{
+    "files":  [
+                  {
+                      "name":  "04-01-container-padding.md",
+                      "path":  "chapter-04/04-01-container-padding.md",
+                      "size":  8098
+                  },
+                  {
+                      "name":  "04-02-text-widget.md",
+                      "path":  "chapter-04/04-02-text-widget.md",
+                      "size":  9207
+                  },
+                  {
+                      "name":  "04-03-icon-image.md",
+                      "path":  "chapter-04/04-03-icon-image.md",
+                      "size":  8971
+                  },
+                  {
+                      "name":  "04-04-row-column-stack.md",
+                      "path":  "chapter-04/04-04-row-column-stack.md",
+                      "size":  10781
+                  },
+                  {
+                      "name":  "04-05-expanded-flexible.md",
+                      "path":  "chapter-04/04-05-expanded-flexible.md",
+                      "size":  9557
+                  },
+                  {
+                      "name":  "04-06-listview-gridview.md",
+                      "path":  "chapter-04/04-06-listview-gridview.md",
+                      "size":  11394
+                  },
+                  {
+                      "name":  "04-07-single-child-scroll.md",
+                      "path":  "chapter-04/04-07-single-child-scroll.md",
+                      "size":  10382
+                  },
+                  {
+                      "name":  "04-08-buttons.md",
+                      "path":  "chapter-04/04-08-buttons.md",
+                      "size":  7973
+                  },
+                  {
+                      "name":  "04-09-textfield.md",
+                      "path":  "chapter-04/04-09-textfield.md",
+                      "size":  13640
+                  },
+                  {
+                      "name":  "04-10-checkbox-radio-switch.md",
+                      "path":  "chapter-04/04-10-checkbox-radio-switch.md",
+                      "size":  11010
+                  }
+              ],
+    "chapter":  "chapter-04"
+}

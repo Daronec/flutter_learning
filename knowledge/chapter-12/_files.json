@@ -1,0 +1,55 @@
+﻿{
+    "files":  [
+                  {
+                      "name":  "12-01-animation-system.md",
+                      "path":  "chapter-12/12-01-animation-system.md",
+                      "size":  9046
+                  },
+                  {
+                      "name":  "12-02-implicit-animations.md",
+                      "path":  "chapter-12/12-02-implicit-animations.md",
+                      "size":  9066
+                  },
+                  {
+                      "name":  "12-03-animatedbuilder.md",
+                      "path":  "chapter-12/12-03-animatedbuilder.md",
+                      "size":  10762
+                  },
+                  {
+                      "name":  "12-04-explicit-animations.md",
+                      "path":  "chapter-12/12-04-explicit-animations.md",
+                      "size":  11019
+                  },
+                  {
+                      "name":  "12-05-hero-animations.md",
+                      "path":  "chapter-12/12-05-hero-animations.md",
+                      "size":  10207
+                  },
+                  {
+                      "name":  "12-06-page-transitions.md",
+                      "path":  "chapter-12/12-06-page-transitions.md",
+                      "size":  9060
+                  },
+                  {
+                      "name":  "12-07-lottie.md",
+                      "path":  "chapter-12/12-07-lottie.md",
+                      "size":  10123
+                  },
+                  {
+                      "name":  "12-08-physics.md",
+                      "path":  "chapter-12/12-08-physics.md",
+                      "size":  8109
+                  },
+                  {
+                      "name":  "12-09-rive.md",
+                      "path":  "chapter-12/12-09-rive.md",
+                      "size":  10607
+                  },
+                  {
+                      "name":  "12-10-animationconfig.md",
+                      "path":  "chapter-12/12-10-animationconfig.md",
+                      "size":  14120
+                  }
+              ],
+    "chapter":  "chapter-12"
+}

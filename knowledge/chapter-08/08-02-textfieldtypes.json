@@ -1,0 +1,364 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "TextFormField и типы полей ввода"},
+    {"text": "TextFormField — это виджет для ввода текста, интегрированный с Form. Он поддерживает различные типы клавиатур, автозаполнение и форматирование ввода.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "TextInputType значения"},
+    {"level": 3, "type": "heading", "text": "Основные типы ввода"},
+    {"text": "| Тип | Описание | Клавиатура |", "type": "paragraph"},
+    {"text": "|---|---|---|", "type": "paragraph"},
+    {"text": "| <code>text</code> | Обычный текст | Полная клавиатура |", "type": "paragraph"},
+    {"text": "| <code>multiline</code> | Многострочный текст | Полная + Enter |", "type": "paragraph"},
+    {"text": "| <code>number</code> | Числа | Цифры + символы |", "type": "paragraph"},
+    {"text": "| <code>email</code> | Email адрес | С символом @ |", "type": "paragraph"},
+    {"text": "| <code>url</code> | URL адрес | С символом / |", "type": "paragraph"},
+    {"text": "| <code>phone</code> | Номер телефона | Цифры + * # |", "type": "paragraph"},
+    {"text": "| <code>datetime</code> | Дата и время | Цифры |", "type": "paragraph"},
+    {"text": "| <code>name</code> | Имя пользователя | Полная клавиатура |", "type": "paragraph"},
+    {"text": "| <code>streetAddress</code> | Адрес | Полная клавиатура |", "type": "paragraph"},
+    {"text": "| <code>none</code> | Без клавиатуры | Закрытая |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Примеры использования"},
+    {"content": "// Обычный текст
+TextFormField(
+decoration: const InputDecoration(labelText: 'Имя'),
+keyboardType: TextInputType.text,
+);
+
+// Многострочный текст
+TextFormField(
+decoration: const InputDecoration(labelText: 'Комментарий'),
+keyboardType: TextInputType.multiline,
+maxLines: null, // Разрешить неограниченное количество строк
+);
+
+// Числовой ввод
+TextFormField(
+decoration: const InputDecoration(labelText: 'Возраст'),
+keyboardType: TextInputType.number,
+);
+
+// Email
+TextFormField(
+decoration: const InputDecoration(
+labelText: 'Email',
+prefixIcon: Icon(Icons.email),
+),
+keyboardType: TextInputType.emailAddress,
+);
+
+// URL
+TextFormField(
+decoration: const InputDecoration(
+labelText: 'Веб-сайт',
+prefixIcon: Icon(Icons.link),
+),
+keyboardType: TextInputType.url,
+);
+
+// Телефон
+TextFormField(
+decoration: const InputDecoration(
+labelText: 'Телефон',
+prefixIcon: Icon(Icons.phone),
+),
+keyboardType: TextInputType.phone,
+);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Типы клавиатуры (KeyboardType)"},
+    {"level": 3, "type": "heading", "text": "Enhanced Keyboard Types"},
+    {"text": "| Тип | Описание | Платформа |", "type": "paragraph"},
+    {"text": "|---|---|---|", "type": "paragraph"},
+    {"text": "| <code>visiblePassword</code> | Пароль с видимыми символами | iOS 14+ |", "type": "paragraph"},
+    {"text": "| <code>visiblePassword</code> | Пароль (обычный) | Android |", "type": "paragraph"},
+    {"text": "| <code>text</code> с <code>obscureText</code> | Скрытый пароль | Обе |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Парольные поля"},
+    {"content": "// Обычный пароль (скрытый)
+TextFormField(
+decoration: const InputDecoration(
+labelText: 'Пароль',
+prefixIcon: Icon(Icons.lock),
+border: OutlineInputBorder(),
+),
+obscureText: true,
+keyboardType: TextInputType.visiblePassword,
+);
+
+// Пароль с переключением видимости
+class PasswordField extends StatefulWidget {
+const PasswordField({super.key});
+
+@override
+State<PasswordField> createState() => _PasswordFieldState();
+}
+
+class _PasswordFieldState extends State<PasswordField> {
+bool _obscureText = true;
+
+@override
+Widget build(BuildContext context) {
+return TextFormField(
+decoration: InputDecoration(
+labelText: 'Пароль',
+prefixIcon: const Icon(Icons.lock),
+border: const OutlineInputBorder(),
+suffixIcon: IconButton(
+icon: Icon(
+_obscureText ? Icons.visibility : Icons.visibility_off,
+),
+onPressed: () {
+setState(() {
+_obscureText = !_obscureText;
+});
+},
+),
+),
+obscureText: _obscureText,
+keyboardType: TextInputType.visiblePassword,
+validator: (value) {
+if (value == null || value.isEmpty) {
+return 'Введите пароль';
+}
+if (value.length < 8) {
+return 'Минимум 8 символов';
+}
+return null;
+},
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "AutoFill — автозаполнение"},
+    {"level": 3, "type": "heading", "text": "Настройка AutoFill"},
+    {"text": "AutoFill использует системные данные пользователя для автоматического заполнения полей:", "type": "paragraph"},
+    {"content": "TextFormField(
+decoration: const InputDecoration(
+labelText: 'Имя',
+border: OutlineInputBorder(),
+),
+autofillHints: const [AutofillHints.name],
+keyboardType: TextInputType.name,
+);
+
+TextFormField(
+decoration: const InputDecoration(
+labelText: 'Email',
+border: OutlineInputBorder(),
+),
+autofillHints: const [AutofillHints.email],
+keyboardType: TextInputType.emailAddress,
+);
+
+TextFormField(
+decoration: const InputDecoration(
+labelText: 'Пароль',
+border: OutlineInputBorder(),
+),
+autofillHints: const [AutofillHints.password],
+obscureText: true,
+keyboardType: TextInputType.visiblePassword,
+);
+
+TextFormField(
+decoration: const InputDecoration(
+labelText: 'Телефон',
+border: OutlineInputBorder(),
+),
+autofillHints: const [AutofillHints.telephoneNumber],
+keyboardType: TextInputType.phone,
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Группы автозаполнения"},
+    {"content": "// Форма с группой автозаполнения
+class AutofillForm extends StatelessWidget {
+const AutofillForm({super.key});
+
+@override
+Widget build(BuildContext context) {
+return Form(
+child: AutofillGroup(
+child: Column(
+children: [
+TextFormField(
+autofillHints: const [AutofillHints.name],
+decoration: const InputDecoration(
+labelText: 'Имя',
+border: OutlineInputBorder(),
+),
+),
+const SizedBox(height: 16),
+TextFormField(
+autofillHints: const [AutofillHints.email],
+decoration: const InputDecoration(
+labelText: 'Email',
+border: OutlineInputBorder(),
+),
+keyboardType: TextInputType.emailAddress,
+),
+const SizedBox(height: 16),
+TextFormField(
+autofillHints: const [AutofillHints.telephoneNumber],
+decoration: const InputDecoration(
+labelText: 'Телефон',
+border: OutlineInputBorder(),
+),
+keyboardType: TextInputType.phone,
+),
+const SizedBox(height: 16),
+TextFormField(
+autofillHints: const [AutofillHints.postalCode],
+decoration: const InputDecoration(
+labelText: 'Почтовый индекс',
+border: OutlineInputBorder(),
+),
+keyboardType: TextInputType.number,
+),
+],
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Доступные AutofillHints"},
+    {"text": "| Hint | Описание |", "type": "paragraph"},
+    {"text": "|---|---|", "type": "paragraph"},
+    {"text": "| <code>name</code> | Имя пользователя |", "type": "paragraph"},
+    {"text": "| <code>email</code> | Email адрес |", "type": "paragraph"},
+    {"text": "| <code>password</code> | Пароль |", "type": "paragraph"},
+    {"text": "| <code>telephoneNumber</code> | Номер телефона |", "type": "paragraph"},
+    {"text": "| <code>postalCode</code> | Почтовый индекс |", "type": "paragraph"},
+    {"text": "| <code>streetAddress</code> | Полный адрес |", "type": "paragraph"},
+    {"text": "| <code>username</code> | Имя пользователя (логин) |", "type": "paragraph"},
+    {"text": "| <code>newPassword</code> | Новый пароль |", "type": "paragraph"},
+    {"text": "| <code>oneTimeCode</code> | Код подтверждения (SMS) |", "type": "paragraph"},
+    {"text": "| <code>ccName</code> | Имя на карте |", "type": "paragraph"},
+    {"text": "| <code>ccNumber</code> | Номер карты |", "type": "paragraph"},
+    {"text": "| <code>ccExpiration</code> | Срок действия карты |", "type": "paragraph"},
+    {"text": "| <code>ccCSC</code> | CVV код карты |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Пример: Полная форма с различными типами полей"},
+    {"content": "class CompleteForm extends StatefulWidget {
+const CompleteForm({super.key});
+
+@override
+State<CompleteForm> createState() => _CompleteFormState();
+}
+
+class _CompleteFormState extends State<CompleteForm> {
+final _formKey = GlobalKey<FormState>();
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Полная форма')),
+body: SingleChildScrollView(
+padding: const EdgeInsets.all(16),
+child: Form(
+key: _formKey,
+child: AutofillGroup(
+child: Column(
+children: [
+// Имя
+TextFormField(
+autofillHints: const [AutofillHints.name],
+keyboardType: TextInputType.name,
+decoration: const InputDecoration(
+labelText: 'Полное имя',
+prefixIcon: Icon(Icons.person),
+border: OutlineInputBorder(),
+),
+validator: (value) =>
+value == null || value.isEmpty ? 'Введите имя' : null,
+),
+const SizedBox(height: 16),
+
+// Email
+TextFormField(
+autofillHints: const [AutofillHints.email],
+keyboardType: TextInputType.emailAddress,
+decoration: const InputDecoration(
+labelText: 'Email',
+prefixIcon: Icon(Icons.email),
+border: OutlineInputBorder(),
+),
+validator: (value) {
+if (value == null || value.isEmpty) {
+return 'Введите email';
+}
+if (!value.contains('@')) {
+return 'Некорректный email';
+}
+return null;
+},
+),
+const SizedBox(height: 16),
+
+// Телефон
+TextFormField(
+autofillHints: const [AutofillHints.telephoneNumber],
+keyboardType: TextInputType.phone,
+decoration: const InputDecoration(
+labelText: 'Телефон',
+prefixIcon: Icon(Icons.phone),
+border: OutlineInputBorder(),
+),
+validator: (value) {
+if (value == null || value.isEmpty) {
+return 'Введите телефон';
+}
+return null;
+},
+),
+const SizedBox(height: 16),
+
+// Пароль
+TextFormField(
+autofillHints: const [AutofillHints.newPassword],
+obscureText: true,
+keyboardType: TextInputType.visiblePassword,
+decoration: const InputDecoration(
+labelText: 'Пароль',
+prefixIcon: Icon(Icons.lock),
+border: OutlineInputBorder(),
+),
+validator: (value) {
+if (value == null || value.isEmpty) {
+return 'Введите пароль';
+}
+if (value.length < 8) {
+return 'Минимум 8 символов';
+}
+return null;
+},
+),
+const SizedBox(height: 16),
+
+// Комментарий (многострочный)
+TextFormField(
+keyboardType: TextInputType.multiline,
+maxLines: null,
+decoration: const InputDecoration(
+labelText: 'Комментарий',
+prefixIcon: Icon(Icons.comment),
+border: OutlineInputBorder(),
+alignLabelWithHint: true,
+),
+),
+const SizedBox(height: 24),
+
+ElevatedButton(
+onPressed: () {
+if (_formKey.currentState!.validate()) {
+ScaffoldMessenger.of(context).showSnackBar(
+const SnackBar(content: Text('Форма валидна!')),
+);
+}
+},
+child: const Text('Отправить'),
+),
+],
+),
+),
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Используйте <code>autofillHints</code></strong> — это улучшает UX и ускоряет заполнение форм.", "<strong>Выбирайте правильный <code>keyboardType</code></strong> ��� это уменьшает количество ошибок ввода.", "<strong>Используйте <code>obscureText: true</code></strong> для полей пароля.", "<strong>Используйте <code>prefixIcon</code> и <code>suffixIcon</code></strong> для визуальных подсказок.", "<strong>Используйте <code>alignLabelWithHint: true</code></strong> для многострочных полей.", "<strong>Используйте <code>maxLines: null</code></strong> для неограниченного многострочного ввода.", "<strong>Группируйте поля в <code>AutofillGroup</code></strong> — это помогает системе автозаполнения.", "<strong>Для числового ввода</strong> — рассмотрите использование <code>TextInputFormatter</code> для форматирования."], "type": "ol"}
+  ]
+}

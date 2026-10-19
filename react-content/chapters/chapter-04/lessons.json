@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "chapter-04",
+  "lessons": [
+    {
+      "id": "04-01-container-padding",
+      "slug": "container-padding",
+      "title": "Container, Padding, SizedBox — отступы и размеры",
+      "order": 1,
+      "file": "content/04-01-container-padding.md",
+      "summary": "В Flutter существует несколько виджетов для управления отступами и размерами элементов интерфейса. Понимание различий между ними — ключ к созданию чистого и предсказуемого кода.",
+      "tags": []
+    },
+    {
+      "id": "04-02-text-widget",
+      "slug": "text-widget",
+      "title": "Text, RichText, TextSpan — работа с текстом",
+      "order": 2,
+      "file": "content/04-02-text-widget.md",
+      "summary": "Текст — один из самых распространённых элементов в мобильных приложениях. Flutter предоставляет несколько виджетов для работы с текстом: Text, RichText и TextSpan.",
+      "tags": []
+    },
+    {
+      "id": "04-03-icon-image",
+      "slug": "icon-image",
+      "title": "Icon, Image — иконки и изображения",
+      "order": 3,
+      "file": "content/04-03-icon-image.md",
+      "summary": "Иконки и изображения — неотъемлемая часть любого пользовательского интерфейса. Flutter предоставляет удобные виджеты для работы с обоими типами контента.",
+      "tags": []
+    },
+    {
+      "id": "04-04-row-column-stack",
+      "slug": "row-column-stack",
+      "title": "Row, Column, Stack — основные лейауты",
+      "order": 4,
+      "file": "content/04-04-row-column-stack.md",
+      "summary": "Row, Column и Stack — три основных виджета-лейаута в Flutter. Понимание их работы — основа для создания любого пользовательского интерфейса.",
+      "tags": []
+    },
+    {
+      "id": "04-05-expanded-flexible",
+      "slug": "expanded-flexible",
+      "title": "Expanded, Flexible — распределение пространства",
+      "order": 5,
+      "file": "content/04-05-expanded-flexible.md",
+      "summary": "Expanded и Flexible — виджеты для управления распределением свободного пространства в Row, Column и Flex. Они позволяют создавать адаптивные интерфейсы, которые подстраиваются под размер экрана.",
+      "tags": []
+    },
+    {
+      "id": "04-06-listview-gridview",
+      "slug": "listview-gridview",
+      "title": "ListView, GridView — списки и сетки",
+      "order": 6,
+      "file": "content/04-06-listview-gridview.md",
+      "summary": "ListView и GridView — одни из самых используемых виджетов в Flutter. Они предназначены для отображения списков и сеток данных, часто больших объёмов.",
+      "tags": []
+    },
+    {
+      "id": "04-07-single-child-scroll",
+      "slug": "single-child-scroll",
+      "title": "SingleChildScrollView — скроллинг контента",
+      "order": 7,
+      "file": "content/04-07-single-child-scroll.md",
+      "summary": "SingleChildScrollView — это виджет, который позволяет прокручивать содержимое, которое не помещается на экране. В отличие от ListView, он создаёт все дочерние виджеты сразу, поэтому подходит для небольших объёмов контента.",
+      "tags": []
+    },
+    {
+      "id": "04-08-buttons",
+      "slug": "buttons",
+      "title": "TextButton, ElevatedButton, OutlinedButton — кнопки",
+      "order": 8,
+      "file": "content/04-08-buttons.md",
+      "summary": "Кнопки — основной элемент взаимодействия с приложением. Начиная с Material 3, Flutter предоставляет три основных типа кнопок: ElevatedButton, TextButton и OutlinedButton.",
+      "tags": []
+    },
+    {
+      "id": "04-09-textfield",
+      "slug": "textfield",
+      "title": "TextField, TextFormField — поля ввода",
+      "order": 9,
+      "file": "content/04-09-textfield.md",
+      "summary": "TextField и TextFormField — основные виджеты для ввода текста в Flutter. TextFormField — это обёртка над TextField для использования в формах.",
+      "tags": []
+    },
+    {
+      "id": "04-10-checkbox-radio-switch",
+      "slug": "checkbox-radio-switch",
+      "title": "Checkbox, Radio, Switch — элементы выбора",
+      "order": 10,
+      "file": "content/04-10-checkbox-radio-switch.md",
+      "summary": "Checkbox, Radio и Switch — стандартные элементы пользовательского интерфейса для выбора вариантов. Каждый из них предназначен для определённого типа выбора.",
+      "tags": []
+    }
+  ]
+}

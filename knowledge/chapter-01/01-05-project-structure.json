@@ -1,0 +1,112 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "1.5 Структура Flutter-проекта: папки и файлы"},
+    {"level": 2, "type": "heading", "text": "Обзор структуры"},
+    {"text": "При создании нового Flutter-проекта (<code>flutter create my_app</code>) генерируется следующая структура:", "type": "paragraph"},
+    {"content": "my_app/
+├── .idea/                    # Конфигурации для IDE (Android Studio, VS Code)
+├── android/                  # Нативный Android-проект (Kotlin/Java)
+├── ios/                      # Нативный iOS-проект (Swift/Objective-C)
+├── linux/                    # Нативный Linux-проект (C++)
+├── macos/                    # Нативный macOS-проект (C++)
+├── web/                      # Файлы для веб-версии (index.html, favicon)
+├── windows/                  # Нативный Windows-проект (C++)
+├── lib/                      # Исходный код Dart (основная часть проекта)
+│   └── main.dart             # Точка входа приложения
+├── test/                     # Unit и widget тесты
+├── pubspec.yaml              # Конфигурация проекта и зависимости
+├── pubspec.lock              # Зафиксированные версии зависимостей
+├── README.md                 # Документация проекта
+└── analysis_options.yaml     # Правила статического анализа (lints)", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Ключевые файлы и директории"},
+    {"level": 3, "type": "heading", "text": "lib/ — основная директория кода"},
+    {"content": "lib/
+├── main.dart                 # Точка входа (функция main())
+├── home/                     # Пример: группировка по экранам
+│   ├── home_page.dart
+│   ├── home_viewmodel.dart
+│   └── widgets/
+├── shared/                   # Общие компоненты
+│   ├── widgets/              # Переиспользуемые виджеты
+│   └── theme/                # Тема приложения
+└── utils/                    # Утилиты и хелперы", "language": "", "type": "code"},
+    {"text": "<strong>main.dart</strong> — точка входа:", "type": "paragraph"},
+    {"content": "import 'package:flutter/material.dart';
+
+void main() {
+runApp(const MyApp());
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "pubspec.yaml — конфигурация проекта"},
+    {"text": "Основные разделы:", "type": "paragraph"},
+    {"content": "name: my_app                  # Имя пакета (уникальное, в нижнем регистре)
+description: My Flutter app   # Описание
+version: 1.0.0+1              # Версия + build number
+
+environment:
+sdk: '>=3.0.0 <4.0.0'       # Совместимость с версией Dart
+flutter: \">=3.0.0\"          # Совместимость с версией Flutter
+
+dependencies:
+flutter:
+sdk: flutter
+http: ^1.1.0                # Внешняя зависимость
+
+dev_dependencies:
+flutter_test:
+sdk: flutter
+lint: ^2.0.0                # Dev-зависимости
+
+flutter:
+uses-material-design: true   # Material Icons
+assets:
+- assets/images/           # Статические файлы
+fonts:
+- family: CustomFont
+fonts:
+- asset: assets/fonts/CustomFont-Regular.ttf", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "android/ — Android-часть"},
+    {"content": "android/
+├── app/
+│   ├── src/main/
+│   │   ├── AndroidManifest.xml   # Манифест Android-приложения
+│   │   ├── java/ или kotlin/     # Нативный код
+│   │   └── res/                  # Ресурсы (drawable, layout, values)
+│   ├── build.gradle.kts          # Gradle-конфигурация
+│   └── proguard-rules.pro        # Правила обфускации
+├── build.gradle.kts              # Корневой Gradle
+└── local.properties              # Путь к Android SDK", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "ios/ — iOS-часть"},
+    {"content": "ios/
+├── Runner/
+│   ├── Runner.xcodeproj          # Xcode проект
+│   ├── AppDelegate.swift         # Точка входа iOS
+│   └── Info.plist                # Конфигурация iOS
+├── Flutter/
+│   └── App.framework             # Скомпилированный Flutter-движок
+└── Podfile                       # CocoaPods зависимости", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Дополнительные файлы"},
+    {"level": 3, "type": "heading", "text": "pubspec.lock"},
+    {"items": ["Автоматически генерируемый файл", "Фиксирует точные версии всех зависимостей", "Не редактируется вручную", "Должен быть в <code>.gitignore</code> (в некоторых проектах)"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "analysis_options.yaml"},
+    {"content": "include: package:flutter_lints/flutter.yaml
+
+linter:
+rules:
+prefer_const_constructors: true
+avoid_print: true", "language": "yaml", "type": "code"},
+    {"items": ["Правила статического анализа Dart", "Lint-правила для проверки кода", "Можно настроить строгость проверки"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": ".gitignore"},
+    {"content": "# Flutter/Dart
+.dart_tool/
+.packages
+build/
+*.iml
+.idea/", "language": "gitignore", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Платформозависимые директории"},
+    {"items": ["<strong>android/</strong>, <strong>ios/</strong> — для нативной интеграции и публикации", "<strong>linux/</strong>, <strong>macos/</strong>, <strong>windows/</strong> — для десктоп-версии", "<strong>web/</strong> — для веб-версии"], "type": "ul"},
+    {"content": "**Важно**: Основная логика приложения находится в `lib/`. Платформозависимые папки генерируются автоматически и обычно не требуют ручного редактирования.", "type": "blockquote"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Понимание структуры проекта помогает:", "type": "paragraph"},
+    {"items": ["Организовать код по модулям", "Правильно управлять зависимостями", "Настроить ресурсы и ассеты", "Публиковать приложение в магазины"], "type": "ul"}
+  ]
+}

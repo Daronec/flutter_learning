@@ -1,0 +1,263 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Анимационная система Flutter"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Анимации в Flutter построены на основе системы <code>Animation</code> и <code>Controller</code>. Понимание этой системы — ключ к созданию плавных и производительных анимаций.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Основные компоненты"},
+    {"text": "| Компонент | Назначение |", "type": "paragraph"},
+    {"text": "|-----------|-----------|", "type": "paragraph"},
+    {"text": "| <code>Animation<double></code> | Объект, генерирующий значения |", "type": "paragraph"},
+    {"text": "| <code>AnimationController</code> | Управляет анимацией (вперёд/назад) |", "type": "paragraph"},
+    {"text": "| <code>Curve</code> | Определяет траекторию изменения |", "type": "paragraph"},
+    {"text": "| <code>Tween</code> | Преобразует диапазон значений |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Animation"},
+    {"text": "<code>Animation<T></code> — это абстрактный класс, который генерирует значения во время анимации:", "type": "paragraph"},
+    {"content": "class Animation<T> {
+T get value;              // Текущее значение
+AnimationStatus get status; // Статус анимации
+void addListener(VoidCallback listener);  // Слушатель значений
+void addStatusListener(StatusListener listener); // Слушатель статуса
+}", "language": "dart", "type": "code"},
+    {"text": "Статусы анимации:", "type": "paragraph"},
+    {"text": "| Статус | Описание |", "type": "paragraph"},
+    {"text": "|--------|----------|", "type": "paragraph"},
+    {"text": "| <code>dismissed</code> | Анимация в начальном положении |", "type": "paragraph"},
+    {"text": "| <code>forward</code> | Анимация проигрывается вперёд |", "type": "paragraph"},
+    {"text": "| <code>reverse</code> | Анимация проигрывается назад |", "type": "paragraph"},
+    {"text": "| <code>completed</code> | Анимация завершена |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "AnimationController"},
+    {"text": "<code>AnimationController</code> — главный управляющий класс анимаций:", "type": "paragraph"},
+    {"content": "class MyAnimation extends StatefulWidget {
+const MyAnimation({super.key});
+
+@override
+State<MyAnimation> createState() => _MyAnimationState();
+}
+
+class _MyAnimationState extends State<MyAnimation>
+with SingleTickerProviderStateMixin {
+late AnimationController _controller;
+late Animation<double> _animation;
+
+@override
+void initState() {
+super.initState();
+
+// Создаём контроллер с длительностью
+_controller = AnimationController(
+duration: const Duration(milliseconds: 500),
+vsync: this, // Требуется TickerProvider
+);
+
+// Анимация от 0.0 до 1.0
+_animation = _controller;
+
+// Запуск анимации
+_controller.forward();
+}
+
+@override
+void dispose() {
+_controller.dispose(); // Обязательно!
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return GestureDetector(
+onTap: () {
+// Переключение направления
+if (_controller.isForwardAnimating) {
+_controller.reverse();
+} else {
+_controller.forward();
+}
+},
+child: Container(
+width: 100,
+height: 100,
+color: Colors.blue,
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Параметры AnimationController"},
+    {"text": "| Параметр | Описание | Значение по умолчанию |", "type": "paragraph"},
+    {"text": "|----------|----------|----------------------|", "type": "paragraph"},
+    {"text": "| <code>duration</code> | Длительность анимации | Обязательный |", "type": "paragraph"},
+    {"text": "| <code>lowerBound</code> | Нижняя граница | 0.0 |", "type": "paragraph"},
+    {"text": "| <code>upperBound</code> | Верхняя граница | 1.0 |", "type": "paragraph"},
+    {"text": "| <code>value</code> | Текущее значение | 0.0 |", "type": "paragraph"},
+    {"text": "| <code>velocity</code> | Скорость анимации | 1.0 |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Curves (Кривые)"},
+    {"text": "Curves определяют скорость изменения анимации во времени:", "type": "paragraph"},
+    {"content": "// Стандартные кривые
+Curves.ease        // Плавное замедление
+Curves.easeIn      // Ускорение
+Curves.easeOut     // Замедление
+Curves.easeInOut   // Ускорение + замедление
+Curves.fastOutSlowIn // Material Design по умолчанию
+Curves.linear      // Линейная (без изменений скорости)
+
+// Экстремальные кривые
+Curves.bounceIn    // Отскок при входе
+Curves.bounceOut   // Отскок при выходе
+Curves.bounceInOut // Отскод при входе и выходе
+Curves.elasticIn   // Пружина при входе
+Curves.elasticOut  // Пружина при выходе
+
+// Пользовательская кривая
+Curves.decelerate  // Замедление в конце
+Curves.accelerate  // Ускорение в конце", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Использование кривых"},
+    {"content": "_animation = CurvedAnimation(
+parent: _controller,
+curve: Curves.easeInOut,
+);
+
+// Множественные кривые
+_animation = CurvedAnimation(
+parent: _controller,
+curves: [
+Curves.easeIn,    // Первые 50%
+Curves.bounceOut, // Последние 50%
+],
+);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Tween (Переход значений)"},
+    {"text": "Tween преобразует один диапазон значений в другой:", "type": "paragraph"},
+    {"content": "// Переход от 0 до 100
+final tween = Tween<double>(begin: 0, end: 100);
+
+// Использование
+final animation = tween.animate(_controller);
+
+// Анимация цвета
+final colorTween = ColorTween(
+begin: Colors.blue,
+end: Colors.red,
+);
+final colorAnimation = colorTween.animate(_controller);
+
+// Анимация размера
+final sizeTween = Tween<double>(begin: 50, end: 200);
+final sizeAnimation = sizeTween.animate(_controller);
+
+// Анимация позиции
+final offsetTween = Tween<Offset>(
+begin: Offset.zero,
+end: const Offset(100, 0),
+);
+final offsetAnimation = offsetTween.animate(_controller);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "CompositeTween"},
+    {"content": "// Комбинирование нескольких Tween
+final tween = TweenSequence<double>([
+TweenSequenceItem(
+tween: Tween<double>(begin: 0, end: 100),
+weight: 50, // 50% времени
+),
+TweenSequenceItem(
+tween: Tween<double>(begin: 100, end: 50),
+weight: 50, // 50% времени
+),
+]);
+
+final animation = tween.animate(_controller);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Полный пример анимации"},
+    {"content": "class FullAnimationExample extends StatefulWidget {
+const FullAnimationExample({super.key});
+
+@override
+State<FullAnimationExample> createState() => _FullAnimationExampleState();
+}
+
+class _FullAnimationExampleState extends State<FullAnimationExample>
+with SingleTickerProviderStateMixin {
+late AnimationController _controller;
+late Animation<double> _scaleAnimation;
+late Animation<double> _opacityAnimation;
+late Animation<Offset> _slideAnimation;
+late Animation<Color?> _colorAnimation;
+
+@override
+void initState() {
+super.initState();
+
+_controller = AnimationController(
+duration: const Duration(milliseconds: 1000),
+vsync: this,
+);
+
+// Масштаб с отскоком
+_scaleAnimation = Tween<double>(begin: 0, end: 1).animate(
+CurvedAnimation(
+parent: _controller,
+curve: Curves.bounceOut,
+),
+);
+
+// Прозрачность
+_opacityAnimation = Tween<double>(begin: 0, end: 1).animate(
+CurvedAnimation(
+parent: _controller,
+curve: Curves.easeIn,
+),
+);
+
+// Сдвиг
+_slideAnimation = Tween<Offset>(
+begin: const Offset(0, 1),
+end: Offset.zero,
+).animate(
+CurvedAnimation(
+parent: _controller,
+curve: Curves.easeOutCubic,
+),
+);
+
+// Цвет
+_colorAnimation = ColorTween(
+begin: Colors.blue,
+end: Colors.purple,
+).animate(_controller);
+
+// Запуск
+_controller.forward();
+}
+
+@override
+void dispose() {
+_controller.dispose();
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return SlideTransition(
+position: _slideAnimation,
+child: ScaleTransition(
+scale: _scaleAnimation,
+child: FadeTransition(
+opacity: _opacityAnimation,
+child: Container(
+width: 200,
+height: 200,
+decoration: BoxDecoration(
+color: _colorAnimation.value,
+borderRadius: BorderRadius.circular(16),
+),
+child: const Center(
+child: Text(
+'Animated!',
+style: TextStyle(color: Colors.white, fontSize: 24),
+),
+),
+),
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Лучшие практики"},
+    {"items": ["<strong>Всегда вызывайте <code>dispose()</code></strong> у AnimationController", "<strong>Используйте <code>SingleTickerProviderStateMixin</code></strong> для одного контроллера", "<strong>Используйте <code>MultiTickerProviderStateMixin</code></strong> для нескольких контроллеров", "<strong>Избегайте создания анимаций в <code>build()</code></strong> — создавайте в <code>initState()</code>", "<strong>Используйте <code>CurvedAnimation</code></strong> для плавных анимаций", "<strong>Кэшируйте Tween-объекты</strong> как final поля"], "type": "ol"}
+  ]
+}

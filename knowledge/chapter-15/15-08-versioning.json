@@ -1,0 +1,256 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Versioning и релизные ветки"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Правильная стратегия версионирования и управления ветками — основа успешного процесса разработки. Она обеспечивает предсказуемость релизов, упрощает отладку и помогает команде координировать работу.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Семантическое версионирование (Semantic Versioning)"},
+    {"level": 3, "type": "heading", "text": "Формат версии"},
+    {"content": "MAJOR.MINOR.PATCH
+1.0.0
+
+MAJOR — incompatible API changes (несовместимые изменения)
+MINOR — backwards-compatible functionality (новые функции)
+PATCH — backwards-compatible bug fixes (исправления багов)", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Правила увеличения версии"},
+    {"text": "| Изменение | Тип | Пример |", "type": "paragraph"},
+    {"text": "|-----------|-----|--------|", "type": "paragraph"},
+    {"text": "| Удаление публичного API | MAJOR | 1.0.0 → 2.0.0 |", "type": "paragraph"},
+    {"text": "| Несоответствующее изменение API | MAJOR | 1.0.0 → 2.0.0 |", "type": "paragraph"},
+    {"text": "| Новая обратносвязная функция | MINOR | 1.0.0 → 1.1.0 |", "type": "paragraph"},
+    {"text": "| Обратносвязное исправление бага | PATCH | 1.0.0 → 1.0.1 |", "type": "paragraph"},
+    {"text": "| Предварительный релиз | Pre-release | 1.0.0-alpha.1 |", "type": "paragraph"},
+    {"text": "| Сборка (build metadata) | Build | 1.0.0+20231015 |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Предварительные версии"},
+    {"content": "Формат: MAJOR.MINOR.PATCH-prerelease+build
+
+Примеры:
+1.0.0-alpha.1      — первая альфа-версия
+1.0.0-beta.2       — вторая бета-версия
+1.0.0-rc.1         — первая версия для релиз-кандидата
+1.0.0-rc.1+20231015 — с метаданными сборки
+1.0.0              — финальная версия", "language": "", "type": "code"},
+    {"text": "<strong>Порядок предварительных версий:</strong>", "type": "paragraph"},
+    {"content": "alpha < beta < rc < release", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Версионирование в Flutter"},
+    {"level": 3, "type": "heading", "text": "pubspec.yaml"},
+    {"content": "name: my_app
+description: Описание приложения
+version: 1.2.3+42    # version+build_number
+
+environment:
+sdk: \">=3.0.0 <4.0.0\"
+
+dependencies:
+flutter:
+sdk: flutter
+http: ^1.1.0
+provider: ^6.1.0", "language": "yaml", "type": "code"},
+    {"text": "<strong>Формат: <code>version+build_number</code></strong>", "type": "paragraph"},
+    {"text": "| Часть | Описание | Пример |", "type": "paragraph"},
+    {"text": "|-------|----------|--------|", "type": "paragraph"},
+    {"text": "| version | Семантическая версия | 1.2.3 |", "type": "paragraph"},
+    {"text": "| build_number | Уникальный номер сборки | 42 |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Автоматическое управление версиями"},
+    {"text": "<strong>Пакет: <code>auto_version</code></strong>", "type": "paragraph"},
+    {"content": "# pubspec.yaml
+dev_dependencies:
+auto_version: ^1.0.0", "language": "yaml", "type": "code"},
+    {"content": "// lib/version.dart
+class AppVersion {
+static const String version = '1.2.3';
+static const String buildNumber = '42';
+static const String fullVersion = '1.2.3+42';
+}", "language": "dart", "type": "code"},
+    {"text": "<strong>Пакет: <code>flutter_version_name</code></strong>", "type": "paragraph"},
+    {"content": "# pubspec.yaml
+dev_dependencies:
+flutter_version_name: ^1.0.0", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Автоматизация через CI/CD"},
+    {"content": "# .github/workflows/version-bump.yml
+name: Bump Version
+
+on:
+push:
+branches: [main]
+paths:
+- 'lib/**'
+
+jobs:
+bump-version:
+runs-on: ubuntu-latest
+steps:
+- uses: actions/checkout@v4
+with:
+token: ${{ secrets.GITHUB_TOKEN }}
+
+- name: Bump patch version
+id: bump
+run: |
+# Чтение текущей версии
+VERSION=$(grep '^version:' pubspec.yaml | head -1 | awk '{print $2}')
+MAJOR=$(echo $VERSION | cut -d. -f1)
+MINOR=$(echo $VERSION | cut -d. -f2)
+PATCH=$(echo $VERSION | cut -d. -f3 | cut -d+ -f1)
+BUILD=$(echo $VERSION | cut -d+ -f2)
+
+# Увеличение patch
+NEW_PATCH=$((PATCH + 1))
+NEW_BUILD=$((BUILD + 1))
+NEW_VERSION=\"${MAJOR}.${MINOR}.${NEW_PATCH}+${NEW_BUILD}\"
+
+# Обновление pubspec.yaml
+sed -i \"s/^version: .*/version: ${NEW_VERSION}/\" pubspec.yaml
+
+# Коммит
+git config user.name \"CI Bot\"
+git config user.email \"ci@bot.com\"
+git add pubspec.yaml
+git commit -m \"Bump version to ${NEW_VERSION}\"
+git push", "language": "yaml", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Стратегии управления ветками"},
+    {"level": 3, "type": "heading", "text": "Git Flow"},
+    {"content": "main (master)
+│
+├── develop
+│   │
+│   ├── feature/login-screen
+│   ├── feature/dashboard
+│   ├── bugfix/fix-crash-123
+│   └── release/1.2.0
+│       │
+│       └── hotfix/fix-critical-bug
+│
+└── release/1.1.0
+│
+└── hotfix/fix-security-issue", "language": "", "type": "code"},
+    {"text": "<strong>Описание веток:</strong>", "type": "paragraph"},
+    {"text": "| Ветка | Назначение | Длительность |", "type": "paragraph"},
+    {"text": "|-------|-----------|-------------|", "type": "paragraph"},
+    {"text": "| main | Стабильный код, релизы | Постоянная |", "type": "paragraph"},
+    {"text": "| develop | Интеграция фич | Постоянная |", "type": "paragraph"},
+    {"text": "| feature/* | Новая функциональность | Дни–недели |", "type": "paragraph"},
+    {"text": "| release/* | Подготовка к релизу | Неделя |", "type": "paragraph"},
+    {"text": "| hotfix/* | Срочные исправления | Часы–дни |", "type": "paragraph"},
+    {"text": "<strong>Пример работы с Git Flow:</strong>", "type": "paragraph"},
+    {"content": "# Создание фичи
+git checkout -b feature/user-profile develop
+
+# Завершение фичи
+git checkout develop
+git merge --no-ff feature/user-profile
+git branch -d feature/user-profile
+
+# Начало релиза
+git checkout -b release/1.2.0 develop
+
+# Исправление в релизе
+git checkout release/1.2.0
+# ... исправления ...
+git commit -m \"Fix login validation\"
+
+# Завершение релиза
+git checkout main
+git merge --no-ff release/1.2.0
+git tag -a v1.2.0 -m \"Release 1.2.0\"
+git checkout develop
+git merge --no-ff release/1.2.0
+
+# Hotfix
+git checkout main
+git checkout -b hotfix/fix-login-crash
+# ... исправление ...
+git checkout main
+git merge --no-ff hotfix/fix-login-crash
+git tag -a v1.2.1 -m \"Hotfix 1.2.1\"
+git checkout develop
+git merge --no-ff hotfix/fix-login-crash", "language": "bash", "type": "code"},
+    {"level": 3, "type": "heading", "text": "GitHub Flow"},
+    {"content": "main
+│
+├── feature/add-search
+├── feature/improve-performance
+└── hotfix/fix-memory-leak", "language": "", "type": "code"},
+    {"text": "<strong>Описание:</strong>", "type": "paragraph"},
+    {"items": ["Простая стратегия: только <code>main</code> + функциональные ветки", "Каждая ветка деплоится на staging", "После code review — мерж в main", "Идеально для веб-приложений и continuous deployment"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Trunk-Based Development"},
+    {"content": "trunk (main)
+│
+├── feature-branch (краткоживущая)
+├── feature-branch (краткоживущая)
+└── feature-branch (краткоживущая)", "language": "", "type": "code"},
+    {"text": "<strong>Принципы:</strong>", "type": "paragraph"},
+    {"items": ["Короткоживущие ветки (1–2 дня)", "Частые мерджи в trunk", "Feature flags для скрытия незавершённого кода", "Непрерывная интеграция"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Релизная стратегия"},
+    {"level": 3, "type": "heading", "text": "Типы релизов"},
+    {"text": "| Тип | Частота | Стабильность | Пример |", "type": "paragraph"},
+    {"text": "|-----|---------|-------------|--------|", "type": "paragraph"},
+    {"text": "| Hotfix | По мере необходимости | Высокая | Исправление критического бага |", "type": "paragraph"},
+    {"text": "| Patch | Еженедельно | Высокая | Небольшие исправления |", "type": "paragraph"},
+    {"text": "| Minor | Ежемесячно | Средняя | Новые функции |", "type": "paragraph"},
+    {"text": "| Major | Ежеквартально | Средняя | Значительные изменения |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Чеклист релиза"},
+    {"content": "Подготовка к релизу:
+□ Все фичи из milestone завершены
+□ Код-ревью выполнены
+□ Все тесты проходят
+□ Документация обновлена
+□ Release notes подготовлены
+□ Версия увеличена в pubspec.yaml
+□ Сборка протестирована на реальных устройствах
+□ Performance проверена
+□ Accessibility проверена
+
+Публикация:
+□ Сборка создана (APK/AAB для Android, Archive для iOS)
+□ Подписание выполнено
+□ Загрузка в магазин
+□ Метаданные заполнены
+□ Отправка на审核 (iOS)
+
+После релиза:
+□ Мониторинг крашей (Crashlytics)
+□ Сбор обратной связи
+□ Обновление документации
+□ Планирование следующего спринта", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Управление зависимостями"},
+    {"level": 3, "type": "heading", "text": "pubspec.yaml — правила версионирования"},
+    {"content": "# Тильда (~) — совместимость с minor
+dependencies:
+http: ^1.1.0    # >=1.1.0 <2.0.0
+provider: ^6.1.0  # >=6.1.0 <7.0.0
+
+# Карет (^) — совместимость с major
+dependencies:
+flutter_svg: ^2.0.0  # >=2.0.0 <3.0.0
+
+# Точная версия
+dependencies:
+some_package: 1.2.3
+
+# Путь к локальному пакету
+dependencies:
+my_utils:
+path: ../my_utils
+
+# Git
+dependencies:
+my_package:
+git:
+url: https://github.com/user/package.git
+ref: main", "language": "yaml", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Обновление зависимостей"},
+    {"content": "# Проверка устаревших пакетов
+flutter pub outdated
+
+# Обновление до последней совместимой версии
+flutter pub upgrade --major-versions
+
+# Обновление конкретного пакета
+flutter pub upgrade http
+
+# Lock-файл (не изменять вручную)
+# pubspec.lock — автоматически генерируется", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Следуйте SemVer</strong> для консистентности", "<strong>Используйте теги Git</strong> для каждой версии", "<strong>Автоматизируйте версионирование</strong> в CI/CD", "<strong>Ведите CHANGELOG.md</strong> с описанием изменений", "<strong>Тестируйте в изолированных ветках</strong> перед мержем", "<strong>Используйте feature flags</strong> для управления кодом"], "type": "ul"}
+  ]
+}

@@ -1,0 +1,292 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "ListView, GridView — списки и сетки"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "<code>ListView</code> и <code>GridView</code> — одни из самых используемых виджетов в Flutter. Они предназначены для отображения списков и сеток данных, часто больших объёмов.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "ListView"},
+    {"text": "Виджет <code>ListView</code> отображает линейный список дочерних виджетов.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Конструкторы ListView"},
+    {"text": "| Конструктор | Когда использовать |", "type": "paragraph"},
+    {"text": "|-------------|-------------------|", "type": "paragraph"},
+    {"text": "| <code>ListView()</code> | Когда детей немного и они уже созданы |", "type": "paragraph"},
+    {"text": "| <code>ListView.builder()</code> | Когда детей много или бесконечно |", "type": "paragraph"},
+    {"text": "| <code>ListView.separated()</code> | Когда нужны разделители между элементами |", "type": "paragraph"},
+    {"text": "| <code>ListView.custom()</code> | Для полностью кастомного поведения |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "ListView — с детьми"},
+    {"content": "// ❌ Не используйте для больших списков
+ListView(
+children: const [
+ListTile(title: Text('Первый')),
+ListTile(title: Text('Второй')),
+ListTile(title: Text('Третий')),
+],
+)
+
+// ✅ Используйте для маленьких списков
+const ListView(
+children: [
+Text('Элемент 1'),
+Text('Элемент 2'),
+Text('Элемент 3'),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "ListView.builder — ленивая загрузка"},
+    {"content": "ListView.builder(
+// Количество элементов
+itemCount: items.length,
+// Создание элемента
+itemBuilder: (context, index) {
+return ListTile(
+title: Text(items[index]),
+onTap: () {
+print('Нажат элемент: ${items[index]}');
+},
+);
+},
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "ListView.builder с параметрами"},
+    {"content": "ListView.builder(
+itemCount: items.length,
+padding: const EdgeInsets.symmetric(vertical: 8),
+// Направление прокрутки
+scrollDirection: Axis.vertical, // или Axis.horizontal
+// Физика прокрутки
+physics: const BouncingScrollPhysics(),
+// Кастомизация
+itemBuilder: (context, index) {
+final item = items[index];
+return Card(
+margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+child: ListTile(
+leading: CircleAvatar(child: Text('${index + 1}')),
+title: Text(item.title),
+subtitle: Text(item.description),
+trailing: Icon(Icons.chevron_right),
+onTap: () => navigateToDetail(item),
+),
+);
+},
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "ListView.separated — с разделителями"},
+    {"content": "ListView.separated(
+itemCount: items.length,
+separatorBuilder: (context, index) => const Divider(height: 1),
+itemBuilder: (context, index) {
+return ListTile(
+title: Text(items[index]),
+);
+},
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "ListView с горизонтальной прокруткой"},
+    {"content": "ListView(
+scrollDirection: Axis.horizontal,
+children: const [
+Card(child: SizedBox(width: 150, height: 200, child: Text('1'))),
+SizedBox(width: 8),
+Card(child: SizedBox(width: 150, height: 200, child: Text('2'))),
+SizedBox(width: 8),
+Card(child: SizedBox(width: 150, height: 200, child: Text('3'))),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "ListView с контроллером прокрутки"},
+    {"content": "class ScrollableList extends StatefulWidget {
+@override
+_ScrollableListState createState() => _ScrollableListState();
+}
+
+class _ScrollableListState extends State<ScrollableList> {
+final ScrollController _controller = ScrollController();
+
+@override
+void initState() {
+super.initState();
+// Слушатель прокрутки
+_controller.addListener(() {
+print('Позиция: ${_controller.position.pixels}');
+});
+}
+
+@override
+void dispose() {
+_controller.dispose(); // Важно!
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+ElevatedButton(
+onPressed: () {
+// Плавная прокрутка к началу
+_controller.animateTo(
+0,
+duration: const Duration(milliseconds: 500),
+curve: Curves.easeInOut,
+);
+},
+child: const Text('Наверх'),
+),
+Expanded(
+child: ListView.builder(
+controller: _controller,
+itemCount: 100,
+itemBuilder: (context, index) {
+return ListTile(title: Text('Элемент $index'));
+},
+),
+),
+],
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "GridView"},
+    {"text": "Виджет <code>GridView</code> отображает элементы в двумерной сетке.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Конструкторы GridView"},
+    {"text": "| Конструктор | Описание |", "type": "paragraph"},
+    {"text": "|-------------|----------|", "type": "paragraph"},
+    {"text": "| <code>GridView.builder()</code> | Ленивая загрузка элементов |", "type": "paragraph"},
+    {"text": "| <code>GridView.count()</code> | Фиксированное количество столбцов |", "type": "paragraph"},
+    {"text": "| <code>GridView.extent()</code> | Максимальная ширина столбца |", "type": "paragraph"},
+    {"text": "| <code>GridView.custom()</code> | Полностью кастомный |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "GridView.count — фиксированные столбцы"},
+    {"content": "GridView.count(
+crossAxisCount: 2, // Количество столбцов
+mainAxisSpacing: 8, // Расстояние по вертикали
+crossAxisSpacing: 8, // Расстояние по горизонтали
+padding: const EdgeInsets.all(8),
+// Aspect ratio для высоты элементов
+childAspectRatio: 1.0,
+children: const [
+Card(child: Center(child: Text('1'))),
+Card(child: Center(child: Text('2'))),
+Card(child: Center(child: Text('3'))),
+Card(child: Center(child: Text('4'))),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "GridView.builder — ленивая загрузка"},
+    {"content": "GridView.builder(
+gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+crossAxisCount: 3,
+mainAxisSpacing: 8,
+crossAxisSpacing: 8,
+childAspectRatio: 0.75,
+),
+itemCount: images.length,
+padding: const EdgeInsets.all(8),
+itemBuilder: (context, index) {
+return ClipRRect(
+borderRadius: BorderRadius.circular(8),
+child: Image.network(
+images[index],
+fit: BoxFit.cover,
+),
+);
+},
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "SliverGridDelegateWithMaxCrossAxisExtent"},
+    {"content": "// Максимальная ширина столбца
+GridView.builder(
+gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+maxCrossAxisExtent: 200, // Максимальная ширина
+mainAxisSpacing: 8,
+crossAxisSpacing: 8,
+childAspectRatio: 1,
+),
+itemCount: items.length,
+itemBuilder: (context, index) {
+return Card(child: Center(child: Text(items[index])));
+},
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "SliverGridDelegateWithFixedCrossAxisCount"},
+    {"content": "// Фиксированное количество столбцов
+const SliverGridDelegateWithFixedCrossAxisCount(
+crossAxisCount: 4,      // 4 столбца
+mainAxisSpacing: 10,    // Вертикальный отступ
+crossAxisSpacing: 10,   // Горизонтальный отступ
+childAspectRatio: 1,    // Соотношение сторон
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "SliverList и SliverGrid"},
+    {"text": "Для кастомной прокрутки (например, с <code>CustomScrollView</code>) используются sliver-виджеты.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "SliverList"},
+    {"content": "CustomScrollView(
+slivers: [
+SliverAppBar(
+pinned: true,
+expandedHeight: 200,
+flexibleSpace: FlexibleSpaceBar(
+title: const Text('Список'),
+),
+),
+SliverList(
+delegate: SliverChildBuilderDelegate(
+(context, index) {
+return ListTile(title: Text('Элемент $index'));
+},
+childCount: 100,
+),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "SliverGrid"},
+    {"content": "CustomScrollView(
+slivers: [
+SliverGrid(
+gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+crossAxisCount: 2,
+mainAxisSpacing: 8,
+crossAxisSpacing: 8,
+),
+delegate: SliverChildBuilderDelegate(
+(context, index) {
+return Container(
+color: Colors.primaries[index % Colors.primaries.length],
+);
+},
+childCount: 20,
+),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Performance Considerations"},
+    {"level": 3, "type": "heading", "text": "Правила производительности"},
+    {"text": "| Ситуация | Решение |", "type": "paragraph"},
+    {"text": "|----------|---------|", "type": "paragraph"},
+    {"text": "| Маленький список (< 20 элементов) | <code>ListView(children: [...])</code> |", "type": "paragraph"},
+    {"text": "| Большой список | <code>ListView.builder()</code> |", "type": "paragraph"},
+    {"text": "| Бесконечный список | <code>ListView.builder()</code> с большим itemCount |", "type": "paragraph"},
+    {"text": "| Сетка с фиксированными столбцами | <code>GridView.count()</code> |", "type": "paragraph"},
+    {"text": "| Сетка с адаптивной шириной | <code>GridView.builder()</code> + <code>SliverGridDelegateWithMaxCrossAxisExtent</code> |", "type": "paragraph"},
+    {"text": "| Кастомный скролл | <code>CustomScrollView</code> + <code>Sliver*</code> |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Ключевые рекомендации"},
+    {"content": "ListView.builder(
+itemBuilder: (context, index) {
+return ListTile(
+key: ValueKey(items[index].id),
+title: Text(items[index].title),
+);
+},
+)", "language": "dart", "type": "code"},
+    {"content": "Column(
+children: [
+const Text('Заголовок'),
+Expanded(
+child: ListView.builder(
+itemCount: items.length,
+itemBuilder: (context, index) {
+return ListTile(title: Text(items[index]));
+},
+),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"items": ["<strong>Всегда используйте <code>builder</code> для больших списков</strong> — это создаёт виджеты лениво.", "<strong>Избегайте <code>ListView</code> с большим списком <code>children</code></strong> — все виджеты создаются сразу.", "<strong>Используйте <code>const</code> конструкторы</strong> для элементов списка, чтобы Flutter мог кэшировать виджеты.", "<strong>Используйте <code>key</code> для уникальных элементов</strong>:", "<strong>Используйте <code>ListView</code> внутри <code>Column</code></strong> через <code>Expanded</code>:"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"content": "ListView.builder(
+cacheExtent: 500, // Загружать элементы за пределами видимости
+itemCount: items.length,
+itemBuilder: (context, index) => ListTile(title: Text(items[index])),
+)", "language": "dart", "type": "code"},
+    {"items": ["<strong>Используйте <code>ListView.builder()</code></strong> для всех списков с более чем 20 элементами.", "<strong>Используйте <code>separated</code></strong>, когда нужны разделители — это эффективнее, чем добавлять пустые виджеты.", "<strong>Используйте <code>SliverAppBar</code></strong> с <code>CustomScrollView</code> для эффектов параллакса.", "<strong>Используйте <code>cacheExtent</code></strong> для предварительной загрузки элементов:", "<strong>Избегайте сложных виджетов</strong> внутри <code>ListView.builder</code> — это замедляет прокрутку.", "<strong>Используйте <code>shrinkWrap: true</code></strong> только когда <code>ListView</code> помещается в ограниченный контейнер — это отключает оптимизации прокрутки."], "type": "ol"}
+  ]
+}

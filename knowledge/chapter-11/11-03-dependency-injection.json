@@ -1,0 +1,119 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Dependency Injection в Flutter"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Dependency Injection (DI) — это паттерн проектирования, при котором объект получает зависимости извне, а не создаёт их самостоятельно. Это снижает связность кода и улучшает тестируемость.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Проблемы без DI"},
+    {"content": "// ❌ Плохо: жёсткая зависимость
+class UserService {
+final Dio _client = Dio(); // Создаём внутри
+final SharedPreferences _prefs = SharedPreferences.getInstance();
+
+Future<User> getUser(String id) async {
+final response = await _client.get('/users/$id');
+return User.fromJson(response.data);
+}
+}", "language": "dart", "type": "code"},
+    {"text": "Проблемы:", "type": "paragraph"},
+    {"items": ["Невозможно мокать зависимости в тестах", "Трудно заменить реализацию (например, Dio на MockDio)", "Нарушается принцип единственной ответственности"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Решения с DI"},
+    {"content": "// ✅ Хорошо: зависимости внедряются извне
+class UserService {
+final Dio _client;
+final SharedPreferences _prefs;
+
+UserService({required Dio client, required SharedPreferences prefs})
+: _client = client,
+_prefs = prefs;
+
+Future<User> getUser(String id) async {
+final response = await _client.get('/users/$id');
+return User.fromJson(response.data);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Принципы DI"},
+    {"level": 3, "type": "heading", "text": "Принцип инверсии зависимостей (DIP)"},
+    {"content": "Модули верхнего уровня не должны зависеть от модулей нижнего уровня. Оба должны зависеть от абстракций.", "type": "blockquote"},
+    {"content": "// Абстракция (доменный уровень)
+abstract class DataRepository {
+Future<List<Product>> getProducts();
+}
+
+// Конкретная реализация (уровень данных)
+class ProductRepositoryImpl implements DataRepository {
+final Dio client;
+ProductRepositoryImpl({required this.client});
+
+@override
+Future<List<Product>> getProducts() async {
+final response = await client.get('/products');
+return (response.data as List)
+.map((json) => Product.fromJson(json))
+.toList();
+}
+}
+
+// Потребитель зависит от абстракции
+class ProductViewModel {
+final DataRepository repository;
+ProductViewModel(this.repository);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Принцип единственной ответственности (SRP)"},
+    {"text": "Каждый класс/модуль отвечает за одну вещь:", "type": "paragraph"},
+    {"items": ["<strong>NetworkService</strong> — только HTTP-запросы", "<strong>StorageService</strong> — только локальное хранение", "<strong>UserService</strong> — только бизнес-логика работы с пользователями"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Паттерны DI"},
+    {"level": 3, "type": "heading", "text": "1. Constructor Injection (Внедрение через конструктор)"},
+    {"text": "Самый распространённый и рекомендуемый способ:", "type": "paragraph"},
+    {"content": "class OrderService {
+final ApiService api;
+final StorageService storage;
+final Logger logger;
+
+OrderService({
+required this.api,
+required this.storage,
+required this.logger,
+});
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "2. Setter Injection (Внедрение через свойство)"},
+    {"text": "Полезно для необязательных зависимостей:", "type": "paragraph"},
+    {"content": "class OrderService {
+late final ApiService api;
+StorageService? storage; // Необязательная зависимость
+Logger logger = Logger(); // Значение по умолчанию
+
+void setApi(ApiService api) {
+this.api = api;
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "3. Method Injection (Внедрение через метод)"},
+    {"text": "Для зависимостей, используемых только в одном методе:", "type": "paragraph"},
+    {"content": "class ReportGenerator {
+Future<String> generateReport({required DatabaseService db}) async {
+final data = await db.fetchData();
+return _format(data);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Service Locator Pattern"},
+    {"text": "Service Locator — это способ глобального доступа к зависимостям через центральный реестр:", "type": "paragraph"},
+    {"content": "// Регистрация
+final locator = GetIt.instance;
+locator.registerLazySingleton<ApiService>(() => ApiService());
+locator.registerLazySingleton<StorageService>(() => StorageService());
+locator.registerFactory<UserService>(() => UserService(
+api: locator<ApiService>(),
+storage: locator<StorageService>(),
+));
+
+// Использование
+final userService = locator<UserService>();", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение подходов"},
+    {"text": "| Подход | Плюсы | Минусы |", "type": "paragraph"},
+    {"text": "|--------|-------|--------|", "type": "paragraph"},
+    {"text": "| Constructor Injection | Явные зависимости, легко тестировать | Много параметров в конструкторе |", "type": "paragraph"},
+    {"text": "| Service Locator | Простое использование | Скрытые зависимости, сложно тестировать |", "type": "paragraph"},
+    {"text": "| DI-фреймворк | Автоматизация, аннотации | Дополнительная сложность, магия |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Лучшие практики"},
+    {"items": ["<strong>Предпочитайте Constructor Injection</strong> — зависимости явные и видимые", "<strong>Регистрируйте зависимости в одном месте</strong> — файл main или DI-конфиг", "<strong>Используйте абстракции (интерфейсы)</strong> для зависимостей", "<strong>Singleton для сервисов</strong>, Factory для view-model", "<strong>Не используйте Service Locator в доменном слое</strong>", "<strong>Тестируйте с моками</strong> — DI делает это простым"], "type": "ol"}
+  ]
+}

@@ -1,0 +1,49 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "1.2 Архитектура Flutter: Engine, Framework, Embedder"},
+    {"level": 2, "type": "heading", "text": "Обзор архитектуры"},
+    {"text": "Flutter состоит из трёх основных слоёв, каждый из которых отвечает за свою задачу:", "type": "paragraph"},
+    {"content": "┌─────────────────────────────────────────────────┐
+│              Flutter Framework                  │
+│  (Dart-код, виджеты, анимации, рисование)       │
+├─────────────────────────────────────────────────┤
+│              Flutter Engine                     │
+│  (Core — C++, Dart Runtime, Skia/Impeller)      │
+├─────────────────────────────────────────────────┤
+│              Embedder                           │
+│  (Платформо-зависимый код, интеграция с ОС)     │
+└─────────────────────────────────────────────────┘", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "1. Flutter Framework"},
+    {"text": "Framework — это слой на языке Dart, который разработчики используют ежедневно.", "type": "paragraph"},
+    {"text": "<strong>Основные библиотеки:</strong>", "type": "paragraph"},
+    {"items": ["<strong>widgets</strong> — базовые виджеты (Container, Text, Row, Column и т.д.)", "<strong>animation</strong> — система анимаций", "<strong>painting</strong> — примитивы рисования (Canvas, Paint, Path)", "<strong>gestures</strong> — обработка жестов", "<strong>rendering</strong> — слой рендеринга (layout, paint, composite)", "<strong>services</strong> — сервисы платформы (навигация, клавиатура, статус-бар)", "<strong>foundation</strong> — базовые утилиты и примитивы"], "type": "ul"},
+    {"text": "<strong>Компоненты Framework:</strong>", "type": "paragraph"},
+    {"items": ["<strong>Widget</strong> — конфигурационный объект, описывающий UI", "<strong>Element</strong> — экземпляр в дереве элементов, управляет жизненным циклом виджета", "<strong>RenderObject</strong> — объект, отвечающий за layout и рисование"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "2. Flutter Engine"},
+    {"text": "Engine — это ядро Flutter, написанное на C/C++. Он обеспечивает:", "type": "paragraph"},
+    {"items": ["<strong>Dart Runtime</strong> — выполнение Dart-кода (JIT для разработки, AOT для релиза)", "<strong>Core библиотеки</strong> — dart:core, dart:async, dart:collection", "<strong>Graphics Library</strong> — Skia (рендеринг 2D) или Impeller (новый рендерер)", "<strong>Text Engine</strong> — рендеринг текста, шрифты, Unicode", "<strong>Animation & Gesture System</strong> — обработка жестов и анимаций на низком уровне", "<strong>Plugin Layer</strong> — взаимодействие с нативным кодом через Platform Channels", "<strong>Embedder API</strong> — точка входа для интеграции с платформой"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "3. Embedder"},
+    {"text": "Embedder — это платформо-зависимый слой, который «встраивает» Flutter в приложение:", "type": "paragraph"},
+    {"text": "<strong>Платформы:</strong>", "type": "paragraph"},
+    {"items": ["<strong>Android</strong> — <code>FlutterActivity</code>, <code>FlutterView</code> (Java/Kotlin)", "<strong>iOS</strong> — <code>FlutterViewController</code> (Objective-C/Swift)", "<strong>macOS</strong> — <code>FlutterViewController</code> (Swift/Objective-C)", "<strong>Windows</strong> — <code>FlutterWindow</code> (C++)", "<strong>Linux</strong> — <code>FlutterDesktopRunner</code> (C++)", "<strong>Web</strong> — JavaScript interop (через <code>flutter.js</code>)"], "type": "ul"},
+    {"text": "<strong>Обязанности Embedder:</strong>", "type": "paragraph"},
+    {"items": ["Создание и управление окном/вью", "Подключение к графическому API (OpenGL, Vulkan, Metal, Skia)", "Обработка событий платформы (клавиатура, поворот экрана)", "Управление потоками (UI thread, GPU thread, IO thread)", "Регистрация плагинов"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Слои рендеринга"},
+    {"text": "Внутри Framework работает <strong>render tree</strong>:", "type": "paragraph"},
+    {"content": "Widget (конфигурация)
+↓ создаёт/обновляет
+Element (управление)
+↓ управляет
+RenderObject (layout + paint)
+↓ отправляет команды
+Engine (Skia/Impeller)
+↓ рисует
+Экран", "language": "", "type": "code"},
+    {"items": ["<strong>Widget Tree</strong> — конфигурационные объекты (лёгкие, создаются часто)", "<strong>Element Tree</strong> — кэшированные экземпляры, управляют жизненным циклом", "<strong>RenderObject Tree</strong> — объекты layout и рисования (тяжёлые, кэшируются)"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Жизненный цикл"},
+    {"items": ["Embedder создаёт окно и запускает Dart VM", "Engine инициализирует Dart Runtime и загружает framework", "Вызывается <code>main()</code> — создаётся Widget Tree", "Framework создаёт Element Tree и RenderObject Tree", "RenderObjects проходят layout → paint → composite", "Engine рисует кадры через графический API (60/120 FPS)", "При изменении состояния — перестройка виджетов → обновление render tree"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Понимание архитектуры Flutter помогает:", "type": "paragraph"},
+    {"items": ["Оптимизировать производительность", "Правильно использовать виджеты", "Отлаживать проблемы рендеринга", "Создавать кастомные плагины и рендереры"], "type": "ul"}
+  ]
+}

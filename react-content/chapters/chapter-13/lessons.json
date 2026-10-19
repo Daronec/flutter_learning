@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "chapter-13",
+  "lessons": [
+    {
+      "id": "13-01-test-types",
+      "slug": "test-types",
+      "title": "Виды тестов в Flutter",
+      "order": 1,
+      "file": "content/13-01-test-types.md",
+      "summary": "Тестирование — неотъемлемая часть разработки качественного приложения. В экосистеме Flutter существует три основных вида тестов, каждый из которых решает свои задачи и проверяет разные уровни приложения.",
+      "tags": []
+    },
+    {
+      "id": "13-02-test-package",
+      "slug": "test-package",
+      "title": "Пакет test — основа для unit-тестов",
+      "order": 2,
+      "file": "content/13-02-test-package.md",
+      "summary": "Пакет test — это стандартный фреймворк для тестирования в Dart. Он является основой для unit-тестирования в Flutter и предоставляет мощный набор инструментов для написания чистых, читаемых и поддерживаемых тестов.",
+      "tags": []
+    },
+    {
+      "id": "13-03-flutter-test",
+      "slug": "flutter-test",
+      "title": "Пакет fluttertest — тестирование виджетов",
+      "order": 3,
+      "file": "content/13-03-flutter-test.md",
+      "summary": "Пакет fluttertest — это специализированный фреймворк для тестирования виджетов в Flutter. Он предоставляет инструменты для создания, рендеринга и взаимодействия с виджетами в изолированной тестовой среде.",
+      "tags": []
+    },
+    {
+      "id": "13-04-matchers",
+      "slug": "matchers",
+      "title": "Matchers и ассерции",
+      "order": 4,
+      "file": "content/13-04-matchers.md",
+      "summary": "Matchers — это мощный механизм сравнения значений в тестах Dart/Flutter. Они обеспечивают читаемые сообщения об ошибках и гибкие возможности проверки.",
+      "tags": []
+    },
+    {
+      "id": "13-05-mock-objects",
+      "slug": "mock-objects",
+      "title": "Mock-объекты: mockito, mocktail",
+      "order": 5,
+      "file": "content/13-05-mock-objects.md",
+      "summary": "Mock-объекты — это имитации реальных объектов, используемые для изоляции тестируемого кода от внешних зависимостей. В Dart/Flutter популярен пакет mockito, а также его более простая альтернатива — mocktail.",
+      "tags": []
+    },
+    {
+      "id": "13-06-test-bloc",
+      "slug": "test-bloc",
+      "title": "Тестирование BLoC и State-менеджеров",
+      "order": 6,
+      "file": "content/13-06-test-bloc.md",
+      "summary": "Тестирование BLoC и state-менеджеров — важная часть тестирования Flutter-приложений, использующих паттерн BLoC. Поскольку BLoC работает с потоками событий и состояний, для его тестирования используются специфические подходы.",
+      "tags": []
+    },
+    {
+      "id": "13-07-widget-testing",
+      "slug": "widget-testing",
+      "title": "Widget testing: find, tester, pump",
+      "order": 7,
+      "file": "content/13-07-widget-testing.md",
+      "summary": "Widget testing — это один из самых распространённых видов тестирования в Flutter. Он позволяет проверять рендеринг виджетов, реакцию на действия пользователя и взаимодействие между виджетами.",
+      "tags": []
+    },
+    {
+      "id": "13-08-golden-tests",
+      "slug": "golden-tests",
+      "title": "Golden tests — визульное регрессионное тестирование",
+      "order": 8,
+      "file": "content/13-08-golden-tests.md",
+      "summary": "Golden tests (золотые тесты) — это вид тестирования, который сравнивает рендеринг виджета с эталонным изображением. Это позволяет обнаруживать непреднамеренные визуальные изменения в UI.",
+      "tags": []
+    },
+    {
+      "id": "13-09-integration-tests",
+      "slug": "integration-tests",
+      "title": "Integration tests — end-to-end тестирование",
+      "order": 9,
+      "file": "content/13-09-integration-tests.md",
+      "summary": "Integration tests (интеграционные тесты) — это тесты, которые запускаются на реальном устройстве или эмуляторе и проверяют всё приложение целиком. Они тестируют пользовательские сценарии от начала до конца.",
+      "tags": []
+    },
+    {
+      "id": "13-10-cicd-testing",
+      "slug": "cicd-testing",
+      "title": "CI/CD для Flutter — автоматизация тестирования",
+      "order": 10,
+      "file": "content/13-10-cicd-testing.md",
+      "summary": "CI/CD (Continuous Integration / Continuous Deployment) — это практика автоматизации сборки, тестирования и развертывания приложений. Для Flutter-проектов CI/CD позволяет автоматически запускать тесты при каждом коммите и пул-реквесте.",
+      "tags": []
+    }
+  ]
+}

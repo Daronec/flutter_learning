@@ -1,0 +1,60 @@
+﻿{
+    "files":  [
+                  {
+                      "name":  "06-01-what-is-state.md",
+                      "path":  "chapter-06/06-01-what-is-state.md",
+                      "size":  10145
+                  },
+                  {
+                      "name":  "06-02-setstate.md",
+                      "path":  "chapter-06/06-02-setstate.md",
+                      "size":  12415
+                  },
+                  {
+                      "name":  "06-03-provider.md",
+                      "path":  "chapter-06/06-03-provider.md",
+                      "size":  10234
+                  },
+                  {
+                      "name":  "06-04-changenotifier.md",
+                      "path":  "chapter-06/06-04-changenotifier.md",
+                      "size":  11494
+                  },
+                  {
+                      "name":  "06-05-valuelistenablebuilder.md",
+                      "path":  "chapter-06/06-05-valuelistenablebuilder.md",
+                      "size":  12272
+                  },
+                  {
+                      "name":  "06-06-inheritedwidget.md",
+                      "path":  "chapter-06/06-06-inheritedwidget.md",
+                      "size":  9382
+                  },
+                  {
+                      "name":  "06-07-riverpod.md",
+                      "path":  "chapter-06/06-07-riverpod.md",
+                      "size":  8570
+                  },
+                  {
+                      "name":  "06-08-bloc-pattern.md",
+                      "path":  "chapter-06/06-08-bloc-pattern.md",
+                      "size":  11994
+                  },
+                  {
+                      "name":  "06-09-streams-bloc.md",
+                      "path":  "chapter-06/06-09-streams-bloc.md",
+                      "size":  9222
+                  },
+                  {
+                      "name":  "06-10-redux-mobx.md",
+                      "path":  "chapter-06/06-10-redux-mobx.md",
+                      "size":  12512
+                  },
+                  {
+                      "name":  "06-11-choosing-strategy.md",
+                      "path":  "chapter-06/06-11-choosing-strategy.md",
+                      "size":  10214
+                  }
+              ],
+    "chapter":  "chapter-06"
+}

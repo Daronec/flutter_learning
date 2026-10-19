@@ -1,0 +1,313 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Isar — высокопроизводительная база данных"},
+    {"text": "Isar — это высокопроизводительная NoSQL база данных, написанная на Dart. Она оптимизирована для скорости и использует кэширование в памяти для молниеносных запросов.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Установка"},
+    {"content": "dependencies:
+isar: ^3.1.0+1
+isar_flutter_libs: ^3.1.0+1
+
+dev_dependencies:
+isar_generator: ^3.1.0+1
+build_runner: ^2.4.8", "language": "yaml", "type": "code"},
+    {"content": "flutter pub add isar isar_flutter_libs
+flutter pub add --dev isar_generator build_runner", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Инициализация"},
+    {"level": 3, "type": "heading", "text": "Настройка Isar"},
+    {"content": "import 'package:isar/isar.dart';
+import 'package:isar_flutter_libs/isar_flutter_libs.dart';
+
+part 'user.g.dart';
+part 'isar_database.g.dart';
+
+// Открытие базы данных
+Future<Isar> openDatabase() async {
+if (Isar.instanceNames.isEmpty) {
+return await Isar.open(
+[UserSchema],
+directory: 'isar_db',
+);
+}
+return Isar.getInstance()!;
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Определение схем"},
+    {"level": 3, "type": "heading", "text": "Модель данных"},
+    {"content": "@Collection()
+class User {
+Id id = 0; // Поле id (первичный ключ)
+
+@Index(type: IndexType.fulltext)
+late String name;
+
+late String email;
+
+int? age;
+
+late bool isActive;
+
+@Backlink(to: 'user')
+final tasks = IsarList<Task>();
+
+DateTime? createdAt;
+}
+
+@Collection()
+class Task {
+Id id = 0;
+
+late String title;
+
+bool isDone = false;
+
+late int userId;
+
+final user = IsarLink<User>();
+
+DateTime? createdAt;
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Индексы и ограничения"},
+    {"content": "@Collection()
+class Product {
+Id id = 0;
+
+@Index(unique: true)
+late String sku; // Уникальный индекс
+
+@Index()
+late String name;
+
+double price = 0.0;
+
+@Index()
+String category = '';
+
+@Index(type: IndexType.fulltext)
+late String description;
+
+List<String> tags = [];
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Генерация кода"},
+    {"content": "flutter pub run build_runner build --delete-conflicting-outputs", "language": "bash", "type": "code"},
+    {"level": 2, "type": "heading", "text": "CRUD-операции"},
+    {"level": 3, "type": "heading", "text": "Создание записей"},
+    {"content": "final isar = await openDatabase();
+
+// Создать одну запись
+final userId = await isar.users.put(
+User()
+..name = 'Иван Петров'
+..email = 'ivan@example.com'
+..age = 25
+..isActive = true,
+);
+
+// Создать несколько записей
+await isar.users.putAll([
+User()
+..name = 'Мария'
+..email = 'maria@example.com'
+..age = 30
+..isActive = true,
+User()
+..name = 'Алексей'
+..email = 'alex@example.com'
+..age = 28
+..isActive = false,
+]);
+
+// Создать с ID
+await isar.users.put(User()
+..id = 42
+..name = 'С конкретным ID'
+..email = 'custom@example.com',
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Чтение записей"},
+    {"content": "// Получить по ID
+User? user = await isar.users.get(userId);
+
+// Получить все записи
+List<User> allUsers = await isar.users.where().findAll();
+
+// Фильтрация
+List<User> adults = await isar.users
+.where()
+.ageEqualTo(18) // age >= 18
+.findAll();
+
+// Несколько условий
+List<User> results = await isar.users
+.where()
+.ageEqualTo(25)
+.and()
+.nameEqualTo('Иван')
+.findAll();
+
+// Поиск по имени (LIKE)
+List<User> ivanUsers = await isar.users
+.where()
+.nameContains('Иван')
+.findAll();
+
+// Сортировка
+List<User> sortedUsers = await isar.users
+.where()
+.sortByNameDesc()
+.findAll();
+
+// Пагинация
+List<User> page1 = await isar.users
+.where()
+.offset(0)
+.limit(20)
+.findAll();
+
+// Подсчёт
+int count = await isar.users.where().count();", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Обновление записей"},
+    {"content": "// Обновить по ID
+await isar.users.put(
+User()
+..id = userId
+..name = 'Обновлённое имя'
+..email = 'ivan@example.com'
+..age = 26,
+);
+
+// Обновить через фильтр
+await isar.users
+.filter()
+.isActiveEqualTo(false)
+.forEach((user) {
+user.isActive = true;
+});
+
+// Обновить одно поле
+final user = await isar.users.get(userId);
+if (user != null) {
+user.name = 'Новое имя';
+await isar.users.put(user);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Удаление записей"},
+    {"content": "// Удалить по ID
+await isar.users.delete(userId);
+
+// Удалить все записи
+await isar.users.deleteAll();
+
+// Удалить по фильтру
+await isar.users
+.filter()
+.isActiveEqualTo(false)
+.deleteAll();
+
+// Удалить бокс
+await isar.users.where().findAll();", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Связи между коллекциями"},
+    {"level": 3, "type": "heading", "text": "One-to-One"},
+    {"content": "@Collection()
+class Profile {
+Id id = 0;
+
+late String bio;
+
+late int userId;
+
+final user = IsarLink<User>();
+}
+
+// Установка связи
+final profile = Profile()
+..bio = 'Flutter разработчик'
+..userId = userId;
+
+await isar.profiles.put(profile);
+profile.user.value = await isar.users.get(userId);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "One-to-Many"},
+    {"content": "// В User уже есть @Backlink
+// final tasks = IsarList<Task>();
+
+// Добавление задачи к пользователю
+final task = Task()
+..title = 'Изучить Isar'
+..userId = userId;
+
+await isar.tasks.put(task);
+
+// Получение задач пользователя
+final user = await isar.users.get(userId);
+final tasks = user!.tasks.where((t) => !t.isDone).toList();", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Транзакции"},
+    {"content": "// Транзакция
+await isar.writeTxn(() async {
+final userId = await isar.users.put(
+User()
+..name = 'Новый пользователь'
+..email = 'new@example.com',
+);
+
+await isar.tasks.putAll([
+Task()
+..title = 'Задача 1'
+..userId = userId,
+Task()
+..title = 'Задача 2'
+..userId = userId,
+]);
+});", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Реактивное обновление (Streams)"},
+    {"content": "// Stream всех пользователей
+isar.users.where().watchAutoLoad().listen((users) {
+print('Пользователи: ${users.length}');
+});
+
+// Stream с фильтром
+isar.users
+.filter()
+.isActiveEqualTo(true)
+.watchAutoLoad()
+.listen((activeUsers) {
+print('Активных пользователей: ${activeUsers.length}');
+});
+
+// Stream одной записи
+isar.users
+.filter()
+.idEqualTo(userId)
+.watchSingle()
+.listen((user) {
+print('Пользователь: ${user?.name}');
+});", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Использование с Flutter"},
+    {"content": "class UserStreamWidget extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return IsarWidget(
+builder: (context, isar) {
+return StreamBuilder<List<User>>(
+stream: isar.users.where().watchAutoLoad(),
+builder: (context, snapshot) {
+if (!snapshot.hasData) {
+return const Center(child: CircularProgressIndicator());
+}
+
+final users = snapshot.data!;
+return ListView.builder(
+itemCount: users.length,
+itemBuilder: (context, index) {
+final user = users[index];
+return ListTile(
+title: Text(user.name),
+subtitle: Text(user.email),
+);
+},
+);
+},
+);
+},
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Используйте <code>Id</code></strong> — Isar автоматически генерирует ID", "<strong>Используйте индексы</strong> — для часто запрашиваемых полей", "<strong>Используйте <code>watchAutoLoad()</code></strong> — для реактивного обновления UI", "<strong>Используйте транзакции</strong> — для связанных операций", "<strong>Кэшируйте Isar-инстанс</strong> — создавайте один экземпляр на приложение", "<strong>Используйте <code>@Backlink</code></strong> — для навигации по связям"], "type": "ul"}
+  ]
+}

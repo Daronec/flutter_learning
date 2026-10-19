@@ -1,0 +1,232 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Physics — Scroll Physics в Flutter"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Scroll Physics определяет, как скролл-виджеты ведут себя при прокрутке: инерция, отскоки, ограничение. Flutter предоставляет несколько встроенных физик и позволяет создавать собственные.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Базовые Scroll Physics"},
+    {"level": 3, "type": "heading", "text": "ClampingScrollPhysics"},
+    {"text": "Поведение по умолчанию для Android — скролл останавливается на границах без отскока:", "type": "paragraph"},
+    {"content": "ListView(
+physics: const ClampingScrollPhysics(),
+children: List.generate(
+50,
+(index) => ListTile(title: Text('Item $index')),
+),
+)", "language": "dart", "type": "code"},
+    {"text": "| Характеристика | Значение |", "type": "paragraph"},
+    {"text": "|----------------|----------|", "type": "paragraph"},
+    {"text": "| Платформа | Android |", "type": "paragraph"},
+    {"text": "| Отскок | Нет |", "type": "paragraph"},
+    {"text": "| Инерция | Есть |", "type": "paragraph"},
+    {"text": "| Поведение на границах | Жёсткая остановка |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "BouncingScrollPhysics"},
+    {"text": "Поведение по умолчанию для iOS — скролл с отскоком за пределы контента:", "type": "paragraph"},
+    {"content": "ListView(
+physics: const BouncingScrollPhysics(),
+children: List.generate(
+50,
+(index) => ListTile(title: Text('Item $index')),
+),
+)", "language": "dart", "type": "code"},
+    {"text": "| Характеристика | Значение |", "type": "paragraph"},
+    {"text": "|----------------|----------|", "type": "paragraph"},
+    {"text": "| Платформа | iOS |", "type": "paragraph"},
+    {"text": "| Отскок | Да |", "type": "paragraph"},
+    {"text": "| Инерция | Есть |", "type": "paragraph"},
+    {"text": "| Поведение на границах | Отскок с затуханием |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Custom Scroll Physics"},
+    {"content": "// Пользовательская физика с настройкой
+ListView(
+physics: const BouncingScrollPhysics(
+parent: AlwaysScrollableScrollPhysics(),
+dampingRatio: 0.8,   // Коэффициент затухания (0.0 - 1.0)
+stiffness: 400,      // Жёсткость пружины
+),
+children: List.generate(
+50,
+(index) => ListTile(title: Text('Item $index')),
+),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "AlwaysScrollableScrollPhysics"},
+    {"text": "Принудительная прокрутка даже при малом контенте:", "type": "paragraph"},
+    {"content": "// Всегда показывает скроллбар
+ListView(
+physics: const AlwaysScrollableScrollPhysics(),
+children: const [
+Text('Мало контента'),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Parameters Scroll Physics"},
+    {"text": "| Параметр | Тип | Описание | Значение по умолчанию |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|---------------------|", "type": "paragraph"},
+    {"text": "| <code>dampingRatio</code> | <code>double</code> | Затухание отскока | 0.8 (Bouncing) / 1.0 (Clamping) |", "type": "paragraph"},
+    {"text": "| <code>stiffness</code> | <code>double</code> | Жёсткость пружины | 400 |", "type": "paragraph"},
+    {"text": "| <code>parent</code> | <code>ScrollPhysics?</code> | Родительская физика | null |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Создание кастомной ScrollPhysics"},
+    {"level": 3, "type": "heading", "text": "Базовая структура"},
+    {"content": "class CustomScrollPhysics extends ScrollPhysics {
+final double stiffness;
+final double dampingRatio;
+
+const CustomScrollPhysics({
+super.parent,
+this.stiffness = 400,
+this.dampingRatio = 0.8,
+});
+
+@override
+CustomScrollPhysics applyTo(ScrollPhysics? ancestor) {
+return CustomScrollPhysics(
+parent: buildParent(ancestor),
+stiffness: stiffness,
+dampingRatio: dampingRatio,
+);
+}
+
+@override
+double get inertiaWeight => 0.5;
+
+@override
+double resolve(ScrollPhysics? parent) {
+return super.resolve(parent) ?? this;
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Реализация get frictionFactor"},
+    {"content": "class CustomScrollPhysics extends ScrollPhysics {
+final double stiffness;
+final double dampingRatio;
+
+const CustomScrollPhysics({
+super.parent,
+this.stiffness = 400,
+this.dampingRatio = 0.8,
+});
+
+@override
+CustomScrollPhysics applyTo(ScrollPhysics? ancestor) {
+return CustomScrollPhysics(
+parent: buildParent(ancestor),
+stiffness: stiffness,
+dampingRatio: dampingRatio,
+);
+}
+
+@override
+double get frictionFactor => dampingRatio;
+
+@override
+double resolve(ScrollPhysics? parent) {
+return super.resolve(parent) ?? this;
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Полная реализация с spring"},
+    {"content": "class ElasticScrollPhysics extends ScrollPhysics {
+final double stiffness;
+
+const ElasticScrollPhysics({
+super.parent,
+this.stiffness = 100,
+});
+
+@override
+ElasticScrollPhysics applyTo(ScrollPhysics? ancestor) {
+return ElasticScrollPhysics(
+parent: buildParent(ancestor),
+stiffness: stiffness,
+);
+}
+
+@override
+SpringDescription get spring {
+return SpringDescription(
+mass: 30,
+stiffness: stiffness,
+damping: 1,
+);
+}
+
+@override
+double resolve(ScrollPhysics? parent) {
+return super.resolve(parent) ?? this;
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Использование в виджетах"},
+    {"level": 3, "type": "heading", "text": "ListView с кастомной физикой"},
+    {"content": "ListView(
+physics: const ElasticScrollPhysics(stiffness: 200),
+children: List.generate(
+100,
+(index) => ListTile(
+title: Text('Item $index'),
+subtitle: Text('Описание элемента $index'),
+),
+),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "SingleChildScrollView"},
+    {"content": "SingleChildScrollView(
+physics: const BouncingScrollPhysics(
+parent: AlwaysScrollableScrollPhysics(),
+dampingRatio: 0.7,
+),
+child: Column(
+children: [
+Container(height: 200, color: Colors.blue),
+Container(height: 200, color: Colors.red),
+Container(height: 200, color: Colors.green),
+],
+),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "PageView"},
+    {"content": "PageView(
+physics: const ClampingScrollPhysics(), // Без отскока для страниц
+children: [
+Container(color: Colors.blue, child: const Center(child: Text('1'))),
+Container(color: Colors.red, child: const Center(child: Text('2'))),
+Container(color: Colors.green, child: const Center(child: Text('3'))),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "NestedScrollView"},
+    {"content": "NestedScrollView(
+physics: const BouncingScrollPhysics(),
+headerSliverBuilder: (context, innerBoxIsScrolled) {
+return [
+SliverAppBar(
+expandedHeight: 200,
+flexibleSpace: FlexibleSpaceBar(
+title: const Text('Nested Scroll'),
+),
+),
+];
+},
+body: ListView.builder(
+itemCount: 50,
+itemBuilder: (context, index) {
+return ListTile(title: Text('Item $index'));
+},
+),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Сравнение Scroll Physics"},
+    {"text": "| Физика | Отскок | Инерция | Платформа | Когда использовать |", "type": "paragraph"},
+    {"text": "|--------|--------|---------|-----------|-------------------|", "type": "paragraph"},
+    {"text": "| <code>ClampingScrollPhysics</code> | Нет | Да | Android | Стандартный Android |", "type": "paragraph"},
+    {"text": "| <code>BouncingScrollPhysics</code> | Да | Да | iOS | Стандартный iOS |", "type": "paragraph"},
+    {"text": "| <code>NeverScrollableScrollPhysics</code> | Нет | Нет | — | Отключить скролл |", "type": "paragraph"},
+    {"text": "| <code>AlwaysScrollableScrollPhysics</code> | Да | Да | — | Всегда показывать скролл |", "type": "paragraph"},
+    {"text": "| <code>PageScrollPhysics</code> | Нет | Да | — | PageView |", "type": "paragraph"},
+    {"text": "| <code>Custom</code> | Настраиваемая | Настраиваемая | — | Специальное поведение |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "PageScrollPhysics"},
+    {"text": "Используется для PageView — прокрутка по одной странице за раз:", "type": "paragraph"},
+    {"content": "PageView(
+physics: const PageScrollPhysics().applyTo(
+const BouncingScrollPhysics(),
+),
+children: [
+const Center(child: Text('Страница 1')),
+const Center(child: Text('Страница 2')),
+const Center(child: Text('Страница 3')),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Лучшие практики"},
+    {"items": ["<strong>Используйте <code>ClampingScrollPhysics</code></strong> для PageView", "<strong>Используйте <code>BouncingScrollPhysics</code></strong> для ListView на iOS", "<strong>Используйте <code>AlwaysScrollableScrollPhysics</code></strong> для показа скроллбара", "<strong>Создавайте кастомную физику</strong> через наследование <code>ScrollPhysics</code>", "<strong>Комбинируйте физику</strong> через параметр <code>parent</code>", "<strong>Тестируйте на обеих платформах</strong> — поведение может отличаться"], "type": "ol"}
+  ]
+}

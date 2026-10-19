@@ -1,0 +1,286 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "SingleChildScrollView — скроллинг контента"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "<code>SingleChildScrollView</code> — это виджет, который позволяет прокручивать содержимое, которое не помещается на экране. В отличие от <code>ListView</code>, он создаёт все дочерние виджеты сразу, поэтому подходит для небольших объёмов контента.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Когда использовать SingleChildScrollView"},
+    {"text": "| Виджет | Когда использовать |", "type": "paragraph"},
+    {"text": "|--------|-------------------|", "type": "paragraph"},
+    {"text": "| <code>SingleChildScrollView</code> | Небольшой контент, который всегда известен |", "type": "paragraph"},
+    {"text": "| <code>ListView</code> | Большой или динамический контент |", "type": "paragraph"},
+    {"text": "| <code>CustomScrollView</code> | Сложная прокрутка с несколькими областями |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Пример: форма с прокруткой"},
+    {"content": "SingleChildScrollView(
+padding: const EdgeInsets.all(16),
+child: Column(
+children: [
+const Text(
+'Регистрация',
+style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+),
+const SizedBox(height: 24),
+TextField(
+decoration: const InputDecoration(
+labelText: 'Имя',
+border: OutlineInputBorder(),
+),
+),
+const SizedBox(height: 16),
+TextField(
+decoration: const InputDecoration(
+labelText: 'Email',
+border: OutlineInputBorder(),
+),
+),
+const SizedBox(height: 16),
+ElevatedButton(
+onPressed: () {},
+child: const Text('Зарегистрироваться'),
+),
+],
+),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Направление прокрутки"},
+    {"level": 3, "type": "heading", "text": "Вертикальная прокрутка (по умолчанию)"},
+    {"content": "SingleChildScrollView(
+scrollDirection: Axis.vertical,
+child: Column(
+children: List.generate(
+50,
+(index) => ListTile(title: Text('Элемент $index')),
+),
+),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Горизонтальная прокрутка"},
+    {"content": "SingleChildScrollView(
+scrollDirection: Axis.horizontal,
+padding: const EdgeInsets.symmetric(horizontal: 16),
+child: Row(
+children: List.generate(
+10,
+(index) => Container(
+width: 150,
+margin: const EdgeInsets.only(right: 16),
+decoration: BoxDecoration(
+color: Colors.primaries[index % Colors.primaries.length],
+borderRadius: BorderRadius.circular(8),
+),
+child: Center(child: Text('$index')),
+),
+),
+),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "ScrollController"},
+    {"text": "<code>ScrollController</code> позволяет управлять прокруткой программно.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Базовое использование"},
+    {"content": "class ScrollExample extends StatefulWidget {
+@override
+_ScrollExampleState createState() => _ScrollExampleState();
+}
+
+class _ScrollExampleState extends State<ScrollExample> {
+final ScrollController _controller = ScrollController();
+
+@override
+void initState() {
+super.initState();
+// Слушатель позиции прокрутки
+_controller.addListener(() {
+print('Позиция: ${_controller.offset}');
+});
+}
+
+@override
+void dispose() {
+_controller.dispose(); // Обязательно освободите контроллер!
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+ElevatedButton(
+onPressed: () {
+// Прокрутка к началу
+_controller.animateTo(
+0,
+duration: const Duration(milliseconds: 500),
+curve: Curves.easeInOut,
+);
+},
+child: const Text('Наверх'),
+),
+ElevatedButton(
+onPressed: () {
+// Прокрутка к концу
+_controller.animateTo(
+_controller.position.maxScrollExtent,
+duration: const Duration(milliseconds: 500),
+curve: Curves.easeInOut,
+);
+},
+child: const Text('Вниз'),
+),
+Expanded(
+child: SingleChildScrollView(
+controller: _controller,
+child: Column(
+children: List.generate(
+100,
+(index) => ListTile(title: Text('Элемент $index')),
+),
+),
+),
+),
+],
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "AutoScrollController для автопрокрутки"},
+    {"content": "// Прокрутка к конкретному элементу
+void scrollToIndex(int index) {
+// Нужно найти ключ элемента и прокрутить к нему
+_controller.jumpTo(_controller.position.minScrollExtent);
+}
+
+// Прокрутка при фокусе TextField
+FocusNode _focusNode = FocusNode();
+
+@override
+void initState() {
+super.initState();
+_focusNode.addListener(() {
+if (_focusNode.hasFocus) {
+// Автопрокрутка к полю ввода
+Future.delayed(const Duration(milliseconds: 300), () {
+Scrollable.ensureVisible(
+_focusNode.context!,
+duration: const Duration(milliseconds: 300),
+curve: Curves.easeInOut,
+);
+});
+}
+});
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "ScrollPhysics — физика прокрутки"},
+    {"text": "Физика определяет поведение прокрутки при достижении границ.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Виды ScrollPhysics"},
+    {"text": "| Класс | Описание |", "type": "paragraph"},
+    {"text": "|-------|----------|", "type": "paragraph"},
+    {"text": "| <code>ClampingScrollPhysics</code> | Ограничение без отскока (Android по умолчанию) |", "type": "paragraph"},
+    {"text": "| <code>BouncingScrollPhysics</code> | Отскок за пределами границ (iOS по умолчанию) |", "type": "paragraph"},
+    {"text": "| <code>NeverScrollableScrollPhysics</code> | Отключение прокрутки |", "type": "paragraph"},
+    {"text": "| <code>PageScrollPhysics</code> | Постраничная прокрутка |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "ClampingScrollPhysics"},
+    {"content": "// Ограничение без отскока (Android-стиль)
+SingleChildScrollView(
+physics: const ClampingScrollPhysics(),
+child: Column(
+children: List.generate(50, (i) => ListTile(title: Text('$i'))),
+),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "BouncingScrollPhysics"},
+    {"content": "// Отскок за пределами границ (iOS-стиль)
+SingleChildScrollView(
+physics: const BouncingScrollPhysics(),
+child: Column(
+children: List.generate(50, (i) => ListTile(title: Text('$i'))),
+),
+)
+
+// С кастомной жёсткостью
+SingleChildScrollView(
+physics: const BouncingScrollPhysics(
+parent: AlwaysScrollableScrollPhysics(),
+stiffness: 0.8, // Жёсткость отскока (0-1)
+),
+child: Column(
+children: List.generate(50, (i) => ListTile(title: Text('$i'))),
+),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "NeverScrollableScrollPhysics"},
+    {"content": "// Отключение прокрутки (когда контент помещается)
+SingleChildScrollView(
+physics: const NeverScrollableScrollPhysics(),
+child: Column(
+children: [
+const Text('Небольшой контент'),
+// Остальной контент вне SingleChildScrollView
+],
+),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "PageScrollPhysics"},
+    {"content": "// Постраничная прокрутка
+SingleChildScrollView(
+scrollDirection: Axis.horizontal,
+physics: const PageScrollPhysics(),
+child: Row(
+children: [
+Container(width: 300, color: Colors.red),
+Container(width: 300, color: Colors.green),
+Container(width: 300, color: Colors.blue),
+],
+),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Комбинирование с другими виджетами"},
+    {"level": 3, "type": "heading", "text": "SingleChildScrollView + Column + Expanded"},
+    {"content": "Scaffold(
+appBar: AppBar(title: const Text('Форма')),
+body: SingleChildScrollView(
+padding: const EdgeInsets.all(16),
+child: Column(
+children: [
+const Text('Заголовок', style: TextStyle(fontSize: 24)),
+const SizedBox(height: 16),
+// TextField без ограничений
+TextField(
+decoration: const InputDecoration(
+labelText: 'Имя',
+border: OutlineInputBorder(),
+),
+),
+const SizedBox(height: 16),
+// Кнопка внизу
+SizedBox(
+width: double.infinity,
+child: ElevatedButton(
+onPressed: () {},
+child: const Text('Отправить'),
+),
+),
+],
+),
+),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "SingleChildScrollView + ListView"},
+    {"content": "SingleChildScrollView(
+child: Column(
+children: [
+// Статический контент
+const Text('Описание'),
+const SizedBox(height: 16),
+// Прокручиваемый список
+SizedBox(
+height: 300,
+child: ListView.builder(
+itemCount: items.length,
+itemBuilder: (context, index) {
+return ListTile(title: Text(items[index]));
+},
+),
+),
+const SizedBox(height: 16),
+ElevatedButton(onPressed: () {}, child: const Text('OK')),
+],
+),
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"content": "Scrollable.ensureVisible(
+targetWidgetKey.currentContext!,
+duration: const Duration(milliseconds: 300),
+curve: Curves.easeInOut,
+)", "language": "dart", "type": "code"},
+    {"items": ["<strong>Используйте <code>SingleChildScrollView</code></strong> только для небольшого контента — он создаёт все виджеты сразу.", "<strong>Всегда используйте <code>padding</code></strong> в <code>SingleChildScrollView</code> для отступов по краям.", "<strong>Используйте <code>BouncingScrollPhysics</code></strong> для iOS-стиля и <code>ClampingScrollPhysics</code> для Android.", "<strong>Используйте <code>ScrollController</code></strong> для программной прокрутки, но не забывайте вызывать <code>dispose()</code>.", "<strong>Избегайте вложенных прокручиваемых виджетов</strong> — это вызывает конфликты прокрутки.", "<strong>Используйте <code>NeverScrollableScrollPhysics</code></strong> для отключения прокрутки, когда родительский виджет уже прокручивается.", "<strong>Используйте <code>Scrollable.ensureVisible()</code></strong> для прокрутки к конкретному виджету:"], "type": "ol"}
+  ]
+}

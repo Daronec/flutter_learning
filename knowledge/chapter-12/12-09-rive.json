@@ -1,0 +1,278 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Rive — интерактивные анимации"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "Rive (ранее Flare) — это платформа для создания интерактивных анимаций. В отличие от Lottie, Rive поддерживает state machines, что позволяет создавать анимации, реагирующие на действия пользователя.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Преимущества Rive"},
+    {"items": ["<strong>Интерактивность</strong> — анимации реагируют на ввод", "<strong>State Machines</strong> — логика состояний в редакторе", "<strong>Адаптивность</strong> — анимации подстраиваются под размер", "<strong>Кроссплатформенность</strong> — одна анимация для всех платформ", "<strong>Малый размер</strong> — оптимизированные .riv файлы"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Установка"},
+    {"content": "dependencies:
+rive: ^0.13.0", "language": "yaml", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Базовое использование"},
+    {"level": 3, "type": "heading", "text": "Загрузка анимации"},
+    {"content": "class RiveExample extends StatelessWidget {
+const RiveExample({super.key});
+
+@override
+Widget build(BuildContext context) {
+return RiveAnimation.asset(
+'assets/animations/button.riv',
+// Размеры
+width: 200,
+height: 200,
+// Способ заполнения
+fit: BoxFit.contain,
+// Анимация по умолчанию
+artboard: 'Main',
+// Состояние загрузки
+onInit: (artboard) {
+print('Rive animation loaded!');
+// Получение контролов
+final stateMachine = artboard.findStateMachine('Button');
+if (stateMachine != null) {
+final input = stateMachine.findInput<bool>('Is Hovered');
+input?.value = true;
+}
+},
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Загрузка из network"},
+    {"content": "RiveAnimation.network(
+'https://rive.app/community/animation.riv',
+width: 200,
+height: 200,
+fit: BoxFit.contain,
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Загрузка из bytes"},
+    {"content": "final bytes = await rootBundle.load('assets/animations/animation.riv');
+final artboard = Artboard.fromBytes(bytes.buffer.asUint8List());
+
+RiveAnimation.artboard(
+artboard,
+width: 200,
+height: 200,
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "RiveAnimation Widget"},
+    {"level": 3, "type": "heading", "text": "Типы RiveAnimation"},
+    {"text": "| Метод | Источник |", "type": "paragraph"},
+    {"text": "|-------|----------|", "type": "paragraph"},
+    {"text": "| <code>RiveAnimation.asset()</code> | Локальный файл |", "type": "paragraph"},
+    {"text": "| <code>RiveAnimation.network()</code> | URL |", "type": "paragraph"},
+    {"text": "| <code>RiveAnimation.bytes()</code> | Uint8List |", "type": "paragraph"},
+    {"text": "| <code>RiveAnimation.artboard()</code> | Artboard объект |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Параметры"},
+    {"text": "| Параметр | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>src</code> | <code>String</code> | Путь к .riv файлу |", "type": "paragraph"},
+    {"text": "| <code>artboard</code> | <code>String?</code> | Имя artboard |", "type": "paragraph"},
+    {"text": "| <code>stateMachines</code> | <code>List<String>?</code> | Имена state machines |", "type": "paragraph"},
+    {"text": "| <code>animations</code> | <code>List<String>?</code> | Имена анимаций |", "type": "paragraph"},
+    {"text": "| <code>fit</code> | <code>BoxFit</code> | Метод заполнения |", "type": "paragraph"},
+    {"text": "| <code>onInit</code> | <code>ArtboardCallback</code> | Callback при инициализации |", "type": "paragraph"},
+    {"text": "| <code>onError</code> | <code>ErrorCallback</code> | Callback при ошибке |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "State Machines"},
+    {"level": 3, "type": "heading", "text": "Создание State Machine в Rive Editor"},
+    {"text": "State Machine определяет логику анимации:", "type": "paragraph"},
+    {"content": "┌──────────────────────────────────────┐
+│              State Machine            │
+│                                      │
+│  ┌─────────┐    ┌─────────┐         │
+│  │  Idle   │───>│  Hover  │         │
+│  └─────────┘    └─────────┘         │
+│     ^               |                │
+│     |               v                │
+│  ┌─────────┐    ┌─────────┐         │
+│  │  Press  │<───│  Active │         │
+│  └─────────┘    └─────────┘         │
+│                                      │
+│  Inputs: IsHovered, IsPressed        │
+└──────────────────────────────────────┘", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Управление State Machine из кода"},
+    {"content": "class InteractiveRiveExample extends StatefulWidget {
+const InteractiveRiveExample({super.key});
+
+@override
+State<InteractiveRiveExample> createState() =>
+_InteractiveRiveExampleState();
+}
+
+class _InteractiveRiveExampleState
+extends State<InteractiveRiveExample> {
+bool _isHovered = false;
+bool _isPressed = false;
+
+void _onInit(Artboard artboard) {
+// Получаем State Machine
+final stateMachine =
+artboard.findStateMachine('Button State Machine');
+if (stateMachine == null) return;
+
+// Получаем входы
+final isHoveredInput =
+stateMachine.findInput<bool>('Is Hovered');
+final isPressedInput =
+stateMachine.findInput<bool>('Is Pressed');
+
+// Обновляем значения
+isHoveredInput?.value = _isHovered;
+isPressedInput?.value = _isPressed;
+}
+
+@override
+Widget build(BuildContext context) {
+return GestureDetector(
+onTapDown: (_) => setState(() => _isPressed = true),
+onTapUp: (_) => setState(() => _isPressed = false),
+onTapCancel: () => setState(() => _isPressed = false),
+onHover: (_) => setState(() => _isHovered = _isHovered),
+child: RiveAnimation.asset(
+'assets/animations/button.riv',
+stateMachines: ['Button State Machine'],
+onInit: _onInit,
+width: 200,
+height: 200,
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Animation Controller"},
+    {"level": 3, "type": "heading", "text": "Управление анимациями"},
+    {"content": "class RiveAnimationControllerExample extends StatefulWidget {
+const RiveAnimationControllerExample({super.key});
+
+@override
+State<RiveAnimationControllerExample> createState() =>
+_RiveAnimationControllerExampleState();
+}
+
+class _RiveAnimationControllerExampleState
+extends State<RiveAnimationControllerExample> {
+late RiveAnimationController _controller;
+
+@override
+void initState() {
+super.initState();
+// Создание контроллера
+_controller = RiveAnimationController(
+// Имя анимации в Rive файле
+animations: ['Idle', 'Loading', 'Success'],
+// Автозапуск
+autoPlay: true,
+// Повтор
+onInit: (artboard) {
+// Переключение анимаций
+// artboard.findSMI('Animation')?.value = 1.0;
+},
+);
+super.initState();
+}
+
+@override
+void dispose() {
+_controller.dispose();
+super.dispose();
+}
+
+@override
+Widget build(BuildContext context) {
+return Column(
+children: [
+RiveAnimation.asset(
+'assets/animations/multiple.riv',
+controllers: [_controller],
+width: 200,
+height: 200,
+),
+const SizedBox(height: 20),
+Row(
+mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+children: [
+ElevatedButton(
+onPressed: () => _controller.play('Idle'),
+child: const Text('Idle'),
+),
+ElevatedButton(
+onPressed: () => _controller.play('Loading'),
+child: const Text('Loading'),
+),
+ElevatedButton(
+onPressed: () => _controller.play('Success'),
+child: const Text('Success'),
+),
+],
+),
+],
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Методы RiveAnimationController"},
+    {"text": "| Метод | Описание |", "type": "paragraph"},
+    {"text": "|-------|----------|", "type": "paragraph"},
+    {"text": "| <code>play(name)</code> | Воспроизвести анимацию |", "type": "paragraph"},
+    {"text": "| <code>stop()</code> | Остановить |", "type": "paragraph"},
+    {"text": "| <code>dispose()</code> | Освободить ресурсы |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Rive в интерактивных виджетах"},
+    {"level": 3, "type": "heading", "text": "Кнопка с Rive"},
+    {"content": "class RiveButton extends StatefulWidget {
+final VoidCallback? onPressed;
+final Widget child;
+
+const RiveButton({
+super.key,
+this.onPressed,
+required this.child,
+});
+
+@override
+State<RiveButton> createState() => _RiveButtonState();
+}
+
+class _RiveButtonState extends State<RiveButton> {
+bool _isHovered = false;
+bool _isPressed = false;
+
+void _onInit(Artboard artboard) {
+final sm = artboard.findStateMachine('Button');
+if (sm == null) return;
+
+final hoverInput = sm.findInput<bool>('hover');
+final pressInput = sm.findInput<bool>('pressed');
+
+hoverInput?.value = _isHovered;
+pressInput?.value = _isPressed;
+}
+
+@override
+Widget build(BuildContext context) {
+return MouseRegion(
+onEnter: (_) => setState(() => _isHovered = true),
+onExit: (_) => setState(() => _isHovered = false),
+child: GestureDetector(
+onTapDown: (_) => setState(() => _isPressed = true),
+onTapUp: (_) => setState(() => _isPressed = false),
+onTapCancel: () => setState(() => _isPressed = false),
+onTap: widget.onPressed,
+child: Stack(
+alignment: Alignment.center,
+children: [
+RiveAnimation.asset(
+'assets/animations/button.riv',
+stateMachines: ['Button'],
+onInit: _onInit,
+width: 200,
+height: 60,
+),
+widget.child,
+],
+),
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Создание анимаций в Rive Editor"},
+    {"items": ["<strong>Скачайте Rive Editor</strong> — <a href=\"https://rive.app/\" target=\"_blank\">rive.app</a>", "<strong>Создайте новый файл</strong> — выберите шаблон", "<strong>Добавьте арты</strong> — импортируйте векторную графику", "<strong>Создайте State Machine</strong> — добавьте состояния и переходы", "<strong>Настройте Inputs</strong> — IsHovered, IsPressed и т.д.", "<strong>Экспортируйте</strong> — .riv файл"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Лучшие практики"},
+    {"items": ["<strong>Используйте State Machines</strong> для интерактивности", "<strong>Оптимизируйте арты</strong> — минимизируйте количество точек", "<strong>Используйте <code>stateMachines</code></strong> вместо анимаций для интерактивных элементов", "<strong>Кэшируйте Artboard</strong> при повторном использовании", "<strong>Обрабатывайте ошибки</strong> через <code>onError</code> callback", "<strong>Тестируйте на слабых устройствах</strong> — сложные state machines могут быть дорогими"], "type": "ol"}
+  ]
+}

@@ -1,0 +1,149 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "3.2 Element и Tree — как работает widget-дерево"},
+    {"level": 2, "type": "heading", "text": "Три дерева Flutter"},
+    {"text": "Flutter использует три дерева для построения UI:", "type": "paragraph"},
+    {"content": "Widget Tree (конфигурация)
+↓ создаёт/обновляет
+Element Tree (управление)
+↓ управляет
+RenderObject Tree (layout + рисование)", "language": "", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Widget — конфигурация"},
+    {"content": "// Widget — лёгкий, неизменяемый, создаётся часто
+Text('Hello')
+// Конфигурирует:
+// - текст: 'Hello'
+// - стиль: по умолчанию
+// - strut: true", "language": "dart", "type": "code"},
+    {"text": "<strong>Характеристики Widget:</strong>", "type": "paragraph"},
+    {"items": ["Лёгкий объект (несколько полей)", "Неизменяемый (все поля <code>final</code>)", "Создаётся при каждом <code>build()</code>", "Не содержит состояния", "Не кэшируется"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Element — управление"},
+    {"content": "// Element — экземпляр виджета в дереве
+// Кэшируется, управляет жизненным циклом", "language": "dart", "type": "code"},
+    {"text": "<strong>Характеристики Element:</strong>", "type": "paragraph"},
+    {"items": ["Средней тяжести объект", "Кэшируется в дереве", "Управляет жизненным циклом виджета", "Содержит BuildContext", "knows своих родителей и детей"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Типы Element"},
+    {"text": "| Element | Описание |", "type": "paragraph"},
+    {"text": "|---|---|", "type": "paragraph"},
+    {"text": "| <code>ComponentElement</code> | Для ComponentWidget (Column, Row) |", "type": "paragraph"},
+    {"text": "| <code>StatefulElement</code> | Для StatefulWidget |", "type": "paragraph"},
+    {"text": "| <code>StatelessElement</code> | Для StatelessWidget |", "type": "paragraph"},
+    {"text": "| <code>ProxyElement</code> | Для ProxyWidget (Theme, InheritedWidget) |", "type": "paragraph"},
+    {"text": "| <code>RenderObjectElement</code> | Для RenderObjectWidget |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "RenderObject — рисование"},
+    {"content": "// RenderObject — объект, отвечающий за layout и рисование
+RenderParagraph — для текста
+RenderFlex — для Row/Column
+RenderStack — для Stack", "language": "dart", "type": "code"},
+    {"text": "<strong>Характеристики RenderObject:</strong>", "type": "paragraph"},
+    {"items": ["Тяжёлый объект", "Кэшируется", "Вычисляет layout (position + size)", "Рисует пиксели", "Обрабатывает жесты"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Жизненный цикл Element"},
+    {"content": "1. createElement()
+↓
+2. mount(parent, initialIndex)
+↓
+3. insertRenderObjectChild(key, renderObject)
+↓
+4. build()
+↓
+5. updateChild(newWidget)
+↓
+6. deactivate() / unmount()", "language": "", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Детальный жизненный цикл"},
+    {"content": "// StatelessElement lifecycle
+class StatelessElement extends ComponentElement {
+@override
+Widget build() {
+// Строим виджет
+return widget.build(this);
+}
+
+@override
+void unmount() {
+// Очистка ресурсов
+super.unmount();
+}
+}
+
+// StatefulElement lifecycle
+class StatefulElement _buildStatefulWidget() {
+@override
+Widget build() {
+return _state.build(this);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Widget → Element → RenderObject"},
+    {"level": 3, "type": "heading", "text": "Связь между деревьями"},
+    {"content": "// Widget (конфигурация)
+Text('Hello')
+// ↓ createElement()
+Element (управление)
+// ↓ createRenderObject()
+RenderObject (рисование)
+
+// При изменении:
+Widget (новый)
+// ↓ update()
+Element (обновляется)
+// ↓ updateRenderObject()
+RenderObject (перелayout/перерисовка)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример"},
+    {"content": "class MyWidget extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return Text('Hello');
+// Создаёт:
+// 1. TextElement (Element)
+// 2. RenderParagraph (RenderObject)
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Tree Diffing"},
+    {"level": 3, "type": "heading", "text": "Как Flutter определяет изменения"},
+    {"content": "// Старое дерево
+Column(
+children: [
+Text('A'),
+Text('B'),
+Text('C'),
+],
+)
+
+// Новое дерево
+Column(
+children: [
+Text('A'),
+Text('B'),   // ← не изменился, Element кэширован
+Text('C'),
+],
+)
+
+// Flutter сравнивает:
+// 1. Тип виджета (Text → Text)
+// 2. Key (если есть)
+// 3. Параметры виджета", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Критерии обновления"},
+    {"text": "| Критерий | Описание |", "type": "paragraph"},
+    {"text": "|---|---|", "type": "paragraph"},
+    {"text": "| <strong>Тип</strong> | Если тип разный — удаляем старый, создаём новый |", "type": "paragraph"},
+    {"text": "| <strong>Key</strong> | Если есть Key — используем для сопоставления |", "type": "paragraph"},
+    {"text": "| <strong>Parameters</strong> | Если параметры разные — обновляем конфигурацию |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "BuildContext"},
+    {"content": "// BuildContext — ссылка на Element в дереве
+// Предоставляет информацию о расположении виджета
+
+@override
+Widget build(BuildContext context) {
+// context указывает на Element этого виджета
+// Через context можно получить доступ к:
+// - Theme.of(context) — тема
+// - MediaQuery.of(context) — размеры экрана
+// - Navigator.of(context) — навигация
+// - Provider.of(context) — состояние
+return Text('Hello');
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Понимание трёх деревьев Flutter критически важно для:", "type": "paragraph"},
+    {"items": ["Оптимизации производительности", "Правильного использования Key", "Отладки проблем с перестройкой", "Создания эффективных виджетов"], "type": "ul"},
+    {"text": "Ключевое правило: <strong>Widget — конфигурация, Element — управление, RenderObject — рисование</strong>.", "type": "paragraph"}
+  ]
+}

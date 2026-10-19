@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "chapter-02",
+  "lessons": [
+    {
+      "id": "02-01-syntax-basics",
+      "slug": "syntax-basics",
+      "title": "2.1 Основы синтаксиса Dart: переменные, типы данных",
+      "order": 1,
+      "file": "content/02-01-syntax-basics.md",
+      "summary": "> Правило: const объект — это final, final объект — не обязательно const.",
+      "tags": []
+    },
+    {
+      "id": "02-02-functions",
+      "slug": "functions",
+      "title": "2.2 Функции: параметры, стрелочный синтаксис, async/await",
+      "order": 2,
+      "file": "content/02-02-functions.md",
+      "summary": "Функции в Dart — это полноценные объекты первого класса. Понимание параметров, стрелочного синтаксиса и async/await — основа написания эффективного Dart-кода.",
+      "tags": []
+    },
+    {
+      "id": "02-03-classes-objects",
+      "slug": "classes-objects",
+      "title": "2.3 Классы и объекты: конструкторы, фабрики, инициализация",
+      "order": 3,
+      "file": "content/02-03-classes-objects.md",
+      "summary": "> Важно: Для использования const все поля класса должны быть final.",
+      "tags": []
+    },
+    {
+      "id": "02-04-mixins-interfaces",
+      "slug": "mixins-interfaces",
+      "title": "2.4 Миксины, интерфейсы, абстрактные классы",
+      "order": 4,
+      "file": "content/02-04-mixins-interfaces.md",
+      "summary": "В Dart это одно и то же:",
+      "tags": []
+    },
+    {
+      "id": "02-05-generics",
+      "slug": "generics",
+      "title": "2.5 Generics (обобщённое программирование)",
+      "order": 5,
+      "file": "content/02-05-generics.md",
+      "summary": "Generics — это механизм создания классов, функций и методов, которые работают с любыми типами данных, обеспечивая при этом типобезопасность.",
+      "tags": []
+    },
+    {
+      "id": "02-06-async-await",
+      "slug": "async-await",
+      "title": "2.6 Асинхронность: Future, Stream, isolate",
+      "order": 6,
+      "file": "content/02-06-async-await.md",
+      "summary": "Isolate — это отдельный поток выполнения с собственной памятью. В отличие от threads, изоляты не разделяют память.",
+      "tags": []
+    },
+    {
+      "id": "02-07-collections",
+      "slug": "collections",
+      "title": "2.7 Коллекции: List, Set, Map и их методы",
+      "order": 7,
+      "file": "content/02-07-collections.md",
+      "summary": "Set сохраняет порядок вставки в Dart.",
+      "tags": []
+    },
+    {
+      "id": "02-08-extensions-operators",
+      "slug": "extensions-operators",
+      "title": "2.8 Расширения (extension methods) и операторы",
+      "order": 8,
+      "file": "content/02-08-extensions-operators.md",
+      "summary": "Extensions позволяют добавлять методы к существующим классам без наследования или изменения исходного кода.",
+      "tags": []
+    },
+    {
+      "id": "02-09-exceptions",
+      "slug": "exceptions",
+      "title": "2.9 Исключения и обработка ошибок",
+      "order": 9,
+      "file": "content/02-09-exceptions.md",
+      "summary": "Правильная обработка ошибок — критически важная часть написания надёжного кода. Используйте try/catch для непредсказуемых операций, кастомные исключения для бизнес-логики и Result pattern для явной обработки ошибок.",
+      "tags": []
+    },
+    {
+      "id": "02-10-packages-pubspec",
+      "slug": "packages-pubspec",
+      "title": "2.10 Пакетная система: pubspec, зависимости, pub.dev",
+      "order": 10,
+      "file": "content/02-10-packages-pubspec.md",
+      "summary": "pub.dev — официальный реестр пакетов для Dart и Flutter.",
+      "tags": []
+    }
+  ]
+}

@@ -1,0 +1,250 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "JSON: сериализация и десериализация в Dart"},
+    {"text": "JSON (JavaScript Object Notation) — это текстовый формат обмена данными. В Flutter мы постоянно работаем с JSON при обмене данными с сервером.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Основы работы с JSON"},
+    {"level": 3, "type": "heading", "text": "Импорт"},
+    {"content": "import 'dart:convert';", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "jsonDecode и jsonEncode"},
+    {"content": "// Десериализация JSON (строка → объект)
+String jsonString = '{\"name\": \"Иван\", \"age\": 25}';
+Map<String, dynamic> data = jsonDecode(jsonString);
+print(data['name']); // Иван
+
+// Сериализация объекта в JSON (объект → строка)
+Map<String, dynamic> user = {'name': 'Иван', 'age': 25};
+String output = jsonEncode(user);
+print(output); // {\"name\":\"Иван\",\"age\":25}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Работа со списками"},
+    {"content": "// JSON-массив → List
+String jsonList = '[{\"name\":\"Иван\"},{\"name\":\"Мария\"}]';
+List<dynamic> users = jsonDecode(jsonList);
+
+for (var user in users) {
+print(user['name']);
+}
+
+// List → JSON-массив
+List<Map<String, dynamic>> userList = [
+{'name': 'Иван', 'age': 25},
+{'name': 'Мария', 'age': 30},
+];
+String jsonOutput = jsonEncode(userList);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Ручная сериализация"},
+    {"level": 3, "type": "heading", "text": "Парсинг JSON в объект"},
+    {"content": "Map<String, dynamic> json = {
+'id': 1,
+'name': 'Иван Петров',
+'email': 'ivan@example.com',
+'isActive': true,
+'age': 25,
+'address': {
+'city': 'Москва',
+'street': 'ул. Ленина',
+'zipCode': '101000',
+},
+'tags': ['flutter', 'dart'],
+};
+
+// Извлечение данных
+int id = json['id'] as int;
+String name = json['name'] as String;
+String email = json['email'] as String;
+bool isActive = json['isActive'] as bool;
+int? age = json['age'] as int?; // Может быть null
+
+// Вложенный объект
+Map<String, dynamic> address = json['address'] as Map<String, dynamic>;
+String city = address['city'] as String;
+
+// Список
+List<dynamic> tags = json['tags'] as List<dynamic>;
+List<String> stringTags = tags.map((e) => e as String).toList();", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Создание JSON из объекта"},
+    {"content": "Map<String, dynamic> userMap = {
+'id': 1,
+'name': 'Иван Петров',
+'email': 'ivan@example.com',
+'isActive': true,
+'age': 25,
+'address': {
+'city': 'Москва',
+'street': 'ул. Ленина',
+},
+'tags': ['flutter', 'dart'],
+};
+
+String json = jsonEncode(userMap);", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Классы для работы с JSON"},
+    {"level": 3, "type": "heading", "text": "Класс с методом fromJson"},
+    {"content": "class User {
+final int id;
+final String name;
+final String email;
+final bool isActive;
+final DateTime? createdAt;
+
+User({
+required this.id,
+required this.name,
+required this.email,
+required this.isActive,
+this.createdAt,
+});
+
+// Создание объекта из JSON
+factory User.fromJson(Map<String, dynamic> json) {
+return User(
+id: json['id'] as int,
+name: json['name'] as String,
+email: json['email'] as String,
+isActive: json['isActive'] as bool,
+createdAt: json['createdAt'] != null
+? DateTime.parse(json['createdAt'] as String)
+: null,
+);
+}
+
+// Преобразование объекта в JSON
+Map<String, dynamic> toJson() {
+return {
+'id': id,
+'name': name,
+'email': email,
+'isActive': isActive,
+'createdAt': createdAt?.toIso8601String(),
+};
+}
+}
+
+// Использование
+String json = '{\"id\":1,\"name\":\"Иван\",\"email\":\"ivan@example.com\",\"isActive\":true,\"createdAt\":\"2024-01-15T10:30:00Z\"}';
+User user = User.fromJson(jsonDecode(json));
+String output = jsonEncode(user.toJson());", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Работа с вложенными объектами"},
+    {"content": "class Address {
+final String city;
+final String street;
+final String zipCode;
+
+Address({required this.city, required this.street, required this.zipCode});
+
+factory Address.fromJson(Map<String, dynamic> json) {
+return Address(
+city: json['city'] as String,
+street: json['street'] as String,
+zipCode: json['zipCode'] as String,
+);
+}
+
+Map<String, dynamic> toJson() {
+return {
+'city': city,
+'street': street,
+'zipCode': zipCode,
+};
+}
+}
+
+class User {
+final int id;
+final String name;
+final Address? address;
+
+User({required this.id, required this.name, this.address});
+
+factory User.fromJson(Map<String, dynamic> json) {
+return User(
+id: json['id'] as int,
+name: json['name'] as String,
+address: json['address'] != null
+? Address.fromJson(json['address'] as Map<String, dynamic>)
+: null,
+);
+}
+
+Map<String, dynamic> toJson() {
+return {
+'id': id,
+'name': name,
+'address': address?.toJson(),
+};
+}
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Работа со списками в классах"},
+    {"content": "class Post {
+final int id;
+final String title;
+final List<String> tags;
+final List<Map<String, dynamic>> comments;
+
+Post({
+required this.id,
+required this.title,
+required this.tags,
+required this.comments,
+});
+
+factory Post.fromJson(Map<String, dynamic> json) {
+return Post(
+id: json['id'] as int,
+title: json['title'] as String,
+tags: (json['tags'] as List<dynamic>)
+.map((e) => e as String)
+.toList(),
+comments: (json['comments'] as List<dynamic>)
+.map((e) => e as Map<String, dynamic>)
+.toList(),
+);
+}
+
+Map<String, dynamic> toJson() {
+return {
+'id': id,
+'title': title,
+'tags': tags,
+'comments': comments,
+};
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Обработка null и типов"},
+    {"level": 3, "type": "heading", "text": "Безопасное извлечение данных"},
+    {"content": "// Использование as? для безопасного приведения типа
+factory User.fromJson(Map<String, dynamic> json) {
+return User(
+id: json['id'] as int? ?? 0,           // Значение по умолчанию
+name: json['name'] as String? ?? '',    // Пустая строка
+email: json['email'] as String,         // Обязательное поле
+age: json['age'] as int?,               // Может быть null
+nickname: json['nickname'] as String?,  // Может отсутствовать
+);
+}
+
+// Проверка наличия ключа
+if (json.containsKey('optionalField')) {
+final value = json['optionalField'];
+}
+
+// Проверка типа
+if (json['data'] is Map<String, dynamic>) {
+// обрабатываем как Map
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Преобразование типов"},
+    {"content": "// String → int
+int number = int.parse(json['count'] as String);
+
+// String → double
+double price = double.parse(json['price'] as String);
+
+// String → DateTime
+DateTime date = DateTime.parse(json['date'] as String);
+
+// String → bool (JSON boolean)
+bool active = json['active'] as bool;
+
+// String → bool (из строки \"true\"/\"false\")
+bool active = json['active'] == 'true';", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>Использайте <code>as Type</code></strong> для приведения типов — это безопаснее, чем приведение через <code>as</code>", "<strong>Обрабатывайте null</strong> — проверяйте наличие ключей и значений", "<strong>Создавайте классы-модели</strong> — не работайте с сырым JSON в UI-слое", "<strong>Используйте <code>toIso8601String()</code></strong> для сериализации DateTime", "<strong>Делайте поля <code>final</code></strong> — модели данных должны быть неизменяемыми", "<strong>Добавляйте <code>fromJson</code> и <code>toJson</code></strong> — это стандартный паттерн в Dart"], "type": "ul"}
+  ]
+}

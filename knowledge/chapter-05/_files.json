@@ -1,0 +1,45 @@
+﻿{
+    "files":  [
+                  {
+                      "name":  "05-01-flex-system.md",
+                      "path":  "chapter-05/05-01-flex-system.md",
+                      "size":  12193
+                  },
+                  {
+                      "name":  "05-02-constraints.md",
+                      "path":  "chapter-05/05-02-constraints.md",
+                      "size":  11409
+                  },
+                  {
+                      "name":  "05-03-layoutbuilder.md",
+                      "path":  "chapter-05/05-03-layoutbuilder.md",
+                      "size":  10298
+                  },
+                  {
+                      "name":  "05-04-positioned-align.md",
+                      "path":  "chapter-05/05-04-positioned-align.md",
+                      "size":  11229
+                  },
+                  {
+                      "name":  "05-05-custom-multichild.md",
+                      "path":  "chapter-05/05-05-custom-multichild.md",
+                      "size":  10250
+                  },
+                  {
+                      "name":  "05-06-aspectratio-fittedbox.md",
+                      "path":  "chapter-05/05-06-aspectratio-fittedbox.md",
+                      "size":  11619
+                  },
+                  {
+                      "name":  "05-07-responsive-design.md",
+                      "path":  "chapter-05/05-07-responsive-design.md",
+                      "size":  10026
+                  },
+                  {
+                      "name":  "05-08-orientation-mediaquery.md",
+                      "path":  "chapter-05/05-08-orientation-mediaquery.md",
+                      "size":  12763
+                  }
+              ],
+    "chapter":  "chapter-05"
+}

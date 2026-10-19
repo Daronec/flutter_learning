@@ -1,0 +1,222 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "3.8 Key, ValueKey, UniqueKey — зачем нужны ключи"},
+    {"level": 2, "type": "heading", "text": "Что такое Key?"},
+    {"text": "Key — это идентификатор для виджетов, который помогает Flutter сопоставлять элементы при перестройке дерева.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Когда Key нужны?"},
+    {"text": "Key нужны когда:", "type": "paragraph"},
+    {"items": ["Виджеты вставляются/удаляются из дерева", "Виджеты меняются местами", "Виджеты с состоянием (StatefulWidget) в динамических списках"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Типы Key"},
+    {"level": 3, "type": "heading", "text": "ObjectKey"},
+    {"text": "Базовый класс для Key. Сравнивает объекты по ссылке.", "type": "paragraph"},
+    {"content": "ObjectKey(myObject); // Сравнивает по ==", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "ValueKey"},
+    {"text": "Сравнивает виджеты по значению.", "type": "paragraph"},
+    {"content": "// ValueKey срабатывает при равенстве значений
+ValueKey<int>(1); // Key со значением 1
+ValueKey<String>('user-123'); // Key со строкой
+
+// Пример использования
+ListView.builder(
+itemBuilder: (context, index) {
+return ListTile(
+key: ValueKey(users[index].id), // Уникальный ключ по ID
+title: Text(users[index].name),
+);
+},
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "UniqueKey"},
+    {"text": "Уникальный ключ, который гарантированно не повторяется.", "type": "paragraph"},
+    {"content": "// Каждый UniqueKey уникален
+UniqueKey(); // Новый уникальный ключ
+
+// Использование
+// ❌ Не рекомендуется для списков (каждый раз новый!)
+// ✅ Для создания временных виджетов
+Dialog(
+key: UniqueKey(), // Каждый раз новый Dialog с новым ключом
+child: Text('Dialog'),
+);", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "GlobalKey"},
+    {"text": "Глобальный ключ, видимый во всём дереве.", "type": "paragraph"},
+    {"content": "// GlobalKey виден во всём дереве виджетов
+final globalKey = GlobalKey();
+
+// Использование
+Container(
+key: globalKey,
+child: Text('Hello'),
+);
+
+// Получение State из любого места
+var state = globalKey.currentState as MyStatefulState;
+state.doSomething();
+
+// Получение RenderObject
+var renderBox = globalKey.currentContext?.findRenderObject() as RenderBox;", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Как работает Key matching"},
+    {"level": 3, "type": "heading", "text": "Без Key"},
+    {"content": "// Widget Tree сравнение по типу и позиции
+[
+Text('A'),  // index 0
+Text('B'),  // index 1
+Text('C'),  // index 2
+]
+
+// После удаления B:
+[
+Text('A'),  // index 0 — совпал (тот же тип)
+Text('C'),  // index 1 — совпал (тот же тип) — НО это был Text('B')!
+]", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "С ValueKey"},
+    {"content": "// С Key — сравнение по значению ключа
+[
+Text('A', key: ValueKey('a')),
+Text('B', key: ValueKey('b')),
+Text('C', key: ValueKey('c')),
+]
+
+// После удаления B:
+[
+Text('A', key: ValueKey('a')), // index 0 — совпал
+Text('C', key: ValueKey('c')), // index 1 — совпал по ключу 'c'
+]", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Пример: ListView с Key"},
+    {"content": "class MyList extends StatefulWidget {
+@override
+State<MyList> createState() => _MyListState();
+}
+
+class _MyListState extends State<MyList> {
+List<String> items = ['A', 'B', 'C'];
+
+@override
+Widget build(BuildContext context) {
+return ListView(
+children: items.map((item) {
+return ListTile(
+key: ValueKey(item), // Ключ по значению
+title: Text(item),
+trailing: IconButton(
+icon: Icon(Icons.delete),
+onPressed: () {
+setState(() => items.remove(item));
+},
+),
+);
+}).toList(),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Key и StatefulWidget"},
+    {"level": 3, "type": "heading", "text": "Без Key — проблема"},
+    {"content": "// ❌ Без Key: при удалении элемента, State перемешивается
+// Удаляем элемент B, но State элемента B становится у элемента C!
+
+// С Key: State привязан к ключу, а не к позиции
+// Удаляем элемент B, его State удаляется, State элемента C остаётся", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Пример с сохранением состояния"},
+    {"content": "class TodoList extends StatefulWidget {
+@override
+State<TodoList> createState() => _TodoListState();
+}
+
+class _TodoListState extends State<TodoList> {
+List<TodoItem> todos = [];
+
+@override
+Widget build(BuildContext context) {
+return ListView(
+children: todos.map((todo) {
+return TodoTile(
+key: ValueKey(todo.id), // Ключ по ID — состояние сохраняется
+todo: todo,
+onDelete: () => setState(() => todos.remove(todo)),
+);
+}).toList(),
+);
+}
+}
+
+class TodoTile extends StatefulWidget {
+final TodoItem todo;
+final VoidCallback onDelete;
+
+const TodoTile({required this.todo, required this.onDelete, super.key});
+
+@override
+State<TodoTile> createState() => _TodoTileState();
+}
+
+class _TodoTileState extends State<TodoTile> {
+bool _isCompleted = false;
+
+@override
+Widget build(BuildContext context) {
+return ListTile(
+title: Text(
+widget.todo.title,
+style: TextStyle(decoration: _isCompleted ? TextDecoration.lineThrough : null),
+),
+trailing: Row(
+mainAxisSize: MainAxisSize.min,
+children: [
+IconButton(
+icon: Icon(_isCompleted ? Icons.check : Icons.check_border),
+onPressed: () => setState(() => _isCompleted = !_isCompleted),
+),
+IconButton(
+icon: Icon(Icons.delete),
+onPressed: widget.onDelete,
+),
+],
+),
+);
+}
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Когда использовать какой Key?"},
+    {"text": "| Key | Когда использовать | Пример |", "type": "paragraph"},
+    {"text": "|---|---|---|", "type": "paragraph"},
+    {"text": "| <strong>ValueKey</strong> | Есть уникальное значение | <code>ValueKey(user.id)</code> |", "type": "paragraph"},
+    {"text": "| <strong>UniqueKey</strong> | Временные виджеты | Диалоги, тултипы |", "type": "paragraph"},
+    {"text": "| <strong>GlobalKey</strong> | Доступ из любого места | <code>GlobalKey<ScaffoldState></code> |", "type": "paragraph"},
+    {"text": "| <strong>ObjectKey</strong> | Объект с <code>==</code> | <code>ObjectKey(myObject)</code> |", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "GlobalKey — продвинутые примеры"},
+    {"level": 3, "type": "heading", "text": "Доступ к Scaffold"},
+    {"content": "final scaffoldKey = GlobalKey<ScaffoldState>();
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+key: scaffoldKey,
+appBar: AppBar(...),
+body: Center(
+child: ElevatedButton(
+onPressed: () {
+scaffoldKey.currentState?.openDrawer();
+},
+child: Text('Open Drawer'),
+),
+),
+);
+}", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Перемещение виджета"},
+    {"content": "final widgetKey = GlobalKey();
+
+// Виджет может быть перемещён в другую часть дерева
+// сохранив своё состояние
+Widget build(BuildContext context) {
+return Column(
+children: [
+if (showInTop)
+Container(key: widgetKey, child: Text('Moved')),
+],
+);
+}", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"items": ["<strong>ValueKey</strong> — для списков с уникальными ID", "<strong>UniqueKey</strong> — только для временных виджетов", "<strong>GlobalKey</strong> — только когда действительно нужно", "<strong>Не используйте Key</strong> для статических списков", "<strong>Используйте key</strong> когда State может перемешаться"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Key помогают Flutter правильно сопоставлять виджеты при перестройке дерева:", "type": "paragraph"},
+    {"items": ["<strong>Без Key</strong> — сопоставление по типу и позиции", "<strong>С Key</strong> — сопоставление по значению ключа", "<strong>ValueKey</strong> — самый распространённый тип для списков", "<strong>GlobalKey</strong> — для доступа к State/RenderObject из любого места"], "type": "ul"}
+  ]
+}

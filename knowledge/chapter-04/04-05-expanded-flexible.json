@@ -1,0 +1,260 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "Expanded, Flexible — распределение пространства"},
+    {"level": 2, "type": "heading", "text": "Введение"},
+    {"text": "<code>Expanded</code> и <code>Flexible</code> — виджеты для управления распределением свободного пространства в <code>Row</code>, <code>Column</code> и <code>Flex</code>. Они позволяют создавать адаптивные интерфейсы, которые подстраиваются под размер экрана.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "Flex"},
+    {"text": "Перед изучением <code>Expanded</code> и <code>Flexible</code> нужно понять базовый виджет <code>Flex</code>.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Flex — базовый класс"},
+    {"text": "<code>Row</code> и <code>Column</code> являются сокращениями для <code>Flex</code>:", "type": "paragraph"},
+    {"content": "// Эти эквивалентны:
+Row(children: [...])
+// равносильно:
+Flex(direction: Axis.horizontal, children: [...])
+
+Column(children: [...])
+// равносильно:
+Flex(direction: Axis.vertical, children: [...])", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Expanded"},
+    {"text": "Виджет <code>Expanded</code> заставляет дочерний виджет занимать всё доступное свободное пространство.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные свойства Expanded"},
+    {"text": "| Свойство | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>flex</code> | <code>int</code> | Коэффициент гибкости (по умолчанию 1) |", "type": "paragraph"},
+    {"text": "| <code>child</code> | <code>Widget?</code> | Дочерний виджет |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Пример использования Expanded"},
+    {"content": "Row(
+children: [
+const Text('Фиксированный'),
+const SizedBox(width: 8),
+Expanded(
+child: TextField(
+decoration: const InputDecoration(
+hintText: 'Введите текст',
+),
+),
+),
+const SizedBox(width: 8),
+const Icon(Icons.search),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Flex-коэффициенты"},
+    {"content": "Row(
+children: [
+// Занимает 1/4 пространства
+Expanded(flex: 1, child: Container(color: Colors.red, height: 50)),
+// Занимает 2/4 (1/2) пространства
+Expanded(flex: 2, child: Container(color: Colors.green, height: 50)),
+// Занимает 1/4 пространства
+Expanded(flex: 1, child: Container(color: Colors.blue, height: 50)),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Flexible"},
+    {"text": "Виджет <code>Flexible</code> позволяет дочернему виджету сжиматься и расширяться, но не обязывает его занимать всё пространство.", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Основные свойства Flexible"},
+    {"text": "| Свойство | Тип | Описание |", "type": "paragraph"},
+    {"text": "|----------|-----|----------|", "type": "paragraph"},
+    {"text": "| <code>flex</code> | <code>int</code> | Коэффициент гибкости (по умолчанию 1) |", "type": "paragraph"},
+    {"text": "| <code>fit</code> | <code>FlexFit</code> | Режим заполнения пространства |", "type": "paragraph"},
+    {"text": "| <code>child</code> | <code>Widget?</code> | Дочерний виджет |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "FlexFit"},
+    {"text": "| Значение | Описание |", "type": "paragraph"},
+    {"text": "|----------|----------|", "type": "paragraph"},
+    {"text": "| <code>loose</code> | Виджет может быть любого размера в пределах доступного |", "type": "paragraph"},
+    {"text": "| <code>tight</code> | Виджет должен занять всё доступное пространство (как <code>Expanded</code>) |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Flexible с loose"},
+    {"content": "Row(
+children: [
+const Text('Текст'),
+Flexible(
+fit: FlexFit.loose,
+child: Container(
+color: Colors.blue,
+// Может быть любого размера, не растягивается
+child: const Text('Гибкий блок'),
+),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "Flexible с tight"},
+    {"content": "Row(
+children: [
+const Text('Текст'),
+Flexible(
+fit: FlexFit.tight,
+child: Container(
+color: Colors.blue,
+// Растягивается как Expanded
+child: const Text('Гибкий блок'),
+),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Expanded vs Flexible"},
+    {"text": "| Характеристика | Expanded | Flexible |", "type": "paragraph"},
+    {"text": "|----------------|----------|----------|", "type": "paragraph"},
+    {"text": "| Занимает пространство | Обязательно | По желанию |", "type": "paragraph"},
+    {"text": "| Эквивалент | <code>Flexible(fit: FlexFit.tight)</code> | <code>Flexible(fit: FlexFit.loose)</code> |", "type": "paragraph"},
+    {"text": "| Минимальный размер | Растягивается до максимума | Может сжиматься до intrinsic размера |", "type": "paragraph"},
+    {"text": "| Когда использовать | Когда нужно заполнить пространство | Когда нужно гибкое поведение |", "type": "paragraph"},
+    {"level": 3, "type": "heading", "text": "Наглядный пример различий"},
+    {"content": "// Expanded — всегда растягивается
+Row(
+children: [
+const Text('Фикс: '),
+Expanded(
+child: Container(
+color: Colors.blue,
+child: const Text('Мини'), // Растянется на всю ширину
+),
+),
+],
+)
+
+// Flexible — может быть минимального размера
+Row(
+children: [
+const Text('Фикс: '),
+Flexible(
+child: Container(
+color: Colors.blue,
+child: const Text('Мини'), // Останется компактным
+),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Комбинирование с фиксированными элементами"},
+    {"content": "Row(
+children: [
+// Фиксированная ширина
+const SizedBox(width: 80, child: Text('Лейбл')),
+// Гибкая часть
+Expanded(
+child: TextField(
+decoration: const InputDecoration(hintText: 'Значение'),
+),
+),
+// Фиксированная кнопка
+const SizedBox(
+width: 100,
+child: ElevatedButton(
+onPressed: () {},
+child: Text('OK'),
+),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Вложенные Flex-виджеты"},
+    {"content": "Column(
+children: [
+// Заголовок занимает 1 часть
+Expanded(
+flex: 1,
+child: Container(color: Colors.blue, child: const Text('Header')),
+),
+// Контент занимает 3 части
+Expanded(
+flex: 3,
+child: Container(color: Colors.green, child: const Text('Content')),
+),
+// Футер занимает 1 часть
+Expanded(
+flex: 1,
+child: Container(color: Colors.red, child: const Text('Footer')),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Common Pitfalls (Распространённые ошибки)"},
+    {"level": 3, "type": "heading", "text": "1. Expanded внутри Scrollable без ограничений"},
+    {"content": "// ❌ Ошибка: Expanded внутри SingleChildScrollView
+SingleChildScrollView(
+child: Column(
+children: [
+const Text('Заголовок'),
+Expanded(
+child: Text('Контент'), // Ошибка: нет ограничений
+),
+],
+),
+)
+
+// ✅ Правильно: используйте Flexible
+SingleChildScrollView(
+child: Column(
+children: [
+const Text('Заголовок'),
+Flexible(
+child: Text('Контент'),
+),
+],
+),
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "2. Несколько Expanded с разными требованиями"},
+    {"content": "// ❌ Ошибка: два Expanded с разными ограничениями
+Row(
+children: [
+Expanded(
+child: ConstrainedBox(
+constraints: const BoxConstraints(maxWidth: 100),
+child: Container(color: Colors.blue),
+),
+),
+Expanded(
+child: Container(color: Colors.red),
+),
+],
+)
+
+// ✅ Правильно: используйте Flexible для ограниченного
+Row(
+children: [
+Flexible(
+child: ConstrainedBox(
+constraints: const BoxConstraints(maxWidth: 100),
+child: Container(color: Colors.blue),
+),
+),
+Expanded(
+child: Container(color: Colors.red),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 3, "type": "heading", "text": "3. Expanded внутри Column без SingleChildScrollView"},
+    {"content": "// ❌ Ошибка: Column с Expanded внутри Column (неограниченная высота)
+Column(
+children: [
+const Text('Заголовок'),
+Expanded(
+child: Text('Контент'), // Ошибка: Column не имеет ограничений
+),
+],
+)
+
+// ✅ Правильно: оберните в SingleChildScrollView или используйте SizedBox
+Column(
+children: [
+const Text('Заголовок'),
+Expanded(
+child: SingleChildScrollView(
+child: Text('Контент'),
+),
+),
+],
+)", "language": "dart", "type": "code"},
+    {"level": 2, "type": "heading", "text": "Best Practices"},
+    {"content": "Row(
+children: [
+Expanded(flex: 2, child: LeftPanel()),
+Expanded(flex: 1, child: RightPanel()),
+],
+)", "language": "dart", "type": "code"},
+    {"content": "Row(
+children: [
+SizedBox(width: 50, child: Icon(Icons.menu)),
+Expanded(child: TextField()),
+SizedBox(width: 50, child: Icon(Icons.search)),
+],
+)", "language": "dart", "type": "code"},
+    {"items": ["<strong>Используйте <code>Expanded</code></strong>, когда дочерний виджет должен заполнить всё доступное пространство.", "<strong>Используйте <code>Flexible</code></strong>, когда дочерний виджет может быть меньше доступного пространства.", "<strong>Используйте <code>Flexible(fit: FlexFit.tight)</code></strong> вместо <code>Expanded</code> для более явного кода.", "<strong>Не используйте <code>Expanded</code> внутри <code>SingleChildScrollView</code></strong> — используйте <code>Flexible</code> или <code>SizedBox</code>.", "<strong>Используйте flex-коэффициенты</strong> для пропорционального распределения пространства:", "<strong>Комбинируйте фиксированные и гибкие виджеты</strong> для создания адаптивных лейаутов:"], "type": "ol"}
+  ]
+}

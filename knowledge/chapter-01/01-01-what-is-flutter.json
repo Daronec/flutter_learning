@@ -1,0 +1,25 @@
+﻿{
+  "sections": [
+    {"level": 1, "type": "heading", "text": "1.1 Что такое Flutter? История и философия Google"},
+    {"level": 2, "type": "heading", "text": "Что такое Flutter?"},
+    {"text": "Flutter — это UI-фреймворк с открытым исходным кодом, разработанный компанией Google для создания нативных приложений для мобильных, веб и десктоп-платформ из единой кодовой базы. Первый публичный релиз Flutter 1.0 состоялся в декабре 2018 года.", "type": "paragraph"},
+    {"level": 2, "type": "heading", "text": "История создания"},
+    {"items": ["<strong>2015</strong>: Google начинает работу над проектом «Flutter» (кодовое название «Sky»), изначально для Android", "<strong>2017</strong>: Google I/O 2017 — первое публичное демонстрация", "<strong>декабрь 2018</strong>: Flutter 1.0 — стабильный релиз для iOS и Android", "<strong>2019</strong>: Поддержка веб (Flutter Web)", "<strong>2020</strong>: Поддержка десктоп-платформ (Windows, macOS, Linux)", "<strong>2021</strong>: Flutter 2.0 — стабильная поддержка всех платформ (stable cross-platform)", "<strong>2022–2023</strong>: Flutter 3.x — улучшенный рендерер Impeller, улучшенная производительность", "<strong>2024+</strong>: Flutter 3.16+ — продолжение улучшений производительности и новые возможности"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Философия Google"},
+    {"level": 3, "type": "heading", "text": "Кроссплатформенность без компромиссов"},
+    {"text": "Google стремится доказать, что кроссплатформенная разработка не должна уступать нативной в плане:", "type": "paragraph"},
+    {"items": ["<strong>Производительности</strong> — собственный рендерер Skia/Impeller рисует каждый пиксель", "<strong>Внешнего вида</strong> — идентичный UI на всех платформах", "<strong>Доступа к API</strong> — Platform Channels для взаимодействия с нативным кодом"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "Declarative UI"},
+    {"text": "Flutter следует парадигме декларативного UI (вдохновлённой React), где:", "type": "paragraph"},
+    {"items": ["UI описывается как функция текущего состояния", "При изменении состояния фреймворк автоматически перестраивает нужные части дерева", "Разработчик описывает <em>что</em> показывать, а не <em>как</em>"], "type": "ul"},
+    {"level": 3, "type": "heading", "text": "«Write Once, Run Everywhere»"},
+    {"text": "Одна кодовая база для всех платформ:", "type": "paragraph"},
+    {"items": ["<strong>Мобильные</strong>: iOS, Android", "<strong>Веб</strong>: браузеры", "<strong>Десктоп</strong>: Windows, macOS, Linux", "<strong>Встраиваемые</strong> (embedded)"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Преимущества Flutter"},
+    {"items": ["<strong>Единая кодовая база</strong> — снижение затрат на разработку и поддержку", "<strong>Hot Reload</strong> — мгновенное отображение изменений без перезапуска", "<strong>Нативная производительность</strong> — компиляция в машинный код (AOT для релиза, JIT для разработки)", "<strong>Богатая экосистема</strong> — тысячи пакетов на pub.dev", "<strong>Сильная сообщество</strong> — активное развитие и поддержка Google", "<strong>Fuchsia OS</strong> — Flutter является основным UI-фреймворком для новой ОС Google"], "type": "ol"},
+    {"level": 2, "type": "heading", "text": "Кто использует Flutter?"},
+    {"items": ["<strong>Google</strong> — Google Ads, Google Pay, Google Assistant", "<strong>BMW</strong> — внутренние инструменты и клиентские приложения", "<strong>Alibaba</strong> — Xianyu (приложение для перепродажи товаров)", "<strong>eBay</strong> — интеграция Flutter в существующие приложения", "<strong>Toyota</strong> — приложение Entune 3.0", "<strong>字节跳动 (ByteDance)</strong> — приложение Taua"], "type": "ul"},
+    {"level": 2, "type": "heading", "text": "Заключение"},
+    {"text": "Flutter — это не просто фреймворк, это целая экосистема, которая меняет подход к кроссплатформенной разработке, доказывая, что один код может создавать качественные нативные приложения для всех платформ.", "type": "paragraph"}
+  ]
+}
