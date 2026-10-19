@@ -11,7 +11,7 @@
     "migrate:content": "node scripts/migrate-content.mjs",
     "validate:content": "node scripts/validate-content.mjs",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist -r https://github.com/Daronec/daronec.github.io.git"
+    "deploy": "node scripts/deploy-to-github-io.mjs"
   },
   "dependencies": {
     "gh-pages": "^6.3.0",
