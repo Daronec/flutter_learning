@@ -1,6 +1,7 @@
 {
   "name": "flutter-learning-react",
-  "private": true,
+  "homepage": "https://daronec.github.io/flutter-learning",
+  "private": false,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
@@ -8,9 +9,12 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "migrate:content": "node scripts/migrate-content.mjs",
-    "validate:content": "node scripts/validate-content.mjs"
+    "validate:content": "node scripts/validate-content.mjs",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "gh-pages": "^6.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-markdown": "^10.1.0",
