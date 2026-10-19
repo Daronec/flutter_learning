@@ -114,6 +114,7 @@ h1 { margin-bottom: 16px; color: #15213b; font-size: clamp(2.3rem, 5vw, 4.3rem);
 .interview-body th { background: #eef0ff; color: #27324b; }
 .interview-body img { max-width: 100%; }
 .interview-body hr { margin: 2em 0; border: none; border-top: 1px solid #e3e7f0; }
+.interview-error { color: #c0392b; font-size: 1.05rem; padding: 20px; background: #fdf2f2; border-radius: 12px; border: 1px solid #f5c6cb; }
 
 .error-page { max-width: 650px; padding: 60px 0; }
 .error-page h1 { font-size: 2.8rem; }

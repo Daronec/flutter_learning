@@ -8,7 +8,6 @@ import {
   getLesson
 } from './content/store';
 import type { Lesson } from './types/content';
-import interviewContent from '../questions.md?raw';
 import './styles.css';
 
 type Route =
@@ -159,6 +158,30 @@ function LessonPage({ chapterId, lessonId }: { chapterId: string; lessonId: stri
 }
 
 function InterviewPage() {
+  const [content, setContent] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch('/questions.md')
+      .then((res) => {
+        if (!res.ok) throw new Error('Не удалось загрузить вопросы');
+        return res.text();
+      })
+      .then((text) => setContent(text))
+      .catch((err) => setError(err.message));
+  }, []);
+
+  if (error) {
+    return (
+      <article className="interview-page">
+        <div className="interview-topbar">
+          <a className="back-link" href="#/">← На главную</a>
+        </div>
+        <p className="interview-error">Ошибка: {error}</p>
+      </article>
+    );
+  }
+
   return (
     <article className="interview-page">
       <div className="interview-topbar">
@@ -171,7 +194,11 @@ function InterviewPage() {
         <p className="interview-summary">Комплексный справочник по самым частым вопросам на собеседованиях на позицию Flutter-разработчика.</p>
       </div>
       <div className="interview-body">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{interviewContent}</ReactMarkdown>
+        {content ? (
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+        ) : (
+          <p>Загрузка...</p>
+        )}
       </div>
     </article>
   );
