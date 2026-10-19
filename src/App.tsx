@@ -8,17 +8,22 @@ import {
   getLesson
 } from './content/store';
 import type { Lesson } from './types/content';
+import interviewContent from '../questions.md?raw';
 import './styles.css';
 
 type Route =
   | { type: 'home' }
   | { type: 'chapter'; chapterId: string }
-  | { type: 'lesson'; chapterId: string; lessonId: string };
+  | { type: 'lesson'; chapterId: string; lessonId: string }
+  | { type: 'interview' };
 
 const catalog = getCatalog();
 
 function readRoute(): Route {
   const parts = window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
+  if (parts[0] === 'interview') {
+    return { type: 'interview' };
+  }
   if (parts[0] === 'chapter' && parts[1] && parts[2] === 'lesson' && parts[3]) {
     return {
       type: 'lesson',
@@ -61,6 +66,16 @@ function HomePage() {
         <p className="eyebrow">Путь разработчика</p>
         <h1>Изучайте Flutter последовательно</h1>
         <p>От основ Dart и виджетов до архитектуры, тестирования и публикации приложений.</p>
+      </section>
+      <section className="interview-cta" aria-label="Подготовка к собеседованию">
+        <a className="interview-card" href="#/interview">
+          <span className="interview-card-icon">🎯</span>
+          <div className="interview-card-text">
+            <strong>100 вопросов Flutter к собеседованию</strong>
+            <small>Полный список вопросов и ответов на русском языке</small>
+          </div>
+          <span className="interview-card-arrow">→</span>
+        </a>
       </section>
       <section className="chapter-grid" aria-label="Главы курса">
         {catalog.chapters.map((chapter) => {
@@ -143,6 +158,25 @@ function LessonPage({ chapterId, lessonId }: { chapterId: string; lessonId: stri
   );
 }
 
+function InterviewPage() {
+  return (
+    <article className="interview-page">
+      <div className="interview-topbar">
+        <a className="back-link" href="#/">← На главную</a>
+        <span className="interview-badge">100 вопросов</span>
+      </div>
+      <div className="interview-title-block">
+        <p className="eyebrow">Подготовка к собеседованию</p>
+        <h1>Flutter &amp; Dart — 100 вопросов с ответами</h1>
+        <p className="interview-summary">Комплексный справочник по самым частым вопросам на собеседованиях на позицию Flutter-разработчика.</p>
+      </div>
+      <div className="interview-body">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{interviewContent}</ReactMarkdown>
+      </div>
+    </article>
+  );
+}
+
 function ErrorPage({ error }: { error: Error }) {
   return (
     <section className="error-page">
@@ -165,6 +199,7 @@ function App() {
 
   const page = useMemo(() => {
     try {
+      if (route.type === 'interview') return <InterviewPage />;
       if (route.type === 'chapter') return <ChapterPage chapterId={route.chapterId} />;
       if (route.type === 'lesson') return <LessonPage chapterId={route.chapterId} lessonId={route.lessonId} />;
       return <HomePage />;
