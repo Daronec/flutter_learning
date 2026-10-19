@@ -1,401 +1,401 @@
-# Flutter Interview Questions (1-100)
+# Вопросы для собеседования по Flutter (1-100)
 
-## General Flutter Concepts
+## Общие концепции Flutter
 
-### 1. What is Flutter?
-Flutter is an open-source UI software development kit created by Google. It is used to develop cross-platform applications for Android, iOS, Linux, Mac, Windows, Web, and Google Fuchsia from a single codebase. It uses the Dart programming language.
+### 1. Что такое Flutter?
+Flutter — это фреймворк с открытым исходным кодом для создания кроссплатформенных приложений, созданный Google. Он используется для разработки приложений для Android, iOS, Linux, Mac, Windows, Web и Google Fuchsia из единой кодовой базы. В качестве основного языка программирования использует Dart.
 
-### 2. What is Dart?
-Dart is a client-optimized language for fast apps on any platform. It is developed by Google, designed for client-side development (UIs), and compiles to native machine code. It is used as the primary language for Flutter.
+### 2. Что такое Dart?
+Dart — это язык программирования, оптимизированный для создания быстрых приложений на любой платформе. Он разработан Google, предназначен для клиентской разработки (интерфейсов) и компилируется в нативный машинный код. Используется как основной язык для Flutter.
 
-### 3. What is the difference between Flutter and React Native?
-- **Rendering**: Flutter draws its own widgets on a canvas (Skia/Impeller), while React Native uses native platform widgets.
-- **Language**: Flutter uses Dart; React Native uses JavaScript/TypeScript.
-- **Performance**: Flutter generally offers more consistent performance across platforms as it doesn't rely on a bridge to native components (though RN has the New Architecture JSI).
-- **UI**: Flutter allows full customization of every pixel; React Native is limited to available native components unless custom ones are built.
+### 3. В чём разница между Flutter и React Native?
+- **Рендеринг**: Flutter рисует собственные виджеты на холсте (Skia/Impeller), тогда как React Native использует нативные виджеты платформы.
+- **Язык**: Flutter использует Dart; React Native использует JavaScript/TypeScript.
+- **Производительность**: Flutter обычно обеспечивает более стабильную производительность на всех платформах, так как не полагается на мост к нативным компонентам (хотя RN имеет новую архитектуру JSI).
+- **UI**: Flutter позволяет полностью настраивать каждый пиксель; React Native ограничен доступными нативными компонентами, если не созданы кастомные.
 
-### 4. What is the difference between Flutter and Kotlin/Swift?
-Flutter allows you to write one codebase for both Android and iOS. Kotlin is for Android, and Swift is for iOS. Using Flutter saves development and maintenance time compared to writing separate native apps.
+### 4. В чём разница между Flutter и Kotlin/Swift?
+Flutter позволяет писать одну кодовую базу для Android и iOS. Kotlin используется для Android, а Swift — для iOS. Использование Flutter экономит время разработки и поддержки по сравнению с написанием отдельных нативных приложений.
 
-### 5. What is the Flutter Engine?
-The Flutter Engine is the core implementation written in C/C++. It provides low-level rendering, graphics, file/network I/O, and Dart runtime. It is embedded in every Flutter app.
+### 5. Что такое Flutter Engine?
+Flutter Engine — это ядро фреймворка, написанное на C/C++. Оно обеспечивает низкоуровневый рендеринг, графику, файловый/сетевой ввод-вывод и среду выполнения Dart. Оно встраивается в каждое Flutter-приложение.
 
-### 6. What is Dart SDK?
-The Dart SDK contains the Dart runtime, libraries, compiler (dart2js, dartdevc), and tools (dart, pub). It is required to compile and run Dart code.
+### 6. Что такое Dart SDK?
+Dart SDK включает среду выполнения Dart, библиотеки, компилятор (dart2js, dartdevc) и инструменты (dart, pub). Он необходим для компиляции и запуска Dart-кода.
 
-### 7. What is the difference between Flutter and Xamarin?
-Flutter draws its own UI using the Skia/Impeller engine, providing high performance and consistent UI. Xamarin uses native controls rendered by the platform, relying on C# and .NET.
+### 7. В чём разница между Flutter и Xamarin?
+Flutter рисует свой UI с помощью движка Skia/Impeller, обеспечивая высокую производительность и единообразие UI. Xamarin использует нативные элементы управления, отрисовываемые платформой, и опирается на C# и .NET.
 
-### 8. What is Hot Reload?
-Hot Reload injects updated source code files into a running Dart virtual machine. After compilation, it updates the widget tree in real-time, allowing developers to see changes instantly without losing state.
+### 8. Что такое Hot Reload?
+Hot Reload (горячая перезагрузка) внедряет обновлённые файлы исходного кода в работающую Dart-машину виртуальных машин. После компиляции он обновляет дерево виджетов в реальном времени, позволяя разработчикам мгновенно видеть изменения без потери состояния.
 
-### 9. What is Hot Restart?
-Hot Restart stops the running app, recompiles it, and restarts it from scratch. It is slower than Hot Reload but ensures a clean state (e.g., after changing app-level configuration or main function).
+### 9. Что такое Hot Restart?
+Hot Restart (горячая перезапуск) останавливает запущенное приложение, перекомпилирует его и перезапускает с нуля. Это медленнее, чем Hot Reload, но обеспечивает чистое состояние (например, после изменения конфигурации приложения или функции main).
 
-### 10. What is AOT and JIT compilation in Flutter?
-- **JIT (Just-In-Time)**: Used in Debug mode. Allows Hot Reload and fast development cycles.
-- **AOT (Ahead-Of-Time)**: Used in Release mode. Compiles Dart code to native ARM machine code for high performance and fast startup.
-
----
-
-## Widgets & UI Basics
-
-### 11. What is a Widget in Flutter?
-Everything in Flutter is a widget. A widget is an immutable description of part of a user interface. Widgets are lightweight objects that describe what their view should look like given their current configuration and state.
-
-### 12. What is the difference between StatelessWidget and StatefulWidget?
-- **StatelessWidget**: Immutable widget that doesn't change during its lifetime. It only needs `build()` method. Example: `Text`, `Icon`.
-- **StatefulWidget**: Mutable widget that maintains state which can change during the widget's lifecycle. It requires a `State` object and `setState()`. Example: `Checkbox`, `TextField`.
-
-### 13. What is the difference between `const` and `final` in Dart?
-- `final`: Value is set once at runtime and cannot be changed.
-- `const`: Value is set at compile-time and is implicitly final. Preferred for widgets to enable Flutter's widget tree optimization (skipping rebuilds if the widget hasn't changed).
-
-### 14. What is the difference between `main()` and `runApp()`?
-- `main()`: The entry point of the Dart program. It initializes variables and starts the app.
-- `runApp()`: A Flutter method that takes a widget (usually `MaterialApp`) and attaches it to the screen. It replaces the entire widget tree.
-
-### 15. What is the purpose of `MaterialApp`?
-`MaterialApp` is a convenience widget that wraps a number of widgets that are commonly required for Material Design applications. It sets up the navigator, theme, routes, and home screen.
-
-### 16. What is the purpose of `WidgetsApp`?
-`WidgetsApp` is a minimal set of widgets that implement basic application features like navigation, theme, and locale support. `MaterialApp` extends `WidgetsApp` with Material Design specific widgets.
-
-### 17. What is `Scaffold`?
-`Scaffold` provides a scaffold for Material Design applications. It implements the basic Material Design layout structure, including support for app bars, snackbars, drawers, bottom navigation bars, and floating action buttons.
-
-### 18. What is the difference between `Row` and `Column`?
-- `Row`: Arranges children horizontally.
-- `Column`: Arranges children vertically.
-Both are flexible layout widgets that can be combined to create complex layouts.
-
-### 19. What is the difference between `Expanded` and `Flexible`?
-- `Expanded`: Fills the remaining space of the parent. The child is forced to fill the available space.
-- `Flexible`: Can shrink or expand to fill the space, but doesn't force the child to expand. The child can be smaller than the available space.
-
-### 20. What is the purpose of `Container`?
-`Container` is a convenience widget that combines common painting, positioning, and sizing widgets. It can have a color, decoration, padding, margin, constraints, and alignment.
+### 10. Что такое AOT и JIT компиляция в Flutter?
+- **JIT (Just-In-Time)**: Используется в Debug-режиме. Позволяет использовать Hot Reload и быстрые циклы разработки.
+- **AOT (Ahead-Of-Time)**: Используется в Release-режиме. Компилирует Dart-код в нативный ARM-машинный код для высокой производительности и быстрого запуска.
 
 ---
 
-## State & Lifecycle
+## Основы виджетов и UI
 
-### 21. What is `setState()`?
-`setState()` is a method in `State` class that notifies the Flutter framework that the internal state of the object has changed. This triggers a rebuild of the widget, updating the UI.
+### 11. Что такое Widget в Flutter?
+Всё во Flutter — это виджет. Виджет — это неизменяемое описание части пользовательского интерфейса. Виджеты — это лёгкие объекты, которые описывают, как должен выглядеть их интерфейс, учитывая текущую конфигурацию и состояние.
 
-### 22. What is the widget lifecycle?
-1. `createState()`: Creates the State object.
-2. `initState()`: Called once when the state is first created. Good for initialization.
-3. `didChangeDependencies()`: Called when a dependency of this State object changes (e.g., InheritedWidget).
-4. `build()`: Describes the part of the user interface built by this widget.
-5. `didUpdateWidget()`: Called when the parent widget changes configuration.
-6. `deactivate()`: Called when the State object is no longer in the tree.
-7. `dispose()`: Called when the State is permanently removed. Good for cleanup (listeners, animations).
+### 12. В чём разница между StatelessWidget и StatefulWidget?
+- **StatelessWidget**: Неизменяемый виджет, который не меняется в течение своего жизненного цикла. Требует только метод `build()`. Пример: `Text`, `Icon`.
+- **StatefulWidget**: Изменяемый виджет, который хранит состояние, способное меняться в течение жизненного цикла виджета. Требует объект `State` и метод `setState()`. Пример: `Checkbox`, `TextField`.
 
-### 23. What is the difference between `initState` and `didChangeDependencies`?
-- `initState`: Called first. Dependencies are not yet available (e.g., `Theme.of(context)` might throw).
-- `didChangeDependencies`: Called after `initState` and whenever a dependency changes. Safe to use context-dependent widgets here.
+### 13. В чём разница между `const` и `final` в Dart?
+- `final`: Значение устанавливается один раз во время выполнения и не может быть изменено.
+- `const`: Значение устанавливается на этапе компиляции и неявно является final. Предпочтительно для виджетов, чтобы обеспечить оптимизацию дерева виджетов Flutter (пропуск перестроения, если виджет не изменился).
 
-### 24. What is the difference between `dispose` and `deactivate`?
-- `deactivate`: Widget is temporarily removed from the tree (e.g., moving between tabs).
-- `dispose`: Widget is permanently removed. Use `dispose` to close resources like streams or controllers.
+### 14. В чём разница между `main()` и `runApp()`?
+- `main()`: Точка входа программы Dart. Инициализирует переменные и запускает приложение.
+- `runApp()`: Метод Flutter, который принимает виджет (обычно `MaterialApp`) и прикрепляет его к экрану. Заменяет всё дерево виджетов.
 
-### 25. What is `BuildContext`?
-`BuildContext` represents the location of a widget in the widget tree. It is used to access ancestor widgets (like `Theme.of(context)`), navigate, and show dialogs.
+### 15. Для чего нужен `MaterialApp`?
+`MaterialApp` — это виджет-обёртка, который содержит набор виджетов, обычно необходимых для приложений в стиле Material Design. Он настраивает навигатор, тему, маршруты и главный экран.
 
-### 26. What is the difference between `const` and empty constructor in widgets?
-Using `const` allows Flutter to cache the widget instance and skip rebuilding it if the parent rebuilds, as long as the configuration hasn't changed. This improves performance.
+### 16. Для чего нужен `WidgetsApp`?
+`WidgetsApp` — это минимальный набор виджетов, реализующий базовые функции приложения, такие как навигация, тема и поддержка локализации. `MaterialApp` расширяет `WidgetsApp` виджетами, специфичными для Material Design.
 
----
+### 17. Что такое `Scaffold`?
+`Scaffold` предоставляет каркас для приложений в стиле Material Design. Он реализует базовую структуру макета Material Design, включая поддержку панелей приложений, snackbars, drawer, нижней панели навигации и плавающих кнопок действия.
 
-## Navigation & Routing
+### 18. В чём разница между `Row` и `Column`?
+- `Row`: Располагает дочерние элементы горизонтально.
+- `Column`: Располагает дочерние элементы вертикально.
+Оба являются гибкими виджетами макета, которые можно комбинировать для создания сложных макетов.
 
-### 27. What is Navigator?
-`Navigator` is a widget that manages a stack of Route objects to navigate between screens. It uses `push` to add routes and `pop` to remove them.
+### 19. В чём разница между `Expanded` и `Flexible`?
+- `Expanded`: Заполняет оставшееся пространство родителя. Дочерний элемент принудительно заполняет доступное пространство.
+- `Flexible`: Может сжиматься или расширяться для заполнения пространства, но не принуждает дочерний элемент расширяться. Дочерний элемент может быть меньше доступного пространства.
 
-### 28. What is the difference between `push` and `pushReplacement`?
-- `push`: Adds a new route to the stack. User can navigate back to the previous screen.
-- `pushReplacement`: Replaces the current route with a new one. The previous route is removed from the stack, so the user cannot navigate back to it.
-
-### 29. How to pass data between screens?
-Data can be passed via constructors of the target screen or via arguments in `Navigator.push`. Data can be returned using `await` on the `push` method.
-
-### 30. What are named routes?
-Named routes are routes that have a string identifier. This allows navigation without importing the screen's widget class, using `Navigator.pushNamed(context, 'route_name')`.
-
-### 31. What is the difference between `MaterialPageRoute` and `CupertinoPageRoute`?
-- `MaterialPageRoute`: Provides a platform-agnostic route that looks like Material Design on Android and Cupertino on iOS.
-- `CupertinoPageRoute`: Provides an iOS-style transition and appearance (slide from right).
-
-### 32. What is `onGenerateRoute`?
-`onGenerateRoute` is a callback in `MaterialApp` that is called when a named route is requested but not found in the `routes` map. It allows dynamic route generation.
-
-### 33. What is `Navigator.pop`?
-`Navigator.pop` removes the topmost route from the navigator's stack, effectively going back to the previous screen.
-
-### 34. What is `Navigator.canPop`?
-Checks if the navigator can pop the current route (i.e., if there is a previous route to go back to).
-
-### 35. What is `Navigator.pushNamedAndRemoveUntil`?
-Pushes a named route and removes all previous routes until a predicate is met. Useful for logging out and removing all history.
+### 20. Для чего нужен `Container`?
+`Container` — это виджет-обёртка, который объединяет общие функции рисования, позиционирования и изменения размера. Он може�� иметь цвет, декорацию, отступы, поля, ограничения и выравнивание.
 
 ---
 
-## Layout & Styling
+## Состояние и жизненный цикл
 
-### 36. What is `SafeArea`?
-`SafeArea` ensures that its content is not obscured by the device's system UI (like status bar or notch).
+### 21. Что такое `setState()`?
+`setState()` — это метод в классе `State`, который уведомляет фреймворк Flutter о том, что внутреннее состояние объекта изменилось. Это запускает перестроение виджета, обновляя пользовательский интерфейс.
 
-### 37. What is `MediaQuery`?
-`MediaQuery` provides information about the size of the screen, padding, and orientation. It is used to create responsive layouts.
+### 22. Что такое жизненный цикл виджета?
+1. `createState()`: Создаёт объект State.
+2. `initState()`: Вызывается один раз при первом создании состояния. Подходит для инициализации.
+3. `didChangeDependencies()`: Вызывается, когда меняется зависимость этого объекта State (например, InheritedWidget).
+4. `build()`: Описывает часть пользовательского интерфейса, созданную этим виджетом.
+5. `didUpdateWidget()`: Вызывается, когда виджет родителя меняет конфигурацию.
+6. `deactivate()`: Вызывается, когда объект State больше не находится в дереве.
+7. `dispose()`: Вызывается, когда State навсегда удалён. Подходит для очистки (списeners, анимации).
 
-### 38. What is `LayoutBuilder`?
-`LayoutBuilder` provides a builder function that receives constraints from the parent widget. It allows building widgets dynamically based on available space.
+### 23. В чём разница между `initState` и `didChangeDependencies`?
+- `initState`: Вызывается первым. Зависимости ещё недоступны (например, `Theme.of(context)` может вызвать ошибку).
+- `didChangeDependencies`: Вызывается после `initState` и при изменении зависимости. Здесь безопасно использовать виджеты, зависящие от контекста.
 
-### 39. What is the difference between `Padding` and `Margin`?
-- `Padding`: Adds space inside the widget, between the widget's content and its border.
-- `Margin`: Adds space outside the widget, pushing other widgets away.
+### 24. В чём разница между `dispose` и `deactivate`?
+- `deactivate`: Виджет временно удалён из дерева (например, при переключении между вкладками).
+- `dispose`: Виджет навсегда удалён. Используйте `dispose` для закрытия ресурсов, таких как потоки или контроллеры.
 
-### 40. What is `IntrinsicWidth`/`IntrinsicHeight`?
-These widgets force their children to match the intrinsic width/height of the children. Useful for buttons that should match the width of the widest button in a row.
+### 25. Что такое `BuildContext`?
+`BuildContext` представляет собой расположение виджета в дереве виджетов. Он используется для доступа к виджетам-предкам (например, `Theme.of(context)`), навигации и показа диалогов.
 
-### 41. What is `ConstrainedBox`?
-`ConstrainedBox` adds constraints to its child. It can enforce minimum or maximum width/height.
-
-### 42. What is `FittedBox`?
-`FittedBox` scales or positions its child to fit the parent box. Similar to CSS `object-fit`.
-
-### 43. What is `AspectRatio`?
-`AspectRatio` forces its child to have a specific aspect ratio.
-
-### 44. What is `ClipRRect`?
-`ClipRRect` clips its child to a rounded rectangle shape.
-
-### 45. What is `Wrap`?
-`Wrap` arranges children in horizontal or vertical runs, wrapping to the next line when space is exhausted. Useful for chips or tags.
+### 26. В чём разница между `const` и пустым конструктором в виджетах?
+Использование `const` позволяет Flutter кэшировать экземпляр виджета и пропускать его перестроение, если родитель перестраивается, до тех пор, пока конфигурация не изменилась. Это повышает производительность.
 
 ---
 
-## Advanced Widgets & Concepts
+## Навигация и маршрутизация
 
-### 46. What is `Stack`?
-`Stack` allows children to be stacked on top of each other. Children can be positioned absolutely using `Positioned`.
+### 27. Что такое Navigator?
+`Navigator` — это виджет, который управляет стеком объектов Route для навигации между экранами. Он использует `push` для добавления маршрутов и `pop` для их удаления.
 
-### 47. What is `Positioned`?
-`Positioned` is used inside a `Stack` to position a child at a specific offset (top, bottom, left, right).
+### 28. В чём разница между `push` и `pushReplacement`?
+- `push`: Добавляет новый маршрут в стек. Пользователь может вернуться на предыдущий экран.
+- `pushReplacement`: Заменяет текущий маршрут новым. Предыдущий маршрут удаляется из стека, поэтому пользователь не может вернуться на него.
 
-### 48. What is `Hero`?
-`Hero` creates an animation where a widget flies from one screen to another. Both screens must have a `Hero` with the same tag.
+### 29. Как передать данные между экранами?
+Данные можно передать через конструкторы целевого экрана или через аргументы в `Navigator.push`. Данные можно вернуть, используя `await` при вызове метода `push`.
 
-### 49. What is `Transform`?
-`Transform` applies a transformation (scale, rotation, translation) to its child.
+### 30. Что такое именованные маршруты (named routes)?
+Именованные маршруты — это маршруты со строковым идентификатором. Это позволяет навигировать без импорта класса виджета экрана, используя `Navigator.pushNamed(context, 'route_name')`.
 
-### 50. What is `CustomPainter`?
-`CustomPainter` allows drawing custom graphics on the canvas. It is used to create unique shapes or animations not supported by standard widgets.
+### 31. В чём разница между `MaterialPageRoute` и `CupertinoPageRoute`?
+- `MaterialPageRoute`: Предоставляет кроссплатформенный маршрут, который выглядит как Material Design на Android и Cupertino на iOS.
+- `CupertinoPageRoute`: Предоставляет переход и внешний вид в стиле iOS (слайд справа).
 
----
+### 32. Что такое `onGenerateRoute`?
+`onGenerateRoute` — это обратный вызов в `MaterialApp`, который вызывается, когда запрошен именованный маршрут, но не найден в карте `routes`. Позволяет динамически генерировать маршруты.
 
-## State Management
+### 33. Что такое `Navigator.pop`?
+`Navigator.pop` удаляет верхний маршрут из стека навигатора, эффективно возвращая на предыдущий экран.
 
-### 51. What is State Management in Flutter?
-State management refers to the practice of managing data that changes over time within an application. It involves keeping track of data (state) and updating the UI when that data changes.
+### 34. Что такое `Navigator.canPop`?
+Проверяет, может ли навигатор выполнить pop текущего маршрута (т.е. есть ли предыдущий маршрут для возврата).
 
-### 52. What are the common state management approaches in Flutter?
-- **setState()**: For small apps or local state.
-- **Provider**: A wrapper around InheritedWidget, easy to learn and widely used.
-- **Riverpod**: A more type-safe and testable evolution of Provider.
-- **Bloc/Cubit**: Event-driven state management using streams and reactive programming.
-- **GetX**: All-in-one solution with routing, state management, and dependency injection.
-- **ValueNotifier/ChangeNotifier**: Simple notification-based approach.
-- **Redux**: Centralized state management inspired by Redux pattern.
-
-### 53. What is Provider?
-Provider is a state management package that wraps InheritedWidget to make data available throughout the widget tree. It allows widgets to listen to changes and rebuild when the provided data changes.
-
-### 54. What is the difference between ChangeNotifierProvider and MultiProvider?
-- **ChangeNotifierProvider**: Provides a single ChangeNotifier instance to the tree.
-- **MultiProvider**: Wraps multiple providers together, allowing you to provide several dependencies at once.
-
-### 55. What is Bloc (Business Logic Component)?
-Bloc is a state management pattern that uses streams to separate business logic from UI. It converts input events (actions) into output states using Streams, making it predictable and testable.
-
-### 56. What is the difference between Cubit and Bloc?
-- **Cubit**: Uses methods to emit states (synchronous). Simpler API, no streams needed.
-- **Bloc**: Uses events to emit states (asynchronous). More complex but better for complex event handling.
-
-### 57. What is Riverpod?
-Riverpod is a reactive caching and state management library that generates code using `build_runner`. It is considered an improvement over Provider, offering better type safety, testability, and no dependency on `BuildContext`.
-
-### 58. What is GetX?
-GetX is an open-source framework for Flutter that provides lightweight and scalable state management, dependency injection, and route management in a single package.
-
-### 59. What is the difference between local state and global state?
-- **Local state**: Owned by a single widget (e.g., `TextEditingController`). Limited scope.
-- **Global state**: Shared across multiple widgets/screens (e.g., user authentication, theme). Managed by Provider, Bloc, etc.
-
-### 60. When should you use setState vs Provider vs Bloc?
-- **setState**: For small, local UI state (e.g., toggle, counter).
-- **Provider**: For medium apps with shared state across a few screens.
-- **Bloc**: For large, complex apps with complex business logic and multiple teams.
+### 35. Что такое `Navigator.pushNamedAndRemoveUntil`?
+Добавляет именованный маршрут и удаляет все предыдущие маршруты до тех пор, пока предикат не выполнится. Полезно для выхода из системы и удаления всей истории.
 
 ---
 
-## Streams & Asynchronous Programming
+## Макет и стилизация
 
-### 61. What is a Stream in Dart?
-A Stream delivers a sequence of values over time, similar to an asynchronous sequence. It can emit data, errors, or completion events. Commonly used for real-time data, user input, and Bloc state changes.
+### 36. Что такое `SafeArea`?
+`SafeArea` гарантирует, что его содержимое не будет перекрыто системным UI устройства (таким как статус-бар или «чёлка»).
 
-### 62. What is a Future?
-A Future represents a single asynchronous operation. It will complete with either a value or an error. Used for one-time async operations like API calls or file reads.
+### 37. Что такое `MediaQuery`?
+`MediaQuery` предоставляет информацию о размере экрана, отступах и ориентации. Используется для создания адаптивных макетов.
 
-### 63. What is the difference between Stream and Future?
-- **Future**: Single asynchronous value/error.
-- **Stream**: Multiple asynchronous values/errors over time (a sequence of Futures).
+### 38. Что такое `LayoutBuilder`?
+`LayoutBuilder` предоставляет функцию построения, которая получает ограничения от родительского виджета. Позволяет динамически создавать виджеты на основе доступного пространства.
 
-### 64. What is `async` and `await`?
-- `async`: Marks a function as asynchronous, allowing it to use `await`.
-- `await`: Pauses execution until the Future completes, then returns the value.
+### 39. В чём разница между `Padding` и `Margin`?
+- `Padding`: Добавляет пространство внутри виджета, между содержимым виджета и его границей.
+- `Margin`: Добавляет пространство снаружи виджета, отталкивая другие виджеты.
 
-### 65. What is StreamBuilder?
-`StreamBuilder` is a widget that builds itself based on the latest snapshot of interaction with a Stream. It is commonly used to display real-time data or Bloc state changes.
+### 40. Что такое `IntrinsicWidth`/`IntrinsicHeight`?
+Эти виджеты заставляют дочерние элементы соответствовать их собственной (intrinsic) ширине/высоте. Полезно для кнопок, которые должны соответствовать ширине самой широкой кнопки в ряду.
 
-### 66. What is FutureBuilder?
-`FutureBuilder` is a widget that builds itself based on the latest snapshot of interaction with a Future. It is used to handle async operations that complete once, like API calls.
+### 41. Что такое `ConstrainedBox`?
+`ConstrainedBox` добавляет ограничения своему дочернему элементу. Он может устанавливать минимальную или максимальную ширину/высоту.
 
-### 67. What is the difference between StreamBuilder and FutureBuilder?
-- **StreamBuilder**: For streams (multiple values over time).
-- **FutureBuilder**: For futures (single value).
+### 42. Что такое `FittedBox`?
+`FittedBox` масштабирует или позиционирует свой дочерний элемент, чтобы он поместился в родительский блок. Аналогично CSS `object-fit`.
 
-### 68. What is a StreamController?
-`StreamController` is used to create and control streams. You can add events to the stream using `.add()`, handle errors with `.addError()`, and listen using `.stream`.
+### 43. Что такое `AspectRatio`?
+`AspectRatio` заставляет дочерний элемент иметь определённое соотношение сторон.
 
-### 69. What is `StreamGroup`?
-`StreamGroup` allows you to combine multiple streams into a single stream. All streams must complete before the group completes.
+### 44. Что такое `ClipRRect`?
+`ClipRRect` обрезает свой дочерний элемент до формы с закруглёнными углами.
 
-### 70. What is the difference between `Stream` and `StreamController`?
-- **Stream**: Read-only; you listen to it.
-- **StreamController**: Write-only; you add events to it and expose the stream for listening.
+### 45. Что такое `Wrap`?
+`Wrap` располагает дочерние элементы горизонтальными или вертикальными строками, перенося на следующую строку при исчерпании пространства. Полезно для чипов или тегов.
 
 ---
 
-## Testing
+## Продвинутые виджеты и концепции
 
-### 71. What types of tests are available in Flutter?
-- **Unit Tests**: Test individual functions or classes in isolation.
-- **Widget Tests**: Test individual widgets in isolation.
-- **Integration Tests**: Test the entire app or multiple screens together.
+### 46. Что такое `Stack`?
+`Stack` позволяет дочерним элементам накладываться друг на друга. Дочерние элементы могут быть позиционированы абсолютно с помощью `Positioned`.
 
-### 72. What is the difference between `testWidgets` and `test`?
-- **test**: For unit tests, no widget/buildContext needed.
-- **testWidgets**: For widget tests, allows building and interacting with widgets.
+### 47. Что такое `Positioned`?
+`Positioned` используется внутри `Stack` для позиционирования дочернего элемента в определённом смещении (top, bottom, left, right).
 
-### 73. What is `pumpWidget`?
-`pumpWidget` is used in widget tests to build a widget tree and trigger a frame. It is equivalent to running `runApp()` in a test environment.
+### 48. Что такое `Hero`?
+`Hero` создаёт анимацию, при которой виджет «летит» с одного экрана на другой. На обоих экранах должен быть `Hero` с одинаковым тегом.
 
-### 74. What is `tester.pump()`?
-`tester.pump()` triggers a build frame. It is used in widget tests to simulate time passing (e.g., waiting for animations or async operations).
+### 49. Что такое `Transform`?
+`Transform` применяет трансформацию (масштабирование, вращение, перемещение) к своему дочернему элементу.
 
-### 75. What is `find` in Flutter testing?
-`find` provides matchers to locate widgets in the widget tree during testing, such as `find.byType()`, `find.text()`, `find.byKey()`.
-
-### 76. What is `expect` in Flutter testing?
-`expect` is used to assert conditions in tests. It compares the actual value with the expected value using matchers like `equals()`, `contains()`, `isNull()`.
-
-### 77. What is `WidgetTester`?
-`WidgetTester` is a class that provides methods to build, interact with, and test widgets, such as `tap()`, `enterText()`, `pump()`, and `pumpAndSettle()`.
-
-### 78. What is `pumpAndSettle()`?
-`pumpAndSettle()` keeps pumping frames until no more frames are scheduled (e.g., animations complete, all Futures resolve).
-
-### 79. What is Mocking in Flutter?
-Mocking creates fake objects that simulate real behavior during testing. Commonly used for dependencies like API services or databases using packages like `mockito` or `mocktail`.
-
-### 80. What is the golden test?
-A golden test (screenshot test) compares the rendered widget against a reference image (golden file). It helps detect unintended visual changes.
+### 50. Что такое `CustomPainter`?
+`CustomPainter` позволяет рисовать пользовательскую графику на холсте. Используется для создания уникальных форм или анимаций, не поддерживаемых стандартными виджетами.
 
 ---
 
-## Performance & Optimization
+## Управление состоянием
 
-### 81. How to optimize Flutter app performance?
-- Use `const` constructors wherever possible.
-- Avoid heavy computations in the `build()` method.
-- Use `ListView.builder` for long lists instead of `ListView()`.
-- Use `const` widgets to skip rebuilds.
-- Profile using Flutter DevTools.
-- Avoid nesting widgets too deeply.
-- Use `AutomaticKeepAliveClientMixin` to preserve state.
+### 51. Что такое State Management во Flutter?
+State Management (управление состоянием) — это практика управления данными, которые меняются со временем в приложении. Оно включает отслеживание данных (состояния) и обновление UI при изменении этих данных.
 
-### 82. What is the difference between `ListView` and `ListView.builder`?
-- **ListView**: Builds all children at once. Not suitable for long lists.
-- **ListView.builder**: Lazily builds items as they scroll into view. More memory-efficient.
+### 52. Какие существуют подходы к управлению состоянием во Flutter?
+- **setState()**: Для небольших приложений или локального состояния.
+- **Provider**: Обёртка вокруг InheritedWidget, прост в изучении и широко используется.
+- **Riverpod**: Более типобезопасная и тестируемая эволюция Provider.
+- **Bloc/Cubit**: Управление состоянием, управляемое событиями, с использованием потоков и реактивного программирования.
+- **GetX**: Всё-в-одном решение с маршрутизацией, управлением состоянием и внедрением зависимостей.
+- **ValueNotifier/ChangeNotifier**: Простой подход на основе уведомлений.
+- **Redux**: Централизованное управление состоянием, вдохновлённое паттерном Redux.
 
-### 83. What is the Flutter DevTools?
-Flutter DevTools is a suite of performance and debugging tools. It allows you to inspect the widget tree, profile performance, monitor memory, and debug network calls.
+### 53. Что такое Provider?
+Provider — это пакет управления состоянием, который оборачивает InheritedWidget, чтобы сделать данные доступными по всему дереву виджетов. Он позволяет виджетам слушать изменения и перестраиваться, когда предоставляемые данные изменяются.
 
-### 84. What is the importance of `const` in performance?
-Using `const` widgets allows Flutter to cache widget instances and skip rebuilding them when the parent rebuilds, reducing unnecessary work and improving performance.
+### 54. В чём разница между ChangeNotifierProvider и MultiProvider?
+- **ChangeNotifierProvider**: Предоставляет один экземпляр ChangeNotifier дереву.
+- **MultiProvider**: Оборачивает несколько провайдеров вместе, позволяя предоставлять несколько зависимостей одновременно.
 
-### 85. What is the RenderTree?
-The RenderTree is the tree of RenderObjects that handles layout, painting, and hit testing. It is generated from the Widget tree and Element tree.
+### 55. Что такое Bloc (Business Logic Component)?
+Bloc — это шаблон управления состоянием, который использует потоки для разделения бизнес-логики и UI. Он преобразует входные события (действия) в выходные состояния с использованием Streams, делая его предсказуемым и тестируемым.
 
-### 86. What causes a widget to rebuild?
-- `setState()` is called.
-- A parent widget rebuilds and the widget's configuration changes.
-- An InheritedWidget dependency changes (e.g., Theme, Provider).
+### 56. В чём разница между Cubit и Bloc?
+- **Cubit**: Использует методы для генерации состояний (синхронно). Более простой API, не требует потоков.
+- **Bloc**: Использует события для генерации состояний (асинхронно). Более сложный, но лучше подходит для сложной обработки событий.
 
-### 87. How to debug performance issues in Flutter?
-- Use Flutter DevTools Performance tab.
-- Enable performance overlay (`Alt + P`).
-- Use `debugRepaintRainbowEnabled` to spot repaints.
-- Check for unnecessary rebuilds using `flutter_log` or logging.
+### 57. Что такое Riverpod?
+Riverpod — это библиотека реактивного кэширования и управления состоянием, которая генерирует код с помощью `build_runner`. Считается улучшением над Provider, предлагая лучшую типобезопасность, тестируемость и отсутствие зависимости от `BuildContext`.
 
-### 88. What is the importance of `keepAlive` in ListView?
-Using `AutomaticKeepAliveClientMixin` keeps the widget's state alive when it scrolls off-screen, preventing rebuilds when scrolling back.
+### 58. Что такое GetX?
+GetX — это фреймворк с открытым исходным кодом для Flutter, который предоставляет лёгкое и масштабируемое управление состоянием, внедрение зависимостей и управление маршрутами в одном пакете.
 
-### 89. What is RepaintBoundary?
-`RepaintBoundary` isolates repaints to a specific portion of the UI. Content inside a RepaintBoundary only repaints when something inside it changes.
+### 59. В чём разница между локальным и глобальным состоянием?
+- **Локальное состояние**: Принадлежит одному виджету (например, `TextEditingController`). Ограниченная область видимости.
+- **Глобальное состояние**:共享 между несколькими виджетами/экранами (например, аутентификация пользователя, тема). Управляется через Provider, Bloc и т.д.
 
-### 90. What is the difference between Layout, Paint, and Compositing?
-- **Layout**: Determines the size and position of widgets.
-- **Paint**: Draws pixels on the screen.
-- **Compositing**: Manages the order in which layers are drawn.
+### 60. Когда следует использовать setState, Provider или Bloc?
+- **setState**: Для небольшого локального UI-состояния (например, переключатель, счётчик).
+- **Provider**: Для приложений среднего размера с общим состоянием на нескольких экранах.
+- **Bloc**: Для крупных, сложных приложений со сложной бизнес-логикой и несколькими командами.
 
 ---
 
-## Platform & Advanced Topics
+## Потоки и асинхронное программирование
 
-### 91. What is Platform Channel?
-Platform Channels allow Flutter code to communicate with native platform code (Java/Kotlin for Android, Objective-C/Swift for iOS). Used for platform-specific APIs.
+### 61. Что такое Stream в Dart?
+Stream (поток) доставляет последовательность значений со временем, подобно асинхронной последовательности. Он может генерировать данные, ошибки или события завершения. Часто используется для данных в реальном времени, ввода пользователя и изменений состояния Bloc.
 
-### 92. What is the difference between MethodChannel and EventChannel?
-- **MethodChannel**: For one-way method calls (Flutter ↔ Native).
-- **EventChannel**: For streams of events from native to Flutter.
+### 62. Что такое Future?
+Future (будущее) представляет одну асинхронную операцию. Он завершится либо значением, либо ошибкой. Используется для однократных асинхронных операций, таких как API-вызовы или чтение файлов.
 
-### 93. What is Isolate in Flutter?
-An Isolate is a separate execution thread with its own memory space. Used for CPU-intensive tasks to avoid blocking the UI thread. Communication is done via messages.
+### 63. В чём разница между Stream и Future?
+- **Future**: Одно асинхронное значение/ошибка.
+- **Stream**: Несколько асинхронных значений/ошибок со временем (последовательность Future).
 
-### 94. What is the difference between `Isolate` and `compute()`?
-- **Isolate**: Low-level, manual message passing.
-- **compute()**: A high-level helper that runs a top-level function in a background Isolate with simplified messaging.
+### 64. Что такое `async` и `await`?
+- `async`: Помечает функцию как асинхронную, позволяя использовать `await`.
+- `await`: Приостанавливает выполнение до завершения Future, затем возвращает значение.
 
-### 95. What is Firebase in Flutter?
-Firebase is Google's backend-as-a-service platform. In Flutter, it is commonly used for authentication, cloud messaging, real-time database, analytics, and crash reporting via packages like `firebase_core` and `cloud_firestore`.
+### 65. Что такое StreamBuilder?
+`StreamBuilder` — это виджет, который строит себя на основе последнего снимка взаимодействия с потоком (Stream). Часто используется для отображения данных в реальном времени или изменений состояния Bloc.
 
-### 96. What is the difference between `inheritedWidget` and `Provider`?
-- **InheritedWidget**: Low-level Flutter widget for sharing data down the tree.
-- **Provider**: A wrapper around InheritedWidget that makes it easier to read, listen to, and update shared data.
+### 66. Что такое FutureBuilder?
+`FutureBuilder` — это виджет, который строит себя на основе последнего снимка взаимодействия с Future. Используется для обработки асинхронных операций, которые завершаются один раз, таких как API-вызовы.
 
-### 97. What is the Flutter Web?
-Flutter Web allows Flutter apps to run on web browsers. It compiles to HTML/JavaScript/Canvas. There are two renderers: CanvasKit (high quality) and HTML renderer (smaller size).
+### 67. В чём разница между StreamBuilder и FutureBuilder?
+- **StreamBuilder**: Для потоков (несколько значений со временем).
+- **FutureBuilder**: Для Future (одно значение).
 
-### 98. What is the difference between CanvasKit and HTML renderer in Flutter Web?
-- **CanvasKit**: Uses WebGL for high-quality rendering, better performance, but larger download size (~2MB).
-- **HTML Renderer**: Uses standard HTML/CSS/Canvas, smaller size, but less consistent across browsers.
+### 68. Что такое StreamController?
+`StreamController` используется для создания и управления потоками. Вы можете добавлять события в поток с помощью `.add`, обрабатывать ошибки через `.addError` и слушать с помощью `.stream`.
 
-### 99. What is the importance of `pubspec.yaml`?
-`pubspec.yaml` defines the project's metadata, dependencies, assets, fonts, and plugins. It is essential for managing packages and resources.
+### 69. Что такое `StreamGroup`?
+`StreamGroup` позволяет объединять несколько потоков в один поток. Все потоки должны завершиться, прежде чем завершится группа.
 
-### 100. What is the difference between `dependencies` and `dev_dependencies` in pubspec.yaml?
-- **dependencies**: Packages required for the app to run in production (e.g., `http`, `provider`).
-- **dev_dependencies**: Packages only needed during development/testing (e.g., `flutter_test`, `lint`, `mocktail`).
+### 70. В чём разница между `Stream` и `StreamController`?
+- **Stream**: Только для чтения; вы его слушаете.
+- **StreamController**: Только для записи; вы добавляете в него события и предоставляете поток для прослушивания.
+
+---
+
+## Тестирование
+
+### 71. Какие виды тестов доступны во Flutter?
+- **Unit Tests (модульные тесты)**: Тестируют отдельные функции или классы в изоляции.
+- **Widget Tests (виджетные тесты)**: Тестируют отдельные виджеты в изоляции.
+- **Integration Tests (интеграционные тесты)**: Тестируют всё приложение или несколько экранов вместе.
+
+### 72. В чём разница между `testWidgets` и `test`?
+- **test**: Для модульных тестов, не требует виджетов/BuildContext.
+- **testWidgets**: Для виджетных тестов, позволяет строить и взаимодействовать с виджетами.
+
+### 73. Что такое `pumpWidget`?
+`pumpWidget` используется в виджетных тестах для построения дерева виджетов и запуска кадра. Он эквивалентен запуску `runApp()` в тестовой среде.
+
+### 74. Что такое `tester.pump()`?
+`tester.pump()` запускает кадр построения. Используется в виджетных тестах для имитации прохождения времени (например, ожидания анимаций или асинхронных операций).
+
+### 75. Что такое `find` в тестировании Flutter?
+`find` предоставляет матчеры для поиска виджетов в дереве виджетов во время тестирования, такие как `find.byType()`, `find.text()`, `find.byKey()`.
+
+### 76. Что такое `expect` в тестировании Flutter?
+`expect` используется для утверждений в тестах. Он сравнивает фактическое значение с ожидаемым с помощью матчеров, таких как `equals()`, `contains()`, `isNull()`.
+
+### 77. Что такое `WidgetTester`?
+`WidgetTester` — это класс, который предоставляет методы для построения, взаимодействия с тестированием виджетов, такие как `tap()`, `enterText()`, `pump()` и `pumpAndSettle()`.
+
+### 78. Что такое `pumpAndSettle()`?
+`pumpAndSettle()` продолжает запускать кадры до тех пор, пока не останется запланированных кадров (например, анимации завершены, все Future разрешены).
+
+### 79. Что такое моккинг (Mocking) во Flutter?
+Моккинг создаёт поддельные объекты, которые имитируют реальное поведение во время тестирования. Обычно используется для зависимостей, таких как API-сервисы или базы данных, с помощью пакетов `mockito` или `mocktail`.
+
+### 80. Что такое golden test (золотой тест)?
+Golden test (тест скриншотов) сравнивает отрендеренный виджет с эталонным изображением (golden file). Он помогает обнаруживать непреднамеренные визуальные изменения.
+
+---
+
+## Производительность и оптимизация
+
+### 81. Как оптимизировать производительность Flutter-приложения?
+- Используйте `const` конструкторы везде, где это возможно.
+- Избегайте тяжёлых вычислений в методе `build()`.
+- Используйте `ListView.builder` для длинных списков вместо `ListView()`.
+- Используйте `const` виджеты для пропуска перестроений.
+- Профилируйте с помощью Flutter DevTools.
+- Избегайте глубокой вложенности виджетов.
+- Используйте `AutomaticKeepAliveClientMixin` для сохранения состояния.
+
+### 82. В чём разница между `ListView` и `ListView.builder`?
+- **ListView**: Строит все дочерние элементы одновременно. Не подходит для длинных списков.
+- **ListView.builder**: Лениво строит элементы по мере их прокрутки в область видимости. Более эффективен по памяти.
+
+### 83. Что такое Flutter DevTools?
+Flutter DevTools — это набор инструментов для производительности и отладки. Он позволяет инспектировать дерево виджетов, профилировать производительность, мониторить память и отлаживать сетевые вызовы.
+
+### 84. В чём важность `const` для производительности?
+Использование `const` виджетов позволяет Flutter кэшировать экземпляры виджетов и пропускать их перестроение, когда родитель перестраивается, уменьшая ненужную работу и повышая производительность.
+
+### 85. Что такое RenderTree (дерево рендера)?
+RenderTree — это дерево RenderObjects, которое обрабатывает макет, рисование и обработку нажатий. Оно создаётся из дерева Widget и дерева Element.
+
+### 86. Что вызывает перестроение виджета?
+- Вызван `setState()`.
+- Родительский виджет перестраивается, и конфигурация виджета изменилась.
+- Зависимость InheritedWidget изменилась (например, Theme, Provider).
+
+### 87. Как отлаживать проблемы производительности во Flutter?
+- Используйте вкладку Performance в Flutter DevTools.
+- Включите оверлей производительности (`Alt + P`).
+- Используйте `debugRepaintRainbowEnabled` для обнаружения перерисовок.
+- Проверяйте ненужные перестроения с помощью `flutter_log` или логирования.
+
+### 88. В чём важность `keepAlive` в ListView?
+Использование `AutomaticKeepAliveClientMixin` сохраняет состояние виджета активным, когда он прокручивается за пределы экрана, предотвращая перестроения при прокрутке обратно.
+
+### 89. Что такое RepaintBoundary?
+`RepaintBoundary` изолирует перерисовки в определённой части UI. Содержимое внутри RepaintBoundary перерисовывается только тогда, когда что-то внутри него меняется.
+
+### 90. В чём разница между Layout, Paint и Compositing?
+- **Layout (макет)**: Определяет размер и позицию виджетов.
+- **Paint (рисование)**: Рисует пиксели на экране.
+- **Compositing (композиция)**: Управляет порядком отрисовки слоёв.
+
+---
+
+## Платформа и продвинутые темы
+
+### 91. Что такое Platform Channel?
+Platform Channels (каналы платформы) позволяют Flutter-коду взаимодействовать с нативным кодом платформы (Java/Kotlin для Android, Objective-C/Swift для iOS). Используются для API, специфичных для платформы.
+
+### 92. В чём разница между MethodChannel и EventChannel?
+- **MethodChannel**: Для односторонних вызовов методов (Flutter ↔ Native).
+- **EventChannel**: Для потоков событий от нативного кода к Flutter.
+
+### 93. Что такое Isolate во Flutter?
+Isolate (изолат) — это отдельный поток выполнения с собственным пространством памяти. Используется для CPU-интенсивных задач, чтобы не блокировать UI-поток. Взаимодействие происходит через сообщения.
+
+### 94. В чём разница между `Isolate` и `compute()`?
+- **Isolate**: Низкоуровневый, ручная передача сообщений.
+- **compute()**: Высокоуровневый помощник, который запускает функцию верхнего уровня в фоновом Isolate с упрощённой передачей сообщений.
+
+### 95. Что такое Firebase во Flutter?
+Firebase — это backend-as-a-service платформа от Google. Во Flutter она обычно используется для аутентификации, облачных уведомлений, базы данных в реальном времени, аналитики и отчётов об ошибках с помощью пакетов `firebase_core` и `cloud_firestore`.
+
+### 96. В чём разница между `inheritedWidget` и `Provider`?
+- **InheritedWidget**: Низкоуровневый виджет Flutter для передачи данных вниз по дереву.
+- **Provider**: Обёртка вокруг InheritedWidget, которая упрощает чтение, прослушивание и обновление общих данных.
+
+### 97. Что такое Flutter Web?
+Flutter Web позволяет запускать Flutter-приложения в веб-браузерах. Он компилируется в HTML/JavaScript/Canvas. Есть два рендерера: CanvasKit (высокое качество) и HTML renderer (меньший размер).
+
+### 98. В чём разница между CanvasKit и HTML renderer во Flutter Web?
+- **CanvasKit**: Использует WebGL для рендеринга высокого качества, лучшую производительность, но больший размер загрузки (~2 МБ).
+- **HTML Renderer**: Использует стандартные HTML/CSS/Canvas, меньший размер, но менее согласованная работа между браузерами.
+
+### 99. В чём важность `pubspec.yaml`?
+`pubspec.yaml` определяет метаданные проекта, зависимости, активы, шрифты и плагины. Он важен для управления пакетами и ресурсами.
+
+### 100. В чём разница между `dependencies` и `dev_dependencies` в pubspec.yaml?
+- **dependencies**: Пакеты, необходимые для работы приложения в продакшене (например, `http`, `provider`).
+- **dev_dependencies**: Пакеты, необходимые только во время разработки/тестирования (например, `flutter_test`, `lint`, `mocktail`).
