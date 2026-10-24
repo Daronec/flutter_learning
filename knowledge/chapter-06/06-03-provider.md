@@ -1,3 +1,16 @@
+﻿---
+tags:
+  - state-management
+  - provider
+  - bloc
+  - riverpod
+chapter: 6
+section: 3
+title: Provider — паттерн observer и наследование
+alias: 06 03 provider
+status: complete
+---
+
 # Provider — паттерн observer и наследование
 
 ## Введение

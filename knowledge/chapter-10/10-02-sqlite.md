@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - storage
+  - database
+  - local
+chapter: 10
+section: 2
+title: SQLite — реляционные базы данных с sqflite
+alias: 10 02 sqlite
+status: complete
+---
+
 # SQLite — реляционные базы данных с sqflite
 
 SQLite — это встроенная реляционная база данных, которая не требует отдельного сервера. Пакет `sqflite` предоставляет доступ к SQLite из Flutter-приложений.

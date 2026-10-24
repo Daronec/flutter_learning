@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - api
+  - http
+  - networking
+chapter: 9
+section: 4
+title: JSON: сериализация и десериализация в Dart
+alias: 09 04 json serialization
+status: complete
+---
+
 # JSON: сериализация и десериализация в Dart
 
 JSON (JavaScript Object Notation) — это текстовый формат обмена данными. В Flutter мы постоянно работаем с JSON при обмене данными с сервером.

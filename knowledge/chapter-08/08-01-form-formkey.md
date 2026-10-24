@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - forms
+  - validation
+chapter: 8
+section: 1
+title: Form и FormKey — основы работы с формами
+alias: 08 01 form formkey
+status: complete
+---
+
 # Form и FormKey — основы работы с формами
 
 Form — это виджет-контейнер, который управляет набором полей ввода (FormField). Он предоставляет методы для валидации, сохранения и сброса данных формы.
@@ -427,3 +438,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 6. **Не храните данные формы внутри TextFormField** — используйте переменные в State.
 7. **Используйте `onChanged`** для мгновенного обновления UI (например, счётчик символов).
 8. **Для сложных форм** — разделяйте на несколько Form виджетов.
+## РЎРІСЏР·Р°РЅРЅС‹Рµ РіР»Р°РІС‹
+
+[[HTTP-протокол: основы и работа с сетью в Flutter]] [[SharedPreferences — простые пары ключ-значение]] 

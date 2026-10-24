@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - layout
+  - responsive
+  - ui
+chapter: 5
+section: 5
+title: CustomMultiChildLayout — кастомные лейауты
+alias: 05 05 custom multichild
+status: complete
+---
+
 # CustomMultiChildLayout — кастомные лейауты
 
 `CustomMultiChildLayout` позволяет создавать полностью кастомные макеты с помощью `LayoutDelegate`. Это самый гибкий инструмент для управления расположением дочерних элементов в Flutter.

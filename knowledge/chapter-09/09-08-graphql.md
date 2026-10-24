@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - api
+  - http
+  - networking
+chapter: 9
+section: 8
+title: GraphQL — основы и интеграция с Flutter
+alias: 09 08 graphql
+status: complete
+---
+
 # GraphQL — основы и интеграция с Flutter
 
 GraphQL — это язык запросов и серверная runtime-технология для API, разработанная Facebook. В отличие от REST, GraphQL позволяет клиенту запрашивать точно те данные, которые нужны.

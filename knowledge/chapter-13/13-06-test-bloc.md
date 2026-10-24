@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - testing
+  - unit-tests
+  - widget-tests
+chapter: 13
+section: 6
+title: Тестирование BLoC и State-менеджеров
+alias: 13 06 test bloc
+status: complete
+---
+
 # Тестирование BLoC и State-менеджеров
 
 Тестирование BLoC и state-менеджеров — важная часть тестирования Flutter-приложений, использующих паттерн BLoC. Поскольку BLoC работает с потоками событий и состояний, для его тестирования используются специфические подходы.

@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - performance
+  - optimization
+chapter: 14
+section: 1
+title: 14-01. Flutter Performance Toolkit и DevTools
+alias: 14 01 performance toolkit
+status: complete
+---
+
 # 14-01. Flutter Performance Toolkit и DevTools
 
 ## Введение
@@ -267,3 +278,6 @@ flutter debug dump-render-tree
 Flutter Performance Toolkit и DevTools предоставляют мощный набор инструментов для анализа и оптимизации производительности. Понимание того, как использовать каждый инструмент, позволяет быстро выявлять и устранять проблемы производительности.
 
 В следующих разделах мы рассмотрим конкретные техники оптимизации: оптимизацию виджетов, избегание лишних rebuild'ов, ленивую загрузку и другие техники.
+## РЎРІСЏР·Р°РЅРЅС‹Рµ РіР»Р°РІС‹
+
+[[Виды тестов в Flutter]] [[Сборка APK и AAB — команды и параметры]] 

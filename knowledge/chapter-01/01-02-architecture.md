@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - flutter
+  - intro
+  - basics
+chapter: 1
+section: 2
+title: Архитектура Flutter: Engine, Framework, Embedder
+alias: 01 02 architecture
+status: complete
+---
+
 # 1.2 Архитектура Flutter: Engine, Framework, Embedder
 
 ## Обзор архитектуры

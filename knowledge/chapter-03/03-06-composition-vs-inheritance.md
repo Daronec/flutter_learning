@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - widgets
+  - architecture
+chapter: 3
+section: 6
+title: Composition vs Inheritance — паттерн компоновки
+alias: 03 06 composition vs inheritance
+status: complete
+---
+
 # 3.6 Composition vs Inheritance — паттерн компоновки
 
 ## Composition (компоновка) в Flutter

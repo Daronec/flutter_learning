@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - layout
+  - responsive
+  - ui
+chapter: 5
+section: 6
+title: AspectRatio, FittedBox, OverflowBox
+alias: 05 06 aspectratio fittedbox
+status: complete
+---
+
 # AspectRatio, FittedBox, OverflowBox
 
 Эти три виджета управляют размерами и масштабированием дочерних элементов: `AspectRatio` поддерживает пропорции, `FittedBox` масштабирует содержимое, а `OverflowBox` позволяет выходить за пределы ограничений.

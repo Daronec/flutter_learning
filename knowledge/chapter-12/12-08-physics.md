@@ -1,3 +1,13 @@
+﻿---
+tags:
+  - animations
+chapter: 12
+section: 8
+title: Physics — Scroll Physics в Flutter
+alias: 12 08 physics
+status: complete
+---
+
 # Physics — Scroll Physics в Flutter
 
 ## Введение

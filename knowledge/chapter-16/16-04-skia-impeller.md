@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - platform-channels
+  - native
+  - plugins
+chapter: 16
+section: 4
+title: Skia и Impeller — графические рендереры
+alias: 16 04 skia impeller
+status: complete
+---
+
 # Skia и Impeller — графические рендереры
 
 Flutter использует графические рендереры для отрисовки UI. Исторически основным рендерером была Skia, но начиная с Flutter 3.10 Google представила Impeller — новый рендерер для предсказуемой производительности.

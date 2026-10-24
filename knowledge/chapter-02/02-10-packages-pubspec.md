@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - dart
+  - syntax
+  - basics
+chapter: 2
+section: 10
+title: Пакетная система: pubspec, зависимости, pub.dev
+alias: 02 10 packages pubspec
+status: complete
+---
+
 # 2.10 Пакетная система: pubspec, зависимости, pub.dev
 
 ## pubspec.yaml

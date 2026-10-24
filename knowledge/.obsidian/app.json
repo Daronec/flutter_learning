@@ -1,0 +1,24 @@
+{
+  "always-update-links": true,
+  "attachment": {
+    "folder": "assets",
+    "path-style": "useFolder"
+  },
+  "livePreview": true,
+  "showFrontmatter": true,
+  "showLineNumber": true,
+  "readableLineLength": true,
+  "strictLineNumbers": false,
+  "defaultViewMode": "source",
+  "spellcheck": true,
+  "previewMarkdownLink": true,
+  "enableHtmlInLinks": true,
+  "foldHeading": true,
+  "foldIndent": true,
+  "showFoldedHeader": true,
+  "show-line-count": true,
+  "mobileInlineTitles": true,
+  "mobileInlineInserter": true,
+  "propertySeparator": " ",
+  "autoConvertHtmlLinks": true
+}

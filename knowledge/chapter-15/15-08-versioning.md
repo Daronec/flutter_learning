@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - build
+  - deployment
+  - ci-cd
+chapter: 15
+section: 8
+title: Versioning и релизные ветки
+alias: 15 08 versioning
+status: complete
+---
+
 # Versioning и релизные ветки
 
 ## Введение

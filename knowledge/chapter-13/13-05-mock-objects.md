@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - testing
+  - unit-tests
+  - widget-tests
+chapter: 13
+section: 5
+title: Mock-объекты: mockito, mocktail
+alias: 13 05 mock objects
+status: complete
+---
+
 # Mock-объекты: mockito, mocktail
 
 Mock-объекты — это имитации реальных объектов, используемые для изоляции тестируемого кода от внешних зависимостей. В Dart/Flutter популярен пакет `mockito`, а также его более простая альтернатива — `mocktail`.

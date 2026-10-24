@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - storage
+  - database
+  - local
+chapter: 10
+section: 3
+title: Drift (formerly Moor) — типобезопасная работа с БД
+alias: 10 03 drift
+status: complete
+---
+
 # Drift (formerly Moor) — типобезопасная работа с БД
 
 Drift (ранее известный как Moor) — это типобезопасная библиотека для работы с SQLite в Dart/Flutter. Она генерирует код на основе объявлений таблиц и предоставляет удобный API для запросов.

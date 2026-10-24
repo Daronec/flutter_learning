@@ -1,3 +1,13 @@
+﻿---
+tags:
+  - animations
+chapter: 12
+section: 7
+title: Lottie — анимации из After Effects
+alias: 12 07 lottie
+status: complete
+---
+
 # Lottie — анимации из After Effects
 
 ## Введение

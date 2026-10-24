@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - build
+  - deployment
+  - ci-cd
+chapter: 15
+section: 9
+title: Crash Reporting — Firebase Crashlytics
+alias: 15 09 crash reporting
+status: complete
+---
+
 # Crash Reporting — Firebase Crashlytics
 
 ## Введение

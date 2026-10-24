@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - performance
+  - optimization
+chapter: 14
+section: 4
+title: 14-04. Lazy Loading — Ленивая загрузка данных
+alias: 14 04 lazy loading
+status: complete
+---
+
 # 14-04. Lazy Loading — Ленивая загрузка данных
 
 ## Введение

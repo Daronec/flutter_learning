@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - build
+  - deployment
+  - ci-cd
+chapter: 15
+section: 4
+title: Публикация в Apple App Store
+alias: 15 04 app store
+status: complete
+---
+
 # Публикация в Apple App Store
 
 ## Введение

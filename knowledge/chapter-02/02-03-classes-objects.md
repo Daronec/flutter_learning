@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - dart
+  - syntax
+  - basics
+chapter: 2
+section: 3
+title: Классы и объекты: конструкторы, фабрики, инициализация
+alias: 02 03 classes objects
+status: complete
+---
+
 # 2.3 Классы и объекты: конструкторы, фабрики, инициализация
 
 ## Базовые классы

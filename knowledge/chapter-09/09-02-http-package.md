@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - api
+  - http
+  - networking
+chapter: 9
+section: 2
+title: Пакет http — базовые запросы в Flutter
+alias: 09 02 http package
+status: complete
+---
+
 # Пакет http — базовые запросы в Flutter
 
 Пакет `http` — это официальный пакет Dart для выполнения HTTP-запросов. Он является наиболее простым и широко используемым способом работы с сетью в Flutter.

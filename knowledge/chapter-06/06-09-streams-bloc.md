@@ -1,3 +1,16 @@
+﻿---
+tags:
+  - state-management
+  - provider
+  - bloc
+  - riverpod
+chapter: 6
+section: 9
+title: Streams и StreamController в BLoC
+alias: 06 09 streams bloc
+status: complete
+---
+
 # Streams и StreamController в BLoC
 
 ## Введение

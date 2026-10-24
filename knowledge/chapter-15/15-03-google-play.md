@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - build
+  - deployment
+  - ci-cd
+chapter: 15
+section: 3
+title: Публикация в Google Play Store
+alias: 15 03 google play
+status: complete
+---
+
 # Публикация в Google Play Store
 
 ## Введение

@@ -1,3 +1,13 @@
+﻿---
+tags:
+  - animations
+chapter: 12
+section: 4
+title: Explicit Animations: AnimationController и Tween
+alias: 12 04 explicit animations
+status: complete
+---
+
 # Explicit Animations: AnimationController и Tween
 
 ## Введение

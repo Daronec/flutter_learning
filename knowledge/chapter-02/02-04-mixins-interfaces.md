@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - dart
+  - syntax
+  - basics
+chapter: 2
+section: 4
+title: Миксины, интерфейсы, абстрактные классы
+alias: 02 04 mixins interfaces
+status: complete
+---
+
 # 2.4 Миксины, интерфейсы, абстрактные классы
 
 ## Абстрактные классы

@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - widgets
+  - ui
+  - basics
+chapter: 4
+section: 3
+title: Icon, Image — иконки и изображения
+alias: 04 03 icon image
+status: complete
+---
+
 # Icon, Image — иконки и изображения
 
 ## Введение

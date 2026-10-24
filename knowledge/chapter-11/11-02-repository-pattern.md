@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - architecture
+  - clean-architecture
+  - repository
+chapter: 11
+section: 2
+title: Repository Pattern в Flutter
+alias: 11 02 repository pattern
+status: complete
+---
+
 # Repository Pattern в Flutter
 
 ## Введение

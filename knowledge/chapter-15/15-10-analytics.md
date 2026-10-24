@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - build
+  - deployment
+  - ci-cd
+chapter: 15
+section: 10
+title: Analytics — сбор метрик использования
+alias: 15 10 analytics
+status: complete
+---
+
 # Analytics — сбор метрик использования
 
 ## Введение

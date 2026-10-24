@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - layout
+  - responsive
+  - ui
+chapter: 5
+section: 1
+title: Flex-система: Row и Column в деталях
+alias: 05 01 flex system
+status: complete
+---
+
 # Flex-система: Row и Column в деталях
 
 Flex-система Flutter — это основа всех макетов. Виджеты `Row` и `Column` используют механизм `Flex`, который распределяет пространство между дочерними элементами по главной оси (main axis) и выравнивает их по поперечной (cross axis).
@@ -320,3 +332,6 @@ Column(
 - `baseline` работает только с текстовыми детьми или контейнерами с текстом
 - Для `spaceBetween`/`spaceAround`/`spaceEvenly` убедитесь, что у Row/Column достаточно пространства по главной оси
 - Комбинируйте `mainAxisSize: MainAxisSize.min` с `CrossAxisAlignment.stretch` для компактных растянутых карточек
+## РЎРІСЏР·Р°РЅРЅС‹Рµ РіР»Р°РІС‹
+
+[[Container, Padding, SizedBox — отступы и размеры]] [[Navigator 1.0: push, pop, named routes]] 

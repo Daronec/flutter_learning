@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - forms
+  - validation
+chapter: 8
+section: 4
+title: AutovalidateMode — когда валидировать
+alias: 08 04 autovalidate
+status: complete
+---
+
 # AutovalidateMode — когда валидировать
 
 AutovalidateMode определяет, когда форма должна автоматически запускать валидацию полей. Правильный выбор режима влияет на UX и производительность.

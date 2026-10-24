@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - architecture
+  - clean-architecture
+  - repository
+chapter: 11
+section: 6
+title: Push-уведомления с Firebase Cloud Messaging
+alias: 11 06 push notifications
+status: complete
+---
+
 # Push-уведомления с Firebase Cloud Messaging
 
 ## Введение

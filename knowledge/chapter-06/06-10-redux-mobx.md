@@ -1,3 +1,16 @@
+﻿---
+tags:
+  - state-management
+  - provider
+  - bloc
+  - riverpod
+chapter: 6
+section: 10
+title: Redux и MobX — альтернативные подходы
+alias: 06 10 redux mobx
+status: complete
+---
+
 # Redux и MobX — альтернативные подходы
 
 ## Введение

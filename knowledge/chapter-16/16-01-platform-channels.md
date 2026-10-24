@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - platform-channels
+  - native
+  - plugins
+chapter: 16
+section: 1
+title: Platform Channels — взаимодействие с нативным кодом
+alias: 16 01 platform channels
+status: complete
+---
+
 # Platform Channels — взаимодействие с нативным кодом
 
 Platform Channels — это основной механизм коммуникации между Dart-кодом Flutter-приложения и нативным кодом на Android (Kotlin/Java) и iOS (Swift/Objective-C). Через Platform Channels Flutter получает доступ к платформенным API, которые не доступны на уровне Dart.
@@ -458,3 +470,6 @@ Map             →   HashMap        →   NSDictionary
      return null;
    });
    ```
+## РЎРІСЏР·Р°РЅРЅС‹Рµ РіР»Р°РІС‹
+
+[[HTTP-протокол: основы и работа с сетью в Flutter]] [[SharedPreferences — простые пары ключ-значение]] 

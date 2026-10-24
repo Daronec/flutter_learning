@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - performance
+  - optimization
+chapter: 14
+section: 3
+title: 14-03. Избегание лишних rebuild'ов
+alias: 14 03 avoid rebuilds
+status: complete
+---
+
 # 14-03. Избегание лишних rebuild'ов
 
 ## Введение

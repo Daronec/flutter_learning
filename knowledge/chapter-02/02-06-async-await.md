@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - dart
+  - syntax
+  - basics
+chapter: 2
+section: 6
+title: Асинхронность: Future, Stream, isolate
+alias: 02 06 async await
+status: complete
+---
+
 # 2.6 Асинхронность: Future, Stream, isolate
 
 ## Future

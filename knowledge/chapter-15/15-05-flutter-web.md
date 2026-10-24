@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - build
+  - deployment
+  - ci-cd
+chapter: 15
+section: 5
+title: Flutter Web — деплой веб-версии
+alias: 15 05 flutter web
+status: complete
+---
+
 # Flutter Web — деплой веб-версии
 
 ## Введение

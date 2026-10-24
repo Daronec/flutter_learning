@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - widgets
+  - ui
+  - basics
+chapter: 4
+section: 9
+title: TextField, TextFormField — поля ввода
+alias: 04 09 textfield
+status: complete
+---
+
 # TextField, TextFormField — поля ввода
 
 ## Введение

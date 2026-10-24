@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - navigation
+  - routing
+chapter: 7
+section: 3
+title: Navigator 2.0: Router, RouteInformationParser, PageRouteBuilder
+alias: 07 03 navigator 2
+status: complete
+---
+
 # Navigator 2.0: Router, RouteInformationParser, PageRouteBuilder
 
 Navigator 2.0 — это декларативная система навигации, introduced в Flutter 2.0. В отличие от императивного Navigator 1.0, Navigator 2.0 позволяет синхронизировать навигацию с состоянием приложения и URL.

@@ -1,3 +1,13 @@
+﻿---
+tags:
+  - animations
+chapter: 12
+section: 6
+title: PageTransitions — анимации навигации
+alias: 12 06 page transitions
+status: complete
+---
+
 # PageTransitions — анимации навигации
 
 ## Введение

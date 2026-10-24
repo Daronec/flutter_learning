@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - api
+  - http
+  - networking
+chapter: 9
+section: 7
+title: REST API — принципы и паттерны в Flutter
+alias: 09 07 rest api
+status: complete
+---
+
 # REST API — принципы и паттерны в Flutter
 
 REST (Representational State Transfer) — это архитектурный стиль для построения распределённых систем. Большинство современных API следуют принципам REST.

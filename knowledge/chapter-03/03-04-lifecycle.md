@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - widgets
+  - architecture
+chapter: 3
+section: 4
+title: Жизненный цикл виджета (lifecycle)
+alias: 03 04 lifecycle
+status: complete
+---
+
 # 3.4 Жизненный цикл виджета (lifecycle)
 
 ## Lifecycle Stateless Widget

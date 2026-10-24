@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - storage
+  - database
+  - local
+chapter: 10
+section: 6
+title: SecureStorage — безопасное хранение данных
+alias: 10 06 securestorage
+status: complete
+---
+
 # SecureStorage — безопасное хранение данных
 
 flutter_secure_storage — это пакет для безопасного хранения чувствительных данных. Он использует Keychain на iOS и Keystore/EncryptedSharedPreferences на Android.

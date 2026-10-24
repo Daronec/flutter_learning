@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - navigation
+  - routing
+chapter: 7
+section: 7
+title: Глубокие ссылки (Deep Links) и Universal Links
+alias: 07 07 deep links
+status: complete
+---
+
 # Глубокие ссылки (Deep Links) и Universal Links
 
 Deep Links позволяют открывать конкретные экраны приложения напрямую из внешних источников: веб-страниц, сообщений, уведомлений и других приложений.

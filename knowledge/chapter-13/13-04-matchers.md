@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - testing
+  - unit-tests
+  - widget-tests
+chapter: 13
+section: 4
+title: Matchers и ассерции
+alias: 13 04 matchers
+status: complete
+---
+
 # Matchers и ассерции
 
 Matchers — это мощный механизм сравнения значений в тестах Dart/Flutter. Они обеспечивают читаемые сообщения об ошибках и гибкие возможности проверки.

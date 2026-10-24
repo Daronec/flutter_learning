@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - dart
+  - syntax
+  - basics
+chapter: 2
+section: 5
+title: Generics (обобщённое программирование)
+alias: 02 05 generics
+status: complete
+---
+
 # 2.5 Generics (обобщённое программирование)
 
 ## Что такое Generics?

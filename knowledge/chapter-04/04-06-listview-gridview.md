@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - widgets
+  - ui
+  - basics
+chapter: 4
+section: 6
+title: ListView, GridView — списки и сетки
+alias: 04 06 listview gridview
+status: complete
+---
+
 # ListView, GridView — списки и сетки
 
 ## Введение

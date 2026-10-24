@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - testing
+  - unit-tests
+  - widget-tests
+chapter: 13
+section: 7
+title: Widget testing: find, tester, pump
+alias: 13 07 widget testing
+status: complete
+---
+
 # Widget testing: find, tester, pump
 
 Widget testing — это один из самых распространённых видов тестирования в Flutter. Он позволяет проверять рендеринг виджетов, реакцию на действия пользователя и взаимодействие между виджетами.

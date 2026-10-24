@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - build
+  - deployment
+  - ci-cd
+chapter: 15
+section: 6
+title: Flutter Desktop — Windows, macOS, Linux
+alias: 15 06 flutter desktop
+status: complete
+---
+
 # Flutter Desktop — Windows, macOS, Linux
 
 ## Введение

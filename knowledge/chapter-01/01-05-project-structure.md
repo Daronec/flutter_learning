@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - flutter
+  - intro
+  - basics
+chapter: 1
+section: 5
+title: Структура Flutter-проекта: папки и файлы
+alias: 01 05 project structure
+status: complete
+---
+
 # 1.5 Структура Flutter-проекта: папки и файлы
 
 ## Обзор структуры

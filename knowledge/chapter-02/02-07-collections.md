@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - dart
+  - syntax
+  - basics
+chapter: 2
+section: 7
+title: Коллекции: List, Set, Map и их методы
+alias: 02 07 collections
+status: complete
+---
+
 # 2.7 Коллекции: List, Set, Map и их методы
 
 ## List

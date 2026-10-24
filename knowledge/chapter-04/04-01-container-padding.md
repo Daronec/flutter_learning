@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - widgets
+  - ui
+  - basics
+chapter: 4
+section: 1
+title: Container, Padding, SizedBox — отступы и размеры
+alias: 04 01 container padding
+status: complete
+---
+
 # Container, Padding, SizedBox — отступы и размеры
 
 ## Введение
@@ -234,3 +246,6 @@ const Column(
      child: child,
    )
    ```
+## РЎРІСЏР·Р°РЅРЅС‹Рµ РіР»Р°РІС‹
+
+[[Flex-система: Row и Column в деталях]] [[Form и FormKey — основы работы с формами]] 

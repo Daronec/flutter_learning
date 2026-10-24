@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - platform-channels
+  - native
+  - plugins
+chapter: 16
+section: 3
+title: Flutter Engine — как это работает изнутри
+alias: 16 03 flutter engine
+status: complete
+---
+
 # Flutter Engine — как это работает изнутри
 
 Flutter Engine — это слой выполнения Flutter, написанный на C++. Он обеспечивает рендеринг, компиляцию кода, поддержку график и системных сервисов. Понимание работы Engine критично для оптимизации производительности и решения сложных проблем.

@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - navigation
+  - routing
+chapter: 7
+section: 5
+title: BottomNavigationBar, Drawer, FloatingActionButton
+alias: 07 05 bottomnav drawer
+status: complete
+---
+
 # BottomNavigationBar, Drawer, FloatingActionButton
 
 Нижняя навигация, боковые панели и плавающие кнопки действий — основные паттерны UI навигации в мобильных приложениях.

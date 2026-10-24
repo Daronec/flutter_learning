@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - testing
+  - unit-tests
+  - widget-tests
+chapter: 13
+section: 3
+title: Пакет flutter_test — тестирование виджетов
+alias: 13 03 flutter test
+status: complete
+---
+
 # Пакет flutter_test — тестирование виджетов
 
 Пакет `flutter_test` — это специализированный фреймворк для тестирования виджетов в Flutter. Он предоставляет инструменты для создания, рендеринга и взаимодействия с виджетами в изолированной тестовой среде.

@@ -1,3 +1,13 @@
+﻿---
+tags:
+  - animations
+chapter: 12
+section: 10
+title: AnimationConfig и CurvedAnimation
+alias: 12 10 animationconfig
+status: complete
+---
+
 # AnimationConfig и CurvedAnimation
 
 ## Введение

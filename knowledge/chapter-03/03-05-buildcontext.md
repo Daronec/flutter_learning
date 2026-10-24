@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - widgets
+  - architecture
+chapter: 3
+section: 5
+title: Контекст (BuildContext) и его роль
+alias: 03 05 buildcontext
+status: complete
+---
+
 # 3.5 Контекст (BuildContext) и его роль
 
 ## Что такое BuildContext?

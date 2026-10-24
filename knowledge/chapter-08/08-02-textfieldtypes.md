@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - forms
+  - validation
+chapter: 8
+section: 2
+title: TextFormField и типы полей ввода
+alias: 08 02 textfieldtypes
+status: complete
+---
+
 # TextFormField и типы полей ввода
 
 TextFormField — это виджет для ввода текста, интегрированный с Form. Он поддерживает различные типы клавиатур, автозаполнение и форматирование ввода.

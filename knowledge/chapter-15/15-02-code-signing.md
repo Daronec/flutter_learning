@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - build
+  - deployment
+  - ci-cd
+chapter: 15
+section: 2
+title: Подписание приложения (Code Signing)
+alias: 15 02 code signing
+status: complete
+---
+
 # Подписание приложения (Code Signing)
 
 ## Введение

@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - architecture
+  - clean-architecture
+  - repository
+chapter: 11
+section: 3
+title: Dependency Injection в Flutter
+alias: 11 03 dependency injection
+status: complete
+---
+
 # Dependency Injection в Flutter
 
 ## Введение

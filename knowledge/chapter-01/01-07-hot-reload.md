@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - flutter
+  - intro
+  - basics
+chapter: 1
+section: 7
+title: Hot Reload, Hot Restart — принципы работы
+alias: 01 07 hot reload
+status: complete
+---
+
 # 1.7 Hot Reload, Hot Restart — принципы работы
 
 ## Что такое Hot Reload и Hot Restart?

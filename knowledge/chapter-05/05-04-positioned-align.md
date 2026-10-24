@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - layout
+  - responsive
+  - ui
+chapter: 5
+section: 4
+title: Positioned, Align, Center — абсолютное позиционирование
+alias: 05 04 positioned align
+status: complete
+---
+
 # Positioned, Align, Center — абсолютное позиционирование
 
 Абсолютное позиционирование позволяет размещать виджеты в конкретных координатах относительно родительского контейнера. В Flutter для этого используются виджеты `Stack`, `Positioned`, `Align` и `Center`.

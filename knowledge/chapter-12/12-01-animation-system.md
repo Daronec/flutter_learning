@@ -1,3 +1,13 @@
+﻿---
+tags:
+  - animations
+chapter: 12
+section: 1
+title: Анимационная система Flutter
+alias: 12 01 animation system
+status: complete
+---
+
 # Анимационная система Flutter
 
 ## Введение
@@ -304,3 +314,6 @@ class _FullAnimationExampleState extends State<FullAnimationExample>
 4. **Избегайте создания анимаций в `build()`** — создавайте в `initState()`
 5. **Используйте `CurvedAnimation`** для плавных анимаций
 6. **Кэшируйте Tween-объекты** как final поля
+## РЎРІСЏР·Р°РЅРЅС‹Рµ РіР»Р°РІС‹
+
+[[Что такое Widget? Философия «всё — виджет»]] [[Container, Padding, SizedBox — отступы и размеры]] 

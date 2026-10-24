@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - layout
+  - responsive
+  - ui
+chapter: 5
+section: 3
+title: LayoutBuilder и ConstrainedBox
+alias: 05 03 layoutbuilder
+status: complete
+---
+
 # LayoutBuilder и ConstrainedBox
 
 `LayoutBuilder` и `ConstrainedBox` — мощные инструменты для создания адаптивных и кастомных макетов. Они позволяют виджетам реагировать на доступное пространство и модифицировать ограничения для дочерних элементов.

@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - forms
+  - validation
+chapter: 8
+section: 6
+title: Работа с DatePicker и TimePicker
+alias: 08 06 datepicker timepicker
+status: complete
+---
+
 # Работа с DatePicker и TimePicker
 
 Flutter предоставляет встроенные виджеты для выбора даты и времени: `showDatePicker` и `showTimePicker`. Они адаптируются под платформу и поддерживают кастомизацию.

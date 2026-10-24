@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - widgets
+  - architecture
+chapter: 3
+section: 2
+title: Element и Tree — как работает widget-дерево
+alias: 03 02 element tree
+status: complete
+---
+
 # 3.2 Element и Tree — как работает widget-дерево
 
 ## Три дерева Flutter

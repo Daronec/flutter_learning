@@ -1,3 +1,16 @@
+﻿---
+tags:
+  - state-management
+  - provider
+  - bloc
+  - riverpod
+chapter: 6
+section: 2
+title: setState() — основы обновления состояния
+alias: 06 02 setstate
+status: complete
+---
+
 # setState() — основы обновления состояния
 
 ## Введение

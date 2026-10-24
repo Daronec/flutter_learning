@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - testing
+  - unit-tests
+  - widget-tests
+chapter: 13
+section: 2
+title: Пакет test — основа для unit-тестов
+alias: 13 02 test package
+status: complete
+---
+
 # Пакет test — основа для unit-тестов
 
 Пакет `test` — это стандартный фреймворк для тестирования в Dart. Он является основой для unit-тестирования в Flutter и предоставляет мощный набор инструментов для написания чистых, читаемых и поддерживаемых тестов.

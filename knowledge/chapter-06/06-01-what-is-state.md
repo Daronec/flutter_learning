@@ -1,3 +1,16 @@
+﻿---
+tags:
+  - state-management
+  - provider
+  - bloc
+  - riverpod
+chapter: 6
+section: 1
+title: Что такое State? Локальное и глобальное состояние
+alias: 06 01 what is state
+status: complete
+---
+
 # Что такое State? Локальное и глобальное состояние
 
 ## Введение
@@ -227,3 +240,6 @@ class ProfilePage extends StatelessWidget {
 Понимание разницы между локальным и глобальным состоянием — это первый шаг к эффективному управлению состоянием в Flutter. Всегда начинайте с самого простого решения и усложняйте только при необходимости.
 
 > **Правило:** Если состояние нужно только в одном виджете — используйте `StatefulWidget` с `setState()`. Если состояние нужно многим виджетам — используйте Provider, Riverpod или BLoC.
+## РЎРІСЏР·Р°РЅРЅС‹Рµ РіР»Р°РІС‹
+
+[[Navigator 1.0: push, pop, named routes]] [[Form и FormKey — основы работы с формами]] [[Clean Architecture в Flutter]] 

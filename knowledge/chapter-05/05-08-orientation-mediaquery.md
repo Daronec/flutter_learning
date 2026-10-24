@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - layout
+  - responsive
+  - ui
+chapter: 5
+section: 8
+title: OrientationBuilder и MediaQuery
+alias: 05 08 orientation mediaquery
+status: complete
+---
+
 # OrientationBuilder и MediaQuery
 
 `MediaQuery` и `OrientationBuilder` — ключевые инструменты для получения информации о экране и адаптации интерфейса к изменениям ориентации.

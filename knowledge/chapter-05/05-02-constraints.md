@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - layout
+  - responsive
+  - ui
+chapter: 5
+section: 2
+title: Constraints — как работают ограничения
+alias: 05 02 constraints
+status: complete
+---
+
 # Constraints — как работают ограничения
 
 Constraints (ограничения) — это фундаментальный механизм, на котором строится весь layout в Flutter. Понимание constraints критически важно для создания корректных и предсказуемых макетов.

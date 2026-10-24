@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - architecture
+  - clean-architecture
+  - repository
+chapter: 11
+section: 8
+title: Работа с камерой и галереей в Flutter
+alias: 11 08 camera gallery
+status: complete
+---
+
 # Работа с камерой и галереей в Flutter
 
 ## Введение

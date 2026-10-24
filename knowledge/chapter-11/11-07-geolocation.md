@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - architecture
+  - clean-architecture
+  - repository
+chapter: 11
+section: 7
+title: Геолокация и работа с картами в Flutter
+alias: 11 07 geolocation
+status: complete
+---
+
 # Геолокация и работа с картами в Flutter
 
 ## Введение

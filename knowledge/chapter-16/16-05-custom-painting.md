@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - platform-channels
+  - native
+  - plugins
+chapter: 16
+section: 5
+title: Custom Painting — рисование на Canvas
+alias: 16 05 custom painting
+status: complete
+---
+
 # Custom Painting — рисование на Canvas
 
 Custom Painting — это механизм Flutter для рисования произвольной графики на Canvas. Через классы `CustomPaint`, `CustomPainter` и `Paint` можно создавать уникальные визуальные элементы, диаграммы, анимации и сложные UI-компоненты.

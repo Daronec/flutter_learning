@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - dart
+  - syntax
+  - basics
+chapter: 2
+section: 9
+title: Исключения и обработка ошибок
+alias: 02 09 exceptions
+status: complete
+---
+
 # 2.9 Исключения и обработка ошибок
 
 ## Типы ошибок

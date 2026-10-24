@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - widgets
+  - architecture
+chapter: 3
+section: 3
+title: StatelessWidget vs StatefulWidget
+alias: 03 03 stateless vs stateful
+status: complete
+---
+
 # 3.3 StatelessWidget vs StatefulWidget
 
 ## StatelessWidget

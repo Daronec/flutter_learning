@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - dart
+  - syntax
+  - basics
+chapter: 2
+section: 2
+title: Функции: параметры, стрелочный синтаксис, async/await
+alias: 02 02 functions
+status: complete
+---
+
 # 2.2 Функции: параметры, стрелочный синтаксис, async/await
 
 ## Объявление функций

@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - testing
+  - unit-tests
+  - widget-tests
+chapter: 13
+section: 9
+title: Integration tests — end-to-end тестирование
+alias: 13 09 integration tests
+status: complete
+---
+
 # Integration tests — end-to-end тестирование
 
 Integration tests (интеграционные тесты) — это тесты, которые запускаются на реальном устройстве или эмуляторе и проверяют всё приложение целиком. Они тестируют пользовательские сценарии от начала до конца.

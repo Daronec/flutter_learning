@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - performance
+  - optimization
+chapter: 14
+section: 10
+title: 14-10. Profiling vs Tracing — Методы диагностики
+alias: 14 10 profiling tracing
+status: complete
+---
+
 # 14-10. Profiling vs Tracing — Методы диагностики
 
 ## Введение

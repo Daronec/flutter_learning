@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - widgets
+  - ui
+  - basics
+chapter: 4
+section: 8
+title: TextButton, ElevatedButton, OutlinedButton — кнопки
+alias: 04 08 buttons
+status: complete
+---
+
 # TextButton, ElevatedButton, OutlinedButton — кнопки
 
 ## Введение

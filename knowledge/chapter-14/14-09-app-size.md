@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - performance
+  - optimization
+chapter: 14
+section: 9
+title: 14-09. App Size Optimization — Уменьшение размера бандла
+alias: 14 09 app size
+status: complete
+---
+
 # 14-09. App Size Optimization — Уменьшение размера бандла
 
 ## Введение

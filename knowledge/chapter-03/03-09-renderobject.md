@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - widgets
+  - architecture
+chapter: 3
+section: 9
+title: RenderObject — связь между widget и пикселями
+alias: 03 09 renderobject
+status: complete
+---
+
 # 3.9 RenderObject — связь между widget и пикселями
 
 ## Что такое RenderObject?

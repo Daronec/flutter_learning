@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - platform-channels
+  - native
+  - plugins
+chapter: 16
+section: 2
+title: Writing Native Plugins — создание кастомных плагинов
+alias: 16 02 native plugins
+status: complete
+---
+
 # Writing Native Plugins — создание кастомных плагинов
 
 Создание собственных плагинов позволяет расширить возможности Flutter, интегрировав платформенно-зависимый код. Плагин — это пакет, который содержит как Dart-код, так и нативную реализацию для Android и iOS.

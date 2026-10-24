@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - performance
+  - optimization
+chapter: 14
+section: 8
+title: 14-08. Memory Management и утечки памяти
+alias: 14 08 memory management
+status: complete
+---
+
 # 14-08. Memory Management и утечки памяти
 
 ## Введение

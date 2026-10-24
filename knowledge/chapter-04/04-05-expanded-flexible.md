@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - widgets
+  - ui
+  - basics
+chapter: 4
+section: 5
+title: Expanded, Flexible — распределение пространства
+alias: 04 05 expanded flexible
+status: complete
+---
+
 # Expanded, Flexible — распределение пространства
 
 ## Введение

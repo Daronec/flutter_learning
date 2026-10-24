@@ -1,3 +1,13 @@
+﻿---
+tags:
+  - animations
+chapter: 12
+section: 3
+title: AnimatedBuilder и AnimatedCrossFade
+alias: 12 03 animatedbuilder
+status: complete
+---
+
 # AnimatedBuilder и AnimatedCrossFade
 
 ## Введение

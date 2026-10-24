@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - testing
+  - unit-tests
+  - widget-tests
+chapter: 13
+section: 10
+title: CI/CD для Flutter — автоматизация тестирования
+alias: 13 10 cicd testing
+status: complete
+---
+
 # CI/CD для Flutter — автоматизация тестирования
 
 CI/CD (Continuous Integration / Continuous Deployment) — это практика автоматизации сборки, тестирования и развертывания приложений. Для Flutter-проектов CI/CD позволяет автоматически запускать тесты при каждом коммите и пул-реквесте.

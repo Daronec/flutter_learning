@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - platform-channels
+  - native
+  - plugins
+chapter: 16
+section: 9
+title: Multiplatform development — единая кодовая база
+alias: 16 09 multiplatform
+status: complete
+---
+
 # Multiplatform development — единая кодовая база
 
 Multiplatform development в Flutter позволяет создавать приложения для нескольких платформ с минимальными изменениями кода. Эффективная стратегия разделения кода между платформами — ключ к успешной multiplatform-разработке.

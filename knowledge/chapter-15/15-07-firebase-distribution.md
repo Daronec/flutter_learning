@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - build
+  - deployment
+  - ci-cd
+chapter: 15
+section: 7
+title: Firebase App Distribution — тестовый деплой
+alias: 15 07 firebase distribution
+status: complete
+---
+
 # Firebase App Distribution — тестовый деплой
 
 ## Введение

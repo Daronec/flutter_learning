@@ -1,3 +1,13 @@
+﻿---
+tags:
+  - animations
+chapter: 12
+section: 2
+title: Implicit Animations в Flutter
+alias: 12 02 implicit animations
+status: complete
+---
+
 # Implicit Animations в Flutter
 
 ## Введение

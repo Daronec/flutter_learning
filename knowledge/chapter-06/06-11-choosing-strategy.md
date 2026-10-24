@@ -1,3 +1,16 @@
+﻿---
+tags:
+  - state-management
+  - provider
+  - bloc
+  - riverpod
+chapter: 6
+section: 11
+title: Выбор стратегии управления состоянием
+alias: 06 11 choosing strategy
+status: complete
+---
+
 # Выбор стратегии управления состоянием
 
 ## Введение

@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - storage
+  - database
+  - local
+chapter: 10
+section: 7
+title: File I/O — работа с файлами в Flutter
+alias: 10 07 file io
+status: complete
+---
+
 # File I/O — работа с файлами в Flutter
 
 dart:io предоставляет API для работы с файловой системой. В Flutter это позволяет читать и записывать файлы, работать с директориями и управлять файловыми операциями.

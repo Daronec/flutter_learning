@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - navigation
+  - routing
+chapter: 7
+section: 4
+title: AutoRoute и go_router — декларативная маршрутизация
+alias: 07 04 autoroute gorouter
+status: complete
+---
+
 # AutoRoute и go_router — декларативная маршрутизация
 
 go_router и AutoRoute — это популярные библиотеки для декларативной маршрутизации в Flutter. Обе абстрагируют сложность Navigator 2.0, предоставляя удобный API.

@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - flutter
+  - intro
+  - basics
+chapter: 1
+section: 3
+title: Dart vs Flutter — в чём разница
+alias: 01 03 dart vs flutter
+status: complete
+---
+
 # 1.3 Dart vs Flutter — в чём разница
 
 ## Ключевое различие

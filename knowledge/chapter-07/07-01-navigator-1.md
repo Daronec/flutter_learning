@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - navigation
+  - routing
+chapter: 7
+section: 1
+title: Navigator 1.0: push, pop, named routes
+alias: 07 01 navigator 1
+status: complete
+---
+
 # Navigator 1.0: push, pop, named routes
 
 Navigator 1.0 — это императивная система навигации в Flutter, основанная на стеке маршрутов (route stack). Это базовый и наиболее часто используемый подход к навигации в Flutter-приложениях.
@@ -300,3 +311,6 @@ Navigator 1.0 подходит для большинства приложени�
 - Приложение не требует сложной маршрутизации
 
 Для более сложных сценариев (deep links, URL-синхронизация) рассмотрите Navigator 2.0 или go_router.
+## РЎРІСЏР·Р°РЅРЅС‹Рµ РіР»Р°РІС‹
+
+[[Form и FormKey — основы работы с формами]] [[HTTP-протокол: основы и работа с сетью в Flutter]] 

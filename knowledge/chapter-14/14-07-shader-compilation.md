@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - performance
+  - optimization
+chapter: 14
+section: 7
+title: 14-07. Shader Compilation и Precompilation
+alias: 14 07 shader compilation
+status: complete
+---
+
 # 14-07. Shader Compilation и Precompilation
 
 ## Введение

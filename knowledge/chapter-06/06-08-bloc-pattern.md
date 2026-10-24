@@ -1,3 +1,16 @@
+﻿---
+tags:
+  - state-management
+  - provider
+  - bloc
+  - riverpod
+chapter: 6
+section: 8
+title: BLoC (Business Logic Component) — паттерн проектирования
+alias: 06 08 bloc pattern
+status: complete
+---
+
 # BLoC (Business Logic Component) — паттерн проектирования
 
 ## Введение

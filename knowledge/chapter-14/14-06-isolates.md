@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - performance
+  - optimization
+chapter: 14
+section: 6
+title: 14-06. Isolates и многопоточность
+alias: 14 06 isolates
+status: complete
+---
+
 # 14-06. Isolates и многопоточность
 
 ## Введение

@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - flutter
+  - intro
+  - basics
+chapter: 1
+section: 6
+title: Первый запуск: создание и запуск приложения
+alias: 01 06 first run
+status: complete
+---
+
 # 1.6 Первый запуск: создание и запуск приложения
 
 ## Создание проекта

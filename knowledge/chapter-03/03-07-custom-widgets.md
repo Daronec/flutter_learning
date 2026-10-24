@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - widgets
+  - architecture
+chapter: 3
+section: 7
+title: Кастомные виджеты: создание и переиспользование
+alias: 03 07 custom widgets
+status: complete
+---
+
 # 3.7 Кастомные виджеты: создание и переиспользование
 
 ## Создание кастомного виджета

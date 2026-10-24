@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - widgets
+  - ui
+  - basics
+chapter: 4
+section: 4
+title: Row, Column, Stack — основные лейауты
+alias: 04 04 row column stack
+status: complete
+---
+
 # Row, Column, Stack — основные лейауты
 
 ## Введение

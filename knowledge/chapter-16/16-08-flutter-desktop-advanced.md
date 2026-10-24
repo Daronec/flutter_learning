@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - platform-channels
+  - native
+  - plugins
+chapter: 16
+section: 8
+title: Flutter для Desktop — особенности платформ
+alias: 16 08 flutter desktop advanced
+status: complete
+---
+
 # Flutter для Desktop — особенности платформ
 
 Flutter поддерживает десктопные платформы: Windows, macOS и Linux. Каждая платформа имеет свои особенности, требования и возможности интеграции с нативными API.

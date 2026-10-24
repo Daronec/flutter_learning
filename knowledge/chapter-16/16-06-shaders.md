@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - platform-channels
+  - native
+  - plugins
+chapter: 16
+section: 6
+title: Shader (Shaders) — GPU-ускоренная графика
+alias: 16 06 shaders
+status: complete
+---
+
 # Shader (Shaders) — GPU-ускоренная графика
 
 Shaders — это программы, выполняемые на GPU для обработки пикселей и вершин. В Flutter шейдеры позволяют создавать сложные визуальные эффекты с высокой производительностью, используя мощь графического процессора.

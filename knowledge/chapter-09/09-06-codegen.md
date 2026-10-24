@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - api
+  - http
+  - networking
+chapter: 9
+section: 6
+title: Автоматизация сериализации: json_serializable и freezed
+alias: 09 06 codegen
+status: complete
+---
+
 # Автоматизация сериализации: json_serializable и freezed
 
 Вместо ручной написания `fromJson` и `toJson` можно использовать инструменты автоматической генерации кода. Это экономит время и уменьшает количество ошибок.

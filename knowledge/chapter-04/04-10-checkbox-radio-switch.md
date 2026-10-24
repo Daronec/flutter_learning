@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - widgets
+  - ui
+  - basics
+chapter: 4
+section: 10
+title: Checkbox, Radio, Switch — элементы выбора
+alias: 04 10 checkbox radio switch
+status: complete
+---
+
 # Checkbox, Radio, Switch — элементы выбора
 
 ## Введение

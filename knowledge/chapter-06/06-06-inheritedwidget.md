@@ -1,3 +1,16 @@
+﻿---
+tags:
+  - state-management
+  - provider
+  - bloc
+  - riverpod
+chapter: 6
+section: 6
+title: InheritedWidget — механизм распространения данных
+alias: 06 06 inheritedwidget
+status: complete
+---
+
 # InheritedWidget — механизм распространения данных
 
 ## Введение

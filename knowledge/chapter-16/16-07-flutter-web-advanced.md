@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - platform-channels
+  - native
+  - plugins
+chapter: 16
+section: 7
+title: Flutter для Web — особенности и ограничения
+alias: 16 07 flutter web advanced
+status: complete
+---
+
 # Flutter для Web — особенности и ограничения
 
 Flutter для Web позволяет разворачивать Flutter-приложения в браузере. Однако веб-архитектура имеет специфические особенности и ограничения, которые необходимо учитывать при разработке.

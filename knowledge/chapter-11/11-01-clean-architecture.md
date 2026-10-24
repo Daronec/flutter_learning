@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - architecture
+  - clean-architecture
+  - repository
+chapter: 11
+section: 1
+title: Clean Architecture в Flutter
+alias: 11 01 clean architecture
+status: complete
+---
+
 # Clean Architecture в Flutter
 
 ## Введение
@@ -301,3 +313,6 @@ class UserCard extends StatelessWidget {
 4. **Не допускайте утечки DTO в domain**
 5. **Используйте генерацию кода** для DTO (json_serializable, freezed)
 6. **Регулярно проверяйте направление зависимостей**
+## РЎРІСЏР·Р°РЅРЅС‹Рµ РіР»Р°РІС‹
+
+[[Что такое State? Локальное и глобальное состояние]] [[Виды тестов в Flutter]] [[14-01. Flutter Performance Toolkit и DevTools]] 

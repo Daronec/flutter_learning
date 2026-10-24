@@ -1,3 +1,16 @@
+﻿---
+tags:
+  - state-management
+  - provider
+  - bloc
+  - riverpod
+chapter: 6
+section: 5
+title: ValueListenableBuilder и ListenableBuilder
+alias: 06 05 valuelistenablebuilder
+status: complete
+---
+
 # ValueListenableBuilder и ListenableBuilder
 
 ## Введение

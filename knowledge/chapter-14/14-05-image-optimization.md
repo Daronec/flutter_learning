@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - performance
+  - optimization
+chapter: 14
+section: 5
+title: 14-05. Image Optimization — Сжатие и формат изображений
+alias: 14 05 image optimization
+status: complete
+---
+
 # 14-05. Image Optimization — Сжатие и формат изображений
 
 ## Введение

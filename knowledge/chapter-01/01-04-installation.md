@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - flutter
+  - intro
+  - basics
+chapter: 1
+section: 4
+title: Установка и настройка окружения (Flutter SDK, IDE, эмулятор)
+alias: 01 04 installation
+status: complete
+---
+
 # 1.4 Установка и настройка окружения (Flutter SDK, IDE, эмулятор)
 
 ## Системные требования

@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - platform-channels
+  - native
+  - plugins
+chapter: 16
+section: 10
+title: Future of Flutter — roadmap и тренды
+alias: 16 10 future flutter
+status: complete
+---
+
 # Future of Flutter — roadmap и тренды
 
 Flutter продолжает развиваться, расширяя возможности кроссплатформенной разработки. В этом разделе рассматриваются текущие тренды, roadmap и будущие направления развития Flutter.

@@ -1,3 +1,16 @@
+﻿---
+tags:
+  - state-management
+  - provider
+  - bloc
+  - riverpod
+chapter: 6
+section: 7
+title: ScopedModel и Riverpod — альтернативы Provider
+alias: 06 07 riverpod
+status: complete
+---
+
 # ScopedModel и Riverpod — альтернативы Provider
 
 ## Введение

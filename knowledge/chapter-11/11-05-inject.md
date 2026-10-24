@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - architecture
+  - clean-architecture
+  - repository
+chapter: 11
+section: 5
+title: Inject — DI-фреймворк для Dart
+alias: 11 05 inject
+status: complete
+---
+
 # Inject — DI-фреймворк для Dart
 
 ## Введение

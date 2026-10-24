@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - widgets
+  - ui
+  - basics
+chapter: 4
+section: 7
+title: SingleChildScrollView — скроллинг контента
+alias: 04 07 single child scroll
+status: complete
+---
+
 # SingleChildScrollView — скроллинг контента
 
 ## Введение

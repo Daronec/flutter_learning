@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - architecture
+  - clean-architecture
+  - repository
+chapter: 11
+section: 4
+title: GetIt — Сервис-локация в Flutter
+alias: 11 04 getit
+status: complete
+---
+
 # GetIt — Сервис-локация в Flutter
 
 ## Введение

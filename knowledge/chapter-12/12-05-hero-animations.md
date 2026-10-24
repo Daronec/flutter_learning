@@ -1,3 +1,13 @@
+﻿---
+tags:
+  - animations
+chapter: 12
+section: 5
+title: Hero-анимации в Flutter
+alias: 12 05 hero animations
+status: complete
+---
+
 # Hero-анимации в Flutter
 
 ## Введение

@@ -1,0 +1,19 @@
+{
+  "properties": {
+    "tags": {
+      "type": "multi",
+      "inclusion": "comprehensive"
+    },
+    "chapter": {
+      "type": "number",
+      "format": "int"
+    },
+    "section": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "options": ["draft", "review", "complete"]
+    }
+  }
+}

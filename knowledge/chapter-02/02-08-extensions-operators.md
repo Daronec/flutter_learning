@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - dart
+  - syntax
+  - basics
+chapter: 2
+section: 8
+title: Расширения (extension methods) и операторы
+alias: 02 08 extensions operators
+status: complete
+---
+
 # 2.8 Расширения (extension methods) и операторы
 
 ## Extension Methods

@@ -1,3 +1,16 @@
+﻿---
+tags:
+  - state-management
+  - provider
+  - bloc
+  - riverpod
+chapter: 6
+section: 4
+title: ChangeNotifier и Consumer
+alias: 06 04 changenotifier
+status: complete
+---
+
 # ChangeNotifier и Consumer
 
 ## Введение

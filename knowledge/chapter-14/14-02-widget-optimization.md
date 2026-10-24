@@ -1,3 +1,14 @@
+﻿---
+tags:
+  - performance
+  - optimization
+chapter: 14
+section: 2
+title: 14-02. Widget Build-оптимизация: const-конструкторы и ключи
+alias: 14 02 widget optimization
+status: complete
+---
+
 # 14-02. Widget Build-оптимизация: const-конструкторы и ключи
 
 ## Введение

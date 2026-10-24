@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - widgets
+  - ui
+  - basics
+chapter: 4
+section: 2
+title: Text, RichText, TextSpan — работа с текстом
+alias: 04 02 text widget
+status: complete
+---
+
 # Text, RichText, TextSpan — работа с текстом
 
 ## Введение

@@ -1,3 +1,15 @@
+﻿---
+tags:
+  - api
+  - http
+  - networking
+chapter: 9
+section: 10
+title: Interceptors и перехват запросов в Dio
+alias: 09 10 interceptors
+status: complete
+---
+
 # Interceptors и перехват запросов в Dio
 
 Interceptors (интерсепторы) — это механизм перехвата HTTP-запросов и ответов на глобальном уровне. Они позволяют модифицировать запросы, ответы и ошибки до того, как они достигнут кода приложения.
